@@ -16,11 +16,11 @@ Rovanは、会社・商品・サービス名またはURLを起点に、自社の
 
 - 実測値は、質問・AI・モデル・地域・言語・測定時点と、成功した観測数を添えて表示する。
 - 会社名を入力した場合は、見つかった公開サイト候補を利用者が確認してから測定する。
-- 初回の公開確認と許可後、有効な有料Watchは同じ参照元サイトの短い記載をRovan公開ページへ自動更新する。停止・直前取り消しが可能。自由文Change Packは下書きのまま扱い、顧客サイトには書き込まない。
+- 初回の公開確認と許可後、有効な有料Watchは同じ参照元サイトの短い記載をRovan公開ページへ自動更新する。停止・直前取り消しが可能。自由文Change Packは下書きとして扱い、顧客サイトには書き込まない。\n- 人間のASO/LLMO/GEOコンサルが行う質問設計、AI実測、競合・引用元分析、Evidence Gap判定、技術監査、優先順位付け、FAQ・比較文・記事・JSON-LD等の完成成果物生成、再測定・監視は、通常ケースをRovan内部で自動化する。顧客サイト/CMSへの最終反映だけはRovanの責務外とする。
 - 公開情報は、参照元で確認できる事実と入力者が確認した内容に限定する。AIの推薦・順位・問い合わせ・売上は保証しない。
 - 北極星はAI顧客奪還シェア（固定50問の候補入り割合）。WatchでAI別の成功分母・欠損・同条件の前後推移を示す。初回候補外からの回復率とは別であり、実際の顧客シェアではない。
 
-現行の開発ルールは [`AGENTS.md`](AGENTS.md)、現行のプロダクト方針は [`docs/CORE_PRODUCT_STRATEGY.md`](docs/CORE_PRODUCT_STRATEGY.md)、継続測定の定義は [`docs/CONTINUOUS_VALUE_RETENTION.md`](docs/CONTINUOUS_VALUE_RETENTION.md) を参照してください。履歴・旧案はマスター白書とオーナー台帳に保存しています。
+現行の開発ルールは [`AGENTS.md`](AGENTS.md)、現行のプロダクト方針は [`docs/CORE_PRODUCT_STRATEGY.md`](docs/CORE_PRODUCT_STRATEGY.md)、人力ASO/LLMO業務を無人化する上位互換方針は [`docs/AUTONOMOUS_AI_SEARCH_SUPERSET_STRATEGY.md`](docs/AUTONOMOUS_AI_SEARCH_SUPERSET_STRATEGY.md)、継続測定の定義は [`docs/CONTINUOUS_VALUE_RETENTION.md`](docs/CONTINUOUS_VALUE_RETENTION.md) を参照してください。履歴・旧案はマスター白書とオーナー台帳に保存しています。
 
 ---
 
@@ -238,5 +238,5 @@ A passing check is required before claiming a code change is release-ready.
 - no universal rank, recommendation, Citation, inquiry or revenue guarantee;
 - no causal claim from a simple before/after movement;
 - no invented customer results, implementation times, certifications or ROI;
-- no direct customer-site write without explicit approval and rollback design;
+- no direct customer-site/CMS write; Rovan may generate implementation-ready artifacts, but publication into external customer-controlled systems remains outside Rovan;
 - AI-readable drafts are human-reviewed aids; they do not guarantee AI recommendation, citation or search ranking.
