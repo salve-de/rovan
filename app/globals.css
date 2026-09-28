@@ -4135,3 +4135,34 @@ svg { width: 1.1em; height: 1.1em; }
 }
 /* 長い本文は文節改行にすると行末がガタつくため、通常の折り返しに戻す */
 .pg-doc p, .pg-doc li { word-break: normal; text-wrap: wrap; }
+
+/* ホーム: 始め方（手間・HPなし・料金をひとまとめ） */
+.home-section-head { display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; max-width: 780px; margin: 0 auto; }
+.home-section-eyebrow { font-size: 15px; font-weight: 700; color: var(--brand); }
+.home-section-head h2 { font-size: clamp(26px, 3.6vw, 42px); line-height: 1.4; }
+.home-section-head p { font-size: clamp(15px, 1.6vw, 18px); color: var(--text-muted); }
+.home-easy { background: var(--bg); padding: var(--sp-8) 0; }
+.home-easy-inner { display: flex; flex-direction: column; align-items: center; gap: var(--sp-4); }
+.home-easy-grid { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 48px; align-items: center; width: 100%; max-width: 1000px; }
+.home-easy-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+.home-easy-steps li { display: flex; align-items: center; gap: 18px; background: var(--home-surface); border-radius: 18px; padding: 22px 24px; }
+.home-easy-steps li:last-child { background: var(--brand); }
+.home-easy-steps li:last-child strong, .home-easy-steps li:last-child span { color: var(--bg); }
+.home-easy-num { flex-shrink: 0; width: 44px; height: 44px; border-radius: 50%; background: var(--navy); color: var(--bg); font-size: 20px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.home-easy-steps li:last-child .home-easy-num { background: var(--bg); color: var(--brand); }
+.home-easy-steps strong { display: block; font-family: var(--font-heading-family); font-size: 20px; color: var(--navy); line-height: 1.4; }
+.home-easy-steps div span { display: block; margin-top: 4px; font-size: 15px; color: var(--text-muted); }
+.home-easy-phone { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.home-easy-phone figcaption { text-align: center; font-size: 14px; font-weight: 700; color: var(--navy); line-height: 1.6; }
+.home-easy-phone small { font-weight: 400; color: var(--text-subtle); }
+.home-faq { background: var(--home-surface) !important; }
+.home-final-cta { background: var(--bg); padding: var(--sp-8) 0; }
+@media (max-width: 900px) {
+  .home-easy-grid { grid-template-columns: 1fr; gap: 32px; }
+}
+@media (max-width: 640px) {
+  .home-easy { padding: var(--sp-6) 0; }
+  .home-easy-steps li { padding: 16px; gap: 14px; }
+  .home-easy-steps strong { font-size: 17px; }
+  .home-final-cta { padding: var(--sp-6) 0; }
+}
