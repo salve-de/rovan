@@ -1529,15 +1529,8 @@ svg { width: 1.1em; height: 1.1em; }
 .readiness-list span.missing { color: var(--orange); }
 
 /* Footer and utility/error states */
-.site-footer { padding: 58px 0 32px; background: var(--white); color: var(--ink-soft); border-top: 1px solid var(--line); }
 .footer-grid { display: grid; grid-template-columns: 1.4fr .65fr .65fr; gap: 55px; }
 .footer-brand p { max-width: 330px; margin: 16px 0 0; color: var(--text-subtle); font-size: .72rem; line-height: 1.75; }
-.site-footer .brand { color: var(--navy); }
-.site-footer .brand small { color: var(--text-subtle); }
-.site-footer nav { display: grid; align-content: start; gap: 9px; }
-.site-footer nav strong { margin-bottom: 4px; color: var(--navy); font-size: .67rem; font-weight: 700; }
-.site-footer nav a { color: var(--text-subtle); font-size: .68rem; text-decoration: none; }
-.site-footer nav a:hover { color: var(--navy); }
 .footer-meta { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 20px; padding-top: 22px; border-top: 1px solid var(--line); color: var(--text-subtle); font-size: .61rem; }
 .full-loading { min-height: 100vh; display: grid; place-items: center; background: var(--paper); color: var(--ink-soft); font-size: .86rem; }
 .empty-page { min-height: 100vh; background: var(--paper); }
@@ -4491,6 +4484,9 @@ svg { width: 1.1em; height: 1.1em; }
 /* page: home (approved 2026-09-29) */
 .home-page { overflow-x: hidden; background: var(--bg); }
 .home-page h1, .home-page h2, .home-page h3 { font-family: var(--font-heading-family); font-weight: 700; color: var(--navy); margin: 0; }
+/* 日本語の見出し・短文は文節で折り返し、「か。」だけが次行に落ちるのを防ぐ */
+.home-page h1, .home-page h2, .home-page h3, .home-page p, .home-why-now-card-lead, .home-diagnosis-row-title, .home-faq-q, .home-change-step-text, .home-diagnosis-cta-label, .home-diagnosis-cta-note { word-break: auto-phrase; text-wrap: pretty; }
+.home-page h1, .home-page h2 { text-wrap: balance; }
 .home-page p { margin: 0; }
 .home-section-head { display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; max-width: 760px; margin: 0 auto; }
 .home-section-eyebrow { font-size: 15px; font-weight: 700; color: var(--brand); }
@@ -4542,17 +4538,17 @@ svg { width: 1.1em; height: 1.1em; }
 .home-why-now-card { background: var(--bg); border-radius: 20px; padding: 30px 32px 26px; display: flex; flex-direction: column; gap: 16px; }
 .home-why-now-card-lead { font-size: 16px; font-weight: 700; color: var(--navy); line-height: 1.6; }
 .home-why-now-bars { display: flex; align-items: flex-end; gap: 14px; height: 176px; }
-.home-why-now-bar-col { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 96px; }
+.home-why-now-bar-col { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 0 1 96px; min-width: 56px; }
 .home-why-now-bar-value { font-size: 18px; font-weight: 700; }
 .home-why-now-bar { width: 100%; border-radius: 8px 8px 0 0; }
-.home-why-now-bar-label { font-size: 13px; }
+.home-why-now-bar-label { font-size: 13px; white-space: nowrap; }
 .home-why-now-bar.tone-neutral { background: var(--border-strong); }
 .home-why-now-bar-value.tone-neutral, .home-why-now-bar-label.tone-neutral { color: var(--text-subtle); }
 .home-why-now-bar.tone-warn { background: var(--warn); }
 .home-why-now-bar-value.tone-warn, .home-why-now-bar-label.tone-warn { color: var(--warn); font-weight: 700; }
 .home-why-now-bar.tone-brand { background: var(--brand); }
 .home-why-now-bar-value.tone-brand, .home-why-now-bar-label.tone-brand { color: var(--brand); font-weight: 700; }
-.home-why-now-result { align-self: center; font-family: var(--font-heading-family); font-size: 40px; font-weight: 700; line-height: 1.2; }
+.home-why-now-result { align-self: center; white-space: nowrap; flex-shrink: 0; font-family: var(--font-heading-family); font-size: 40px; font-weight: 700; line-height: 1.2; }
 .home-why-now-result.tone-warn { color: var(--warn); }
 .home-why-now-result.tone-brand { color: var(--brand); }
 .home-why-now-source { font-size: 12px; color: var(--text-subtle); border-top: 1px solid var(--border); padding-top: 12px; line-height: 1.6; }
@@ -4748,10 +4744,20 @@ svg { width: 1.1em; height: 1.1em; }
 .home-footer-brand p { font-size: 14px; line-height: 1.8; color: var(--border-strong); }
 .home-footer-col { display: flex; flex-direction: column; gap: 12px; font-size: 14px; }
 .home-footer-col strong { font-weight: 700; color: var(--brand-pale); }
-.home-footer-col a { color: var(--border-strong); }
+.home-footer-col a { color: var(--border-strong); text-decoration: none; }
+.home-footer .brand { color: var(--bg); }
+.home-footer .brand small { color: var(--brand-pale); }
 .home-footer-col a:hover { color: var(--bg); }
 .home-footer-legal { border-top: 1px solid rgba(255, 255, 255, 0.14); margin-top: var(--sp-4); padding-top: 22px; display: flex; flex-direction: column; gap: 6px; font-size: 12px; line-height: 1.7; color: #9fb1bd; }
 .home-footer-copyright { margin-top: 8px; }
+
+/* ==================== Responsive: small desktop (1025–1280px) ==================== */
+@media (min-width: 1025px) and (max-width: 1280px) {
+  .home-nosite-flow { grid-template-columns: minmax(0, 1fr) 32px minmax(0, 1.15fr) 32px minmax(0, 1.2fr); }
+  .home-why-now-card { padding: 26px 24px 22px; }
+  .home-why-now-result { font-size: 34px; }
+  .home-change-compare { grid-template-columns: minmax(0, 1fr) 260px minmax(0, 1fr); gap: 20px; }
+}
 
 /* ==================== Responsive: tablet (<=1024px) ==================== */
 @media (max-width: 1024px) {
@@ -4771,14 +4777,27 @@ svg { width: 1.1em; height: 1.1em; }
   .home-nosite-arrow { transform: rotate(90deg); margin: 4px 0; }
   .home-diagnosis-row { grid-template-columns: 1fr; }
   .home-diagnosis-rank-panel { grid-template-columns: 1fr; }
-  .home-faq-grid { grid-template-columns: 1fr; }
-  .home-footer-grid { grid-template-columns: 1fr 1fr; }
+  /* 1列になった内容は読みやすい幅に抑えて中央へ */
+  .home-why-now-grid, .home-benefits-grid, .home-change-compare, .home-change-report, .home-nosite-flow, .home-diagnosis-rows, .home-benefits-pricing { max-width: 640px; margin-left: auto; margin-right: auto; }
+  .home-benefits-card { display: grid; grid-template-columns: 120px minmax(0, 1fr); grid-template-areas: "img num" "img title" "img body"; column-gap: 24px; row-gap: 6px; align-items: start; }
+  .home-benefits-card-img { grid-area: img; width: 120px; height: 120px; align-self: center; }
+  .home-benefits-card-number { grid-area: num; font-size: 32px; }
+  .home-benefits-card h3 { grid-area: title; font-size: 20px; }
+  .home-benefits-card p { grid-area: body; }
+  .home-footer-grid { grid-template-columns: 1fr 1fr 1fr; }
   .home-footer-brand { grid-column: 1 / -1; }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .home-steps-grid { grid-template-columns: 110px repeat(4, minmax(0, 1fr)); column-gap: 10px; }
+  .home-steps-avatar img { width: 48px; height: 48px; }
+  .home-steps-card { padding: 14px; }
+  .home-steps-card-title { font-size: 16px; }
+  .home-steps-card-body, .home-steps-card-placeholder { font-size: 13px; }
 }
 
 /* ==================== Responsive: mobile (<=640px) ==================== */
 @media (max-width: 640px) {
-  .home-hero-title { font-size: 28px; }
   .home-hero-art-inner { max-width: 340px; }
   .home-hero-bubble { left: 24%; width: 62%; padding: 10px 12px; gap: 5px; border-radius: 14px; }
   .home-hero-bubble-label { font-size: 11px; }
@@ -4791,7 +4810,7 @@ svg { width: 1.1em; height: 1.1em; }
   .home-why-now-bar-col { width: auto; flex: 1 1 0; min-width: 0; }
   .home-why-now-result { font-size: 32px; }
 
-  .home-why-now-grid, .home-benefits-grid, .home-faq-grid { grid-template-columns: 1fr; }
+  .home-faq-grid { grid-template-columns: 1fr; }
   .home-benefits-pricing { flex-direction: column; gap: 8px; }
   .home-benefits-pricing-sep { display: none; }
   .home-change-report { align-items: flex-start; }
@@ -4802,6 +4821,50 @@ svg { width: 1.1em; height: 1.1em; }
   .home-steps-role-label { display: block; }
 
   .home-diagnosis-cta { padding: 22px 18px; }
+  .home-diagnosis-cta-label { font-size: 17px; text-align: center; }
+  .home-diagnosis-cta-note { text-align: center; }
 
-  .home-footer-grid { grid-template-columns: 1fr; }
+  /* 縦に長くなりすぎないよう余白を詰める */
+  .home-hero { padding: var(--sp-4) 0 var(--sp-6); }
+  .home-hero-title { font-size: clamp(21px, 6.8vw, 28px); }
+  .home-hero-lead-main { font-size: 17px; }
+  .home-hero-lead-sub { font-size: 15px; }
+  .home-hero-trust { gap: 8px 16px; font-size: 13px; }
+  .home-why-now, .home-change, .home-benefits, .home-nosite, .home-steps, .home-faq, .home-diagnosis { padding: var(--sp-6) 0; }
+  .home-why-now-inner { gap: var(--sp-4); }
+  .home-why-now-head p, .home-nosite-head p, .home-steps-head p { font-size: 15px; }
+  .home-why-now-bars { height: 140px; }
+  .home-why-now-conclusion { font-size: 17px; }
+  .home-change-head h2 { font-size: 22px; line-height: 1.5; }
+  .home-change-panel { padding: 20px 16px 18px; }
+  .home-change-report { padding: 18px 20px; }
+
+  /* メリット: 画像を左に置き、1枚あたりの高さを抑える */
+  .home-benefits-card { display: grid; grid-template-columns: 84px minmax(0, 1fr); grid-template-areas: "img num" "img title" "body body"; column-gap: 16px; row-gap: 6px; padding: 20px; align-items: end; }
+  .home-benefits-card-img { grid-area: img; width: 84px; height: 84px; align-self: center; }
+  .home-benefits-card-number { grid-area: num; font-size: 28px; }
+  .home-benefits-card h3 { grid-area: title; font-size: 19px; align-self: start; }
+  .home-benefits-card p { grid-area: body; font-size: 15px; margin-top: 8px; }
+  .home-benefits-pricing { text-align: center; padding: 16px; }
+
+  .home-steps-card-rovan.is-repeat .home-steps-role-label { color: var(--brand-pale); }
+
+  .home-faq-card { padding: 20px; }
+  .home-faq-q { font-size: 16px; }
+
+  .home-diagnosis-row { gap: 16px; }
+  .home-diagnosis-row-num { width: 36px; height: 36px; font-size: 17px; }
+  .home-diagnosis-row-title { font-size: 21px; }
+  .home-diagnosis-row-body { font-size: 15px; }
+  .home-diagnosis-panel { padding: 16px; }
+  .home-diagnosis-rank-item { grid-template-columns: 138px minmax(0, 1fr) 34px; gap: 8px; }
+  .home-diagnosis-rank-item span:first-child { white-space: nowrap; }
+  .home-diagnosis-rank-item span:first-child, .home-diagnosis-rank-item span:last-child { font-size: 13px; }
+  .home-diagnosis-qa-panel { grid-template-columns: 1fr; gap: 8px; }
+  .home-diagnosis-qa-panel > svg { justify-self: center; transform: rotate(90deg); }
+  .home-diagnosis-qa-q { justify-self: end; max-width: 88%; }
+
+  .home-footer { padding: var(--sp-6) 0 var(--sp-4); }
+  .home-footer-grid { grid-template-columns: 1fr 1fr; gap: var(--sp-4) var(--sp-2); }
+  .home-footer-brand { grid-column: 1 / -1; }
 }
