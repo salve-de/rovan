@@ -116,25 +116,21 @@ export function PublicProfileActions({ result, sample = false, selectedStrategyI
 
   return (
     <section className="public-profile-interactive-card" aria-label="AI推薦データの作成・公開">
-      <div className="profile-interactive-header" style={{ marginBottom: "20px" }}>
-        <p className="overline" style={{ color: "var(--color-success, #059669)", fontSize: "0.74rem", fontWeight: 700, letterSpacing: "0.08em" }}>
-          AI推薦データの生成・配備プレビュー
-        </p>
-        <h3 style={{ fontSize: "1.3rem", fontWeight: 800, margin: "6px 0 8px", color: "var(--navy, #0f172a)" }}>
-          自社の強みが、AIの比較候補から埋もれないように。
-        </h3>
-        <p style={{ fontSize: "0.85rem", color: "var(--text-secondary, #475569)", lineHeight: 1.6, margin: 0 }}>
+      <div className="profile-interactive-header">
+        <p className="overline profile-interactive-eyebrow">AI推薦データの生成・配備プレビュー</p>
+        <h3>自社の強みが、AIの比較候補から埋もれないように。</h3>
+        <p className="profile-interactive-lead">
           会社の強み・対応条件・参照元をまとめた、AI向けの公開データを作成します。自社サイトの改修は不要です。公開後はWatchで自動更新を許可し、AI回答の変化を追えます。
         </p>
       </div>
 
       {/* AI下書きガイド案内 */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px", flexWrap: "wrap", gap: "8px" }}>
-        <span style={{ fontSize: "0.78rem", fontWeight: 700, color: "#0f172a", display: "inline-flex", alignItems: "center", gap: "6px" }}>
-          <span style={{ background: "#0284c7", color: "#ffffff", padding: "2px 6px", borderRadius: "3px", fontSize: "0.68rem" }}>AI下書き候補</span>
+      <div className="profile-draft-guide">
+        <span className="profile-draft-guide-label">
+          <span className="ui-badge">AI下書き候補</span>
           公開情報から抽出した特徴候補（内容確認用）
         </span>
-        <span style={{ fontSize: "0.72rem", color: "#64748b" }}>※ 公開ページに載せるのは参照元で確認できる情報だけです</span>
+        <span className="profile-draft-guide-note">※ 公開ページに載せるのは参照元で確認できる情報だけです</span>
       </div>
 
       {/* 3つの強み選択ラジオカード（無料プランは1枠のみ選択可能） */}
@@ -335,30 +331,22 @@ export function PublicProfileActions({ result, sample = false, selectedStrategyI
               </div>
 
               {/* 公開情報ページの役割 */}
-              <div style={{ marginTop: "20px", padding: "18px 22px", background: "#f8fafc", border: "1.5px solid #cbd5e1", borderRadius: "10px", textAlign: "left" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                  <span style={{ fontSize: "0.72rem", fontWeight: 800, background: "#16a34a", color: "#ffffff", padding: "3px 8px", borderTopLeftRadius: "4px", borderBottomRightRadius: "4px" }}>
-                    自社サイトの改修は不要
-                  </span>
-                  <strong style={{ fontSize: "0.9rem", color: "#0f172a" }}>
-                    このAI推薦データで、御社の強みをどう伝えるのか？
-                  </strong>
+              <div className="profile-role-card">
+                <div className="profile-role-head">
+                  <span className="ui-badge ui-badge--success">自社サイトの改修は不要</span>
+                  <strong>このAI推薦データで、御社の強みをどう伝えるのか？</strong>
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px", marginTop: "12px" }}>
-                  <div style={{ background: "#ffffff", padding: "12px 14px", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
-                    <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "#dc2626", display: "block", marginBottom: "4px" }}>✕ これまでの自社サイト</span>
-                    <p style={{ margin: 0, fontSize: "0.78rem", color: "#475569", lineHeight: 1.55 }}>
-                      参照元ページの情報が分散していると、会社の分野や用途を比較しにくい場合があります。
-                    </p>
+                <div className="profile-role-grid">
+                  <div className="profile-role-before">
+                    <span>これまでの自社サイト</span>
+                    <p>参照元ページの情報が分散していると、会社の分野や用途を比較しにくい場合があります。</p>
                   </div>
-                  <div style={{ background: "#f0fdf4", padding: "12px 14px", borderRadius: "8px", border: "1px solid #bbf7d0" }}>
-                    <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "#16a34a", display: "block", marginBottom: "4px" }}>◯ AI推薦データの公開ページ</span>
-                    <p style={{ margin: 0, fontSize: "0.78rem", color: "#14532d", lineHeight: 1.55 }}>
-                      参照元付きの公開情報をSchema.org形式などで整理します。AIや人が確認しやすくなりますが、推薦や回答を保証するものではありません。
-                    </p>
+                  <div className="profile-role-after">
+                    <span>AI推薦データの公開ページ</span>
+                    <p>参照元付きの公開情報をSchema.org形式などで整理します。AIや人が確認しやすくなりますが、推薦や回答を保証するものではありません。</p>
                   </div>
                 </div>
-                <p style={{ margin: "14px 0 0", fontSize: "0.76rem", color: "#64748b", lineHeight: 1.5 }}>
+                <p className="profile-role-note">
                   ※公開前の下書き確認と明示的な公開操作を分けています。Rovanは自社サイトへ書き込みません。
                 </p>
               </div>

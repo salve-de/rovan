@@ -32,18 +32,14 @@ export function PositioningPanel({ positioning }: { positioning?: PositioningAdv
   return (
     <section className="positioning-section shell" aria-label="ポジショニング診断および戦略提言">
       {/* ポジショニング戦略の選定軸 */}
-      <div className="section-heading-simple" style={{ textAlign: "left", margin: "16px 0 16px" }}>
-          <p className="overline">【差別化戦略】AIに伝える「自社固有の強み」を選ぶ</p>
+      <div className="section-heading-simple positioning-heading">
+        <p className="overline">【差別化戦略】AIに伝える「自社固有の強み」を選ぶ</p>
         <h2>大手と同じ土俵だけで競わず、専門分野や細かな対応条件で選ばれる軸を選びましょう。</h2>
         <p>目指すのは「この相談なら御社」とAIに推薦されること。以下は公開情報と測定結果をもとに検討する戦略案です。強みや他社の弱点を推測せず、内容を確認してから公開します。推薦・順位・成果は保証しません。</p>
       </div>
 
       {/* 3つの戦略タブ（サイト解析から動的生成） */}
-      <div style={{ marginBottom: "8px" }}>
-        <p style={{ fontSize: "0.85rem", fontWeight: 700, color: "#2563eb", margin: "0 0 8px" }}>
-          タブを選択すると、推薦獲得を目指す強みと紹介文案が切り替わります：
-        </p>
-      </div>
+      <p className="positioning-tabs-hint">タブを選択すると、推薦獲得を目指す強みと紹介文案が切り替わります：</p>
       <div className="strategy-selector-tabs" role="tablist" aria-label="戦略方針の選択">
         {strategies.map((item, index) => {
           const isActive = selectedIndex === index;
@@ -65,7 +61,7 @@ export function PositioningPanel({ positioning }: { positioning?: PositioningAdv
       </div>
 
       {/* 選択された戦略の核 */}
-      <div className="winning-angle-card" style={{ marginTop: "20px" }}>
+      <div className="winning-angle-card">
         <div className="winning-angle-badge">AIに伝える、御社固有の推薦軸</div>
         <h3>{current.coreThesis}</h3>
         <p>{current.strategicReason}</p>
@@ -73,13 +69,11 @@ export function PositioningPanel({ positioning }: { positioning?: PositioningAdv
 
       {/* 回答ログ上の候補と、自社側で確認する情報 */}
       <div className="competitor-weakness-block">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "8px", marginBottom: "8px" }}>
-          <h3 style={{ fontSize: "1.05rem", margin: 0 }}>競合の候補表示と、御社が差別化を目指す領域</h3>
-          <span style={{ fontSize: "0.72rem", color: "#64748b", background: "#f1f5f9", padding: "2px 8px", borderRadius: "4px" }}>
-            ※測定ログと公開情報を分けて確認するための案
-          </span>
+        <div className="competitor-weakness-head">
+          <h3>競合の候補表示と、御社が差別化を目指す領域</h3>
+          <span className="ui-badge">※測定ログと公開情報を分けて確認するための案</span>
         </div>
-        <p style={{ fontSize: "0.85rem", color: "#64748b", margin: "0 0 12px" }}>比較候補の弱点を推測せず、今回の回答ログと自社側の公開情報を分けて確認します。</p>
+        <p className="competitor-weakness-lead">比較候補の弱点を推測せず、今回の回答ログと自社側の公開情報を分けて確認します。</p>
         {current.competitorAnalysis.length ? (
           <div className="weakness-grid">
             {current.competitorAnalysis.map((item) => (
@@ -96,7 +90,7 @@ export function PositioningPanel({ positioning }: { positioning?: PositioningAdv
             ))}
           </div>
         ) : (
-          <p style={{ margin: 0, padding: "14px 16px", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "8px", color: "#64748b", fontSize: "0.84rem" }}>
+          <p className="competitor-weakness-empty">
             この戦略案に結びつく比較候補の回答ログはありません。自社の対応条件を参照元で確認し、他社の弱点は推測しません。
           </p>
         )}
@@ -106,7 +100,7 @@ export function PositioningPanel({ positioning }: { positioning?: PositioningAdv
       <div className="actionable-messages-block">
         <div className="actionable-messages-head">
           <h3>確認用の紹介文案（ワンクリックコピー）</h3>
-          <p style={{ fontSize: "0.85rem", color: "#64748b", margin: "4px 0 0" }}>強みを一から書き起こす手間を抑える下書きです。内容を確認してからご利用ください。自社サイトや資料への転用は任意で、Rovanの利用にサイト改修は必要ありません。</p>
+          <p className="actionable-messages-lead">強みを一から書き起こす手間を抑える下書きです。内容を確認してからご利用ください。自社サイトや資料への転用は任意で、Rovanの利用にサイト改修は必要ありません。</p>
         </div>
 
         <div className="actionable-messages-list">

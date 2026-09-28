@@ -317,63 +317,47 @@ export function ScanProgress() {
       <main className="scan-page">
         <SiteHeader compact />
         <section className="direct-entry-stage shell">
-          <div className="no-site-card" style={{ padding: "36px", background: "#ffffff", borderRadius: "12px", border: "1.5px solid #cbd5e1", boxShadow: "0 10px 25px -5px rgba(15, 23, 42, 0.08)", width: "100%" }}>
-            <div style={{ marginBottom: "14px" }}>
-              <span
-                className="no-site-tag"
-                style={
-                  isSocial
-                    ? { background: "linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)", color: "#fff", padding: "4px 10px", borderRadius: "4px", fontSize: "0.75rem", fontWeight: 800 }
-                    : isProduct
-                    ? { background: "#7c3aed", color: "#fff", padding: "4px 10px", borderRadius: "4px", fontSize: "0.75rem", fontWeight: 800 }
-                    : { padding: "4px 10px", borderRadius: "4px", fontSize: "0.75rem", fontWeight: 800 }
-                }
-              >
+          <div className="no-site-card">
+            <div className="no-site-tag-row">
+              <span className={`no-site-tag${isSocial ? " no-site-tag--social" : isProduct ? " no-site-tag--product" : ""}`}>
                 {badgeText}
               </span>
             </div>
-            <h1 style={{ fontSize: "1.55rem", fontWeight: 800, margin: "0 0 12px 0", lineHeight: 1.4, color: "#0f172a" }}>
-              {titleText}
-            </h1>
-            <p style={{ fontSize: "0.88rem", lineHeight: 1.6, color: "#475569", margin: "0 0 24px 0" }}>
-              {descText}
-            </p>
+            <h1>{titleText}</h1>
+            <p className="no-site-desc">{descText}</p>
 
-            <div className="no-site-form-grid" style={{ gridTemplateColumns: "1fr" }}>
+            <div className="no-site-form-grid no-site-form-grid--single">
               <div className="no-site-input-group">
-                <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#334155", marginBottom: "6px", display: "block" }}>{isDirectPreview ? "公開する名称" : brandLabel}</span>
-                <p style={{ margin: 0, padding: "10px 12px", fontSize: "0.9rem", border: "1.5px solid #cbd5e1", borderRadius: "6px", background: "#f8fafc", color: "#0f172a" }}>{directBrandName || rawInput}</p>
+                <span>{isDirectPreview ? "公開する名称" : brandLabel}</span>
+                <p className="input-readonly">{directBrandName || rawInput}</p>
               </div>
               {isDirectPreview ? (
                 <div className="no-site-input-group">
-                  <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#334155", marginBottom: "6px", display: "block" }}>下書きに含める情報</span>
-                  <p style={{ margin: 0, fontSize: "0.82rem", lineHeight: 1.7, color: "#475569" }}>入力された名称{extraSocial || socialInfo.isSocial ? "・SNS参照先" : ""}{extraProduct ? "・商品／サービス名" : ""}{extraUrl ? "・参照元URL" : ""}。未確認の業種・所在地・価格・実績は追加していません。</p>
+                  <span>下書きに含める情報</span>
+                  <p className="no-site-input-note">入力された名称{extraSocial || socialInfo.isSocial ? "・SNS参照先" : ""}{extraProduct ? "・商品／サービス名" : ""}{extraUrl ? "・参照元URL" : ""}。未確認の業種・所在地・価格・実績は追加していません。</p>
                 </div>
               ) : null}
             </div>
 
-            <div className="no-site-action-row" style={{ marginTop: "24px", paddingTop: "18px", borderTop: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px" }}>
+            <div className="no-site-action-row">
               <div className="no-site-target-brand">
-                <span style={{ fontSize: "0.78rem", color: "#64748b" }}>登録対象：</span>
-                <strong style={{ fontSize: "0.95rem", color: "#0f172a", marginLeft: "6px" }}>{socialInfo.displayLabel || directBrandName || rawInput}</strong>
+                <span>登録対象：</span>
+                <strong>{socialInfo.displayLabel || directBrandName || rawInput}</strong>
               </div>
               <button
                 className="button button-primary scan-resolve-start"
                 type="button"
                 disabled={directCreating}
                 onClick={() => void (isDirectPreview ? publishDirectProfile() : createDirectProfile())}
-                style={{ padding: "12px 24px", fontSize: "0.95rem", fontWeight: 800 }}
               >
                 {directCreating ? (isDirectPreview ? "公開処理中…" : "下書きを作成中…") : buttonText} <ArrowIcon />
               </button>
             </div>
             {directDraft ? <ProfileManagementLink capability={{ profileId: directDraft.profileId, token: directDraft.token }} /> : null}
-            {error ? <p className="form-error" style={{ marginTop: "12px" }}>{error}</p> : null}
-            <small className="no-site-small-note" style={{ display: "block", marginTop: "14px", color: "#64748b", fontSize: "0.75rem" }}>
-              {noteText}
-            </small>
+            {error ? <p className="form-error no-site-error">{error}</p> : null}
+            <small className="no-site-small-note">{noteText}</small>
           </div>
-          <div style={{ marginTop: "16px", textAlign: "center" }}>
+          <div className="no-site-back-row">
             <button className="button button-secondary" type="button" aria-label={isDirectPreview ? "下書きに戻る" : "入力をやり直す"} onClick={() => {
               if (isDirectPreview) {
                 setDirectDraft(null);
@@ -431,13 +415,13 @@ export function ScanProgress() {
             </fieldset>
             <div className="scan-resolve-actions">
               <button className="button button-primary scan-resolve-start" type="button" disabled={!selectedUrl} onClick={() => void startScan(selectedUrl)}>このサイトを確定して診断する <span aria-hidden="true">→</span></button>
-              <button className="button button-secondary" type="button" onClick={() => setPhase("no_site")} style={{ marginLeft: "12px" }}>自社サイトがない・候補にない（直接発行する）</button>
+              <button className="button button-secondary scan-resolve-alt-btn" type="button" onClick={() => setPhase("no_site")}>自社サイトがない・候補にない（直接発行する）</button>
             </div>
             <p className="scan-resolve-note">※ドメインとサイト内容を確認してから確定するため、同名他社との取り違えを避けやすくなります。</p>
           </> : null}
           {phase === "failed" ? <div className="scan-error" role="alert">
             <p>{isServiceUnavailableError(error) ? "時間を置いてもう一度お試しください。" : error}</p>
-            <div style={{ display: "flex", gap: "12px", marginTop: "16px", flexWrap: "wrap" }}>
+            <div className="scan-error-actions">
               <button className="button button-secondary" type="button" onClick={() => router.push("/")}>入力をやり直す</button>
             </div>
           </div> : null}
@@ -473,7 +457,7 @@ export function ScanProgress() {
         {error ? <div className="scan-error" role="alert">
           <strong>{isServiceUnavailableError(error) ? "現在診断を受け付けられません。" : "診断を完了できませんでした。"}</strong>
           <p>{isServiceUnavailableError(error) ? "時間を置いてもう一度お試しください。" : error}</p>
-          <div style={{ display: "flex", gap: "12px", marginTop: "16px", flexWrap: "wrap" }}>
+          <div className="scan-error-actions">
             <button className="button button-secondary" type="button" onClick={() => window.location.reload()}>もう一度試す</button>
           </div>
         </div> : null}
