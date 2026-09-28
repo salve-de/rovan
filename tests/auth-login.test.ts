@@ -102,10 +102,10 @@ test("auth suite", async (t) => {
     assert.equal(foundNone.length, 0);
   });
 
-  await t.test("POST /api/auth/login handles valid and invalid requests", async () => {
+  await t.test("POST /api/auth/login never reveals whether an email is registered", async () => {
     const { POST } = await import("../app/api/auth/login/route");
 
-    // 不正メアド
+    // 不正メアド（形式エラーのみ400。これは登録有無とは無関係の入力検証）
     const badRes = await POST(new Request("https://localhost/api/auth/login", {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -113,24 +113,54 @@ test("auth suite", async (t) => {
     }));
     assert.equal(badRes.status, 400);
 
-    // 未登録メアド
+    // 未登録メアドと登録済みメアどちらも同じ200 + 同じ成功メッセージであること
+    // （404や専用フラグで登録有無が外部から判別できてはいけない）
     const notFoundRes = await POST(new Request("https://localhost/api/auth/login", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ email: "nobody_registered_here@example.com" }),
     }));
-    assert.equal(notFoundRes.status, 404);
+    assert.equal(notFoundRes.status, 200);
+    const notFoundData = await notFoundRes.json();
+    assert.equal(notFoundData.ok, true);
+    assert.equal("notFound" in notFoundData, false);
 
-    // 登録済みメアド
     const okRes = await POST(new Request("https://localhost/api/auth/login", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ email: "ceo@auth-test.jp" }),
     }));
     assert.equal(okRes.status, 200);
-    const data = await okRes.json();
-    assert.equal(data.ok, true);
-    assert.ok(data.devLoginUrl);
+    const okData = await okRes.json();
+    assert.equal(okData.ok, true);
+    assert.equal(okData.message, notFoundData.message);
+  });
+
+  await t.test("POST /api/auth/login only exposes devLoginUrl in development", async () => {
+    const { POST } = await import("../app/api/auth/login/route");
+    const originalEnv = process.env.NODE_ENV;
+
+    try {
+      (process.env as any).NODE_ENV = "production";
+      const prodRes = await POST(new Request("https://localhost/api/auth/login", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email: "ceo@auth-test.jp" }),
+      }));
+      const prodData = await prodRes.json();
+      assert.equal("devLoginUrl" in prodData && prodData.devLoginUrl !== undefined, false);
+
+      (process.env as any).NODE_ENV = "development";
+      const devRes = await POST(new Request("https://localhost/api/auth/login", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email: "ceo@auth-test.jp" }),
+      }));
+      const devData = await devRes.json();
+      assert.ok(devData.devLoginUrl);
+    } finally {
+      (process.env as any).NODE_ENV = originalEnv;
+    }
   });
 
   await t.test("GET /api/auth/verify redirects and sets session cookie", async () => {

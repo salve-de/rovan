@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { MarketingShell } from "@/components/marketing-shell";
 import { LoginClient } from "@/components/login-client";
+import { env } from "@/lib/env";
 import "../utility.css";
 
 export const metadata: Metadata = {
@@ -11,14 +12,17 @@ export const metadata: Metadata = {
 };
 
 export default function LoginPage() {
+  const googleEnabled = Boolean(env.googleClientId);
   return (
     <MarketingShell
       eyebrow="ログイン"
       title="Rovan アカウントへログイン。"
-      lead="パスワードの記憶は不要です。Googleアカウント、またはメールアドレスへの直通リンクで1クリックで安全にログインできます。"
+      lead={googleEnabled
+        ? "パスワードの記憶は不要です。Googleアカウント、またはメールアドレスへの直通リンクで1クリックで安全にログインできます。"
+        : "パスワードの記憶は不要です。メールアドレスへの直通リンクで1クリックで安全にログインできます。"}
     >
       <Suspense fallback={<div className="billing-panel"><p>読み込み中…</p></div>}>
-        <LoginClient />
+        <LoginClient googleEnabled={googleEnabled} />
       </Suspense>
     </MarketingShell>
   );

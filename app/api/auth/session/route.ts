@@ -9,7 +9,15 @@ export async function GET(request: Request) {
     return NextResponse.json({ authenticated: false, user: null });
   }
 
-  const session = verifySessionToken(rawToken);
+  let session;
+  try {
+    session = verifySessionToken(rawToken);
+  } catch (error) {
+    // e.g. AUTH_SECRET missing in production: fail closed as "not logged in"
+    // rather than crashing with an unhandled 500.
+    console.error("Session verification failed:", error);
+    return NextResponse.json({ authenticated: false, user: null });
+  }
   if (!session) {
     return NextResponse.json({ authenticated: false, user: null });
   }
