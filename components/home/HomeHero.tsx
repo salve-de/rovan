@@ -35,7 +35,6 @@ export function HomeHero() {
 
         <div className="home-hero-art" aria-hidden="true">
           <div className="home-hero-art-inner">
-            <div className="home-hero-art-circle" />
             <Image className="home-hero-img-customer" src="/illustrations/customer-asks-ai.svg" alt="" width={470} height={470} priority />
             <div className="home-hero-bubble">
               <span className="home-hero-bubble-label">AIの答え</span>
@@ -46,10 +45,6 @@ export function HomeHero() {
                 <span>3. 京浜メタルワークス</span>
               </div>
             </div>
-            <svg className="home-hero-bubble-tail" width="70" height="50" viewBox="0 0 70 50" aria-hidden="true">
-              <path d="M8 0 L48 0 L60 46 Z" fill="var(--bg)" />
-              <path d="M10 1.5 L60 46 L46 1.5" fill="none" stroke="var(--navy)" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-            </svg>
             <Image className="home-hero-img-owner" src="/illustrations/owner-worried.svg" alt="" width={340} height={340} />
             <span className="home-hero-tag">うちの名前が、ない…</span>
           </div>
