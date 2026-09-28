@@ -43,7 +43,7 @@ export function HeroChatDiagnosticCard() {
         {/* 右：参照元付き公開情報を用意した場合の表示例 */}
         <div className="split-card card-after">
           <div className="split-card-header header-after">
-            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <div className="split-badge-row">
               <span className="split-status-badge tag-won">再測定の回答例</span>
               <span className="after-arrow-indicator" aria-hidden="true">➔</span>
             </div>

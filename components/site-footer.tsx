@@ -30,11 +30,11 @@ export function SiteFooter({ watchToken = "" }: { watchToken?: string }) {
           <span>© 2026 Rovan</span>
         </div>
       </div>
-      <div className="shell" style={{ borderTop: "1px solid var(--line, #e2e8f0)", paddingTop: "16px", marginTop: "24px", display: "flex", flexDirection: "column", gap: "6px" }}>
-        <p style={{ fontSize: "0.75rem", color: "var(--muted, #64748b)", lineHeight: 1.6, margin: 0 }}>
+      <div className="shell footer-legal">
+        <p>
           ※ ChatGPTはOpenAI OpCo, LLC、GeminiはGoogle LLC、PerplexityはPerplexity AI, Inc.、ClaudeはAnthropic PBCの商標または登録商標です。当サービスは各社との提携、公認、推奨関係を示すものではありません。
         </p>
-        <p style={{ fontSize: "0.75rem", color: "var(--muted, #64748b)", lineHeight: 1.6, margin: 0 }}>
+        <p>
           ※ AIの推薦・順位・顧客獲得・売上は保証しません。
         </p>
       </div>

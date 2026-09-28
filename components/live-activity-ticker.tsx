@@ -65,7 +65,7 @@ export function LiveActivityTicker() {
       <div className="shell live-activity-inner">
         <div className="live-pulse-wrapper">
           <span className="live-pulse-dot" />
-          <span className="live-label">DEMO</span>
+          <span className="live-label">見本</span>
         </div>
         <div className="live-ticker-content" key={current.id}>
           <span className="live-time">{current.time}</span>

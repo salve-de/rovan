@@ -72,74 +72,34 @@ export function VerifiedCompaniesGallery() {
 
         <div className="verified-cards-grid">
           {INDUSTRY_SHOWCASES.map((company) => (
-            <article className="verified-company-card" key={company.name} style={{ display: "flex", flexDirection: "column" }}>
-              <div className="card-top-meta" style={{ marginBottom: "10px" }}>
+            <article className="verified-company-card" key={company.name}>
+              <div className="card-top-meta">
                 <span className="card-status-pill">{company.category}</span>
                 <span className="card-location">{company.location}</span>
               </div>
-              <h3 className="card-company-name" style={{ fontSize: "1.08rem", marginBottom: "2px" }}>{company.name}</h3>
-              <p className="card-industry" style={{ fontSize: "0.78rem", color: "#64748b", margin: "0 0 10px 0" }}>{company.industry}</p>
-              
-              <div className="card-badge-pill" style={{ marginBottom: "14px", fontSize: "0.68rem" }}>{company.featureNote}</div>
+              <h3 className="card-company-name">{company.name}</h3>
+              <p className="card-industry">{company.industry}</p>
+
+              <div className="card-badge-pill">{company.featureNote}</div>
 
               {/* 洗練された比較ブロック（端正なタイポグラフィで対比） */}
-              <div
-                style={{
-                  background: "#f8fafc",
-                  border: "1px solid #e2e8f0",
-                  borderRadius: "6px",
-                  padding: "12px 14px",
-                  margin: "0 0 14px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "10px",
-                  flex: 1,
-                }}
-              >
+              <div className="card-compare-box">
                 <div>
-                  <span
-                    style={{
-                      fontSize: "0.68rem",
-                      fontWeight: 700,
-                      color: "#64748b",
-                      fontFamily: "var(--font-mono, monospace)",
-                      display: "block",
-                      marginBottom: "4px",
-                      letterSpacing: "0.02em",
-                    }}
-                  >
-                    情報が散在している場合
-                  </span>
-                  <p style={{ margin: 0, fontSize: "0.78rem", color: "#475569", lineHeight: 1.55 }}>
-                    {company.beforeProblem}
-                  </p>
+                  <span className="card-compare-label">情報が散在している場合</span>
+                  <p className="card-compare-text">{company.beforeProblem}</p>
                 </div>
-                <div style={{ paddingTop: "8px", borderTop: "1px solid #e2e8f0" }}>
-                  <span
-                    style={{
-                      fontSize: "0.68rem",
-                      fontWeight: 700,
-                      color: "#0f172a",
-                      fontFamily: "var(--font-mono, monospace)",
-                      display: "block",
-                      marginBottom: "4px",
-                      letterSpacing: "0.02em",
-                    }}
-                  >
-                    公開情報を整理した場合
-                  </span>
-                  <p style={{ margin: 0, fontSize: "0.78rem", color: "#0f172a", fontWeight: 600, lineHeight: 1.55 }}>
-                    {company.afterSolution}
-                  </p>
+                <div className="card-compare-after">
+                  <span className="card-compare-label card-compare-label--after">公開情報を整理した場合</span>
+                  <p className="card-compare-text card-compare-text--after">{company.afterSolution}</p>
                 </div>
               </div>
 
-              <div className="card-spec-box" style={{ background: "#ffffff", padding: "10px 12px", borderRadius: "6px", margin: "0 0 14px", border: "1px solid #e2e8f0" }}>
-                <span style={{ display: "block", fontSize: "0.68rem", color: "#64748b", fontFamily: "var(--font-mono, monospace)", marginBottom: "3px" }}>登録データ（強みの抜粋）</span>
-                <strong style={{ fontSize: "0.8rem", color: "#0f172a", fontWeight: 600, display: "block", lineHeight: 1.4 }}>{company.registeredSpecs}</strong>
+              <div className="card-spec-box">
+                <span className="card-spec-label">登録データ（強みの抜粋）</span>
+                <strong className="card-spec-value">{company.registeredSpecs}</strong>
               </div>
 
-              <Link className="card-view-btn" href={company.href} style={{ marginTop: "auto" }}>
+              <Link className="card-view-btn" href={company.href}>
                 <span>公開情報の見本を見る</span>
                 <ArrowIcon />
               </Link>
