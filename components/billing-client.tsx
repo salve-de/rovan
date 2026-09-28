@@ -83,11 +83,9 @@ export function BillingClient() {
         </div>
       )}
       <input type="hidden" value={token} disabled={busy} onChange={(event) => { setWatch(null); setToken(event.target.value); }} />
-      {watch ? (
-        <button className="button button-dark" type="submit" disabled={busy || !token}>
-          {busy ? "準備中…" : <>契約・決済管理画面を開く <ArrowIcon /></>}
-        </button>
-      ) : null}
+      <button className="button button-dark" type="submit" disabled={busy || !token || !watch} hidden={!token}>
+        {busy ? "準備中…" : watch ? <>契約・決済管理画面を開く <ArrowIcon /></> : "契約情報を確認しています…"}
+      </button>
       {message ? <p className="form-error" role="status">{message}</p> : null}
 
       <div style={{ marginTop: "24px", padding: "16px", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "6px", textAlign: "left" }}>
