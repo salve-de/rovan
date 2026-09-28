@@ -2,12 +2,12 @@ import type { PublicProfile } from "@/lib/types";
 
 const SAMPLE_DATE = "2026-09-01T09:00:00.000Z";
 
-type SampleInput = Pick<PublicProfile, "slug" | "brandName" | "targetUrl" | "market" | "summary" | "targetCustomers" | "useCases" | "facts">;
+type SampleInput = Pick<PublicProfile, "slug" | "brandName" | "targetUrl" | "market" | "summary" | "targetCustomers" | "useCases" | "facts"> & { sourceTitle?: string };
 
 function makeSampleProfile(input: SampleInput): PublicProfile {
   const sourcePages = [{
     url: input.targetUrl,
-    title: `${input.brandName} 参照元（見本）`,
+    title: input.sourceTitle ?? `${input.brandName} 参照元（見本）`,
     description: "実在の事業者情報を示すものではない、画面確認用のサンプルデータです。",
   }];
   const structuredData = JSON.stringify({
@@ -127,6 +127,24 @@ const SAMPLE_PROFILES: Record<string, PublicProfile> = {
       { label: "豆の販売", value: "ハウスブレンド200g・税込1,400円。豆のまま、または器具に合わせて挽いて販売（見本）", sourceUrl: "https://aoba-cafe.example/" },
       { label: "営業時間", value: "火〜日9:00〜18:00、月曜休み。ドリンク提供は注文から5〜10分が目安（見本）", sourceUrl: "https://aoba-cafe.example/" },
       { label: "掲載区分", value: "見本", sourceUrl: "https://aoba-cafe.example/" },
+    ],
+  }),
+  "aoba-bakery": makeSampleProfile({
+    slug: "aoba-bakery",
+    brandName: "青葉ベーカリー",
+    targetUrl: "https://instagram.example/aoba_bakery",
+    sourceTitle: "Instagram @aoba_bakery（見本）",
+    market: "天然酵母のパン・早朝営業のベーカリー",
+    summary: "群馬県高崎市を想定した、ホームページを持たずInstagramだけで発信しているパン屋の見本です。Instagramの公開投稿から確認できた内容だけを整理しています。料金・営業時間はすべて見本です。",
+    targetCustomers: ["出勤前に焼きたてのパンを買いたい方", "天然酵母のパンを探している方"],
+    useCases: ["朝の通勤前の買い物", "予約での取り置き", "手土産用の焼き菓子"],
+    facts: [
+      { label: "得意なこと", value: "自家製の天然酵母で焼く食パン・カンパーニュ（見本）", sourceUrl: "https://instagram.example/aoba_bakery" },
+      { label: "場所", value: "群馬県高崎市を想定。高崎駅から徒歩8分（見本）", sourceUrl: "https://instagram.example/aoba_bakery" },
+      { label: "営業時間", value: "火〜土 7:00〜15:00、日月休み。売り切れ次第終了（見本）", sourceUrl: "https://instagram.example/aoba_bakery" },
+      { label: "予約", value: "前日18時までInstagramのDMで取り置き可（見本）", sourceUrl: "https://instagram.example/aoba_bakery" },
+      { label: "価格の例", value: "天然酵母食パン1斤 税込480円、カンパーニュ 税込620円（見本）", sourceUrl: "https://instagram.example/aoba_bakery" },
+      { label: "掲載区分", value: "見本", sourceUrl: "https://instagram.example/aoba_bakery" },
     ],
   }),
   "yamada-bankin": makeSampleProfile({

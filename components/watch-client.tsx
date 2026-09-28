@@ -26,7 +26,7 @@ function panelDescription(watch: { latest: { panel: { kind: PromptPanelKind } } 
   return watch.latest.panel.kind === "core" ? "同じ質問を固定して" : "同じ質問で";
 }
 
-export function WatchClient() {
+export function WatchClient({ showSellerLinks = false }: { showSellerLinks?: boolean } = {}) {
   const params = useSearchParams();
   const sample = params.get("sample") === "1";
   const urlToken = params.get("token") || "";
@@ -47,7 +47,7 @@ export function WatchClient() {
   }, [sample, urlToken]);
 
   const token = urlToken || sessionToken;
-  return <WatchViewClient key={readoutIdentity(sample, token)} sample={sample} token={token} />;
+  return <WatchViewClient key={readoutIdentity(sample, token)} sample={sample} token={token} showSellerLinks={showSellerLinks} />;
 }
 
 /** ① 今週の結論: 北極星（AI顧客奪還シェア）と、比較サマリー。 */
@@ -505,7 +505,7 @@ function useWatchChange(watch: WatchView | null) {
   }, [watch]);
 }
 
-function WatchViewClient({ sample, token }: { sample: boolean; token: string }) {
+function WatchViewClient({ sample, token, showSellerLinks }: { sample: boolean; token: string; showSellerLinks: boolean }) {
   const lifecycle = useRef<AbortController | null>(null);
   const emailRevision = useRef(0);
   const [watch, setWatch] = useState<WatchView | null>(sample ? toPublicWatch(sampleWatch()) : null);
@@ -780,7 +780,7 @@ function WatchViewClient({ sample, token }: { sample: boolean; token: string }) 
       <ExecutiveReferralCard />
 
       {error ? <p className="floating-error" role="alert">{error}</p> : null}
-      <SiteFooter watchToken={sample ? undefined : token} />
+      <SiteFooter watchToken={sample ? undefined : token} showSellerLinks={showSellerLinks} />
     </main>
   );
 }

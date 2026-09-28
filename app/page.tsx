@@ -1,3 +1,4 @@
+import { sellerReady } from "@/lib/legal";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { HomeHero } from "@/components/home/HomeHero";
@@ -21,7 +22,7 @@ export default function HomePage() {
       <HomeSteps />
       <HomeFaq />
       <HomeDiagnosis />
-      <SiteFooter />
+      <SiteFooter showSellerLinks={sellerReady()} />
     </main>
   );
 }

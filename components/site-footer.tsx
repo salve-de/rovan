@@ -1,12 +1,11 @@
 import Link from "next/link";
 import { Brand } from "@/components/brand";
-import { sellerReady } from "@/lib/legal";
 
 const SUPPORT_PATH = "/support";
 const COMMERCE_PATH = "/commerce";
 
-export function SiteFooter({ watchToken = "" }: { watchToken?: string }) {
-  const showSellerLinks = sellerReady();
+// クライアント画面からも使うため、サーバー専用の lib/legal は読まず、販売者情報の有無は呼び出し側から受け取る
+export function SiteFooter({ watchToken = "", showSellerLinks = false }: { watchToken?: string; showSellerLinks?: boolean }) {
   return (
     <footer className="site-footer home-footer">
       <div className="shell home-footer-grid">

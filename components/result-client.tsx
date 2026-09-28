@@ -32,14 +32,14 @@ function userFacingWarning(value: string) {
   return value;
 }
 
-export function ResultClient() {
+export function ResultClient({ showSellerLinks = false }: { showSellerLinks?: boolean } = {}) {
   const params = useSearchParams();
   const sample = params.get("sample") === "1";
   const scanId = params.get("id");
-  return <ResultView key={readoutIdentity(sample, scanId)} sample={sample} scanId={scanId} />;
+  return <ResultView key={readoutIdentity(sample, scanId)} sample={sample} scanId={scanId} showSellerLinks={showSellerLinks} />;
 }
 
-function ResultView({ sample, scanId }: { sample: boolean; scanId: string | null }) {
+function ResultView({ sample, scanId, showSellerLinks }: { sample: boolean; scanId: string | null; showSellerLinks: boolean }) {
   const router = useRouter();
   const lifecycle = useRef<AbortController | null>(null);
   const [rawResult, setResult] = useState<ScanResult | null>(sample ? sampleResult : null);
@@ -177,7 +177,7 @@ function ResultView({ sample, scanId }: { sample: boolean; scanId: string | null
     ) : null}
 
     {error ? <p className="floating-error" role="alert">{error}</p> : null}
-    <SiteFooter />
+    <SiteFooter showSellerLinks={showSellerLinks} />
   </main>;
 }
 

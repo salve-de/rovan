@@ -1,3 +1,4 @@
+import { sellerReady } from "@/lib/legal";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowIcon } from "@/components/icons";
@@ -120,7 +121,7 @@ export default function PartnersPage() {
         </section>
       </main>
 
-      <SiteFooter />
+      <SiteFooter showSellerLinks={sellerReady()} />
     </div>
   );
 }
