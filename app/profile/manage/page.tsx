@@ -4,7 +4,7 @@ import { ProfileManagementClient } from "@/components/profile-management-client"
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
-  title: "公開ページの管理 | Rovan",
+  title: "公開ページの管理",
   robots: { index: false, follow: false, nocache: true },
   referrer: "no-referrer",
 };

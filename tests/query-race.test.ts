@@ -46,6 +46,7 @@ function harness(file: string, component: string, initialQuery: string) {
     react, "react/jsx-runtime": { jsx, jsxs: jsx },
     "next/navigation": { useSearchParams: () => new URLSearchParams(query) },
     "next/link": { default: "link" }, "@/components/icons": {},
+    "@/components/site-header": { SiteHeader: () => null }, "@/components/site-footer": { SiteFooter: () => null },
     "@/lib/brand": { DATA_DELETION_CONFIRMATION: "DELETE ROVAN DATA" },
     "@/lib/management-link": { watchTokenFromInput },
     "@/lib/sample-report-content": { sampleAiReadable: () => ({ llmsTxt: "架空の見本", jsonLd: "{}", sourcePages: [], publishChecks: [] }) },

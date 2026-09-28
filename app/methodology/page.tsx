@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { MarketingShell } from "@/components/marketing-shell";
+import { PageSection } from "@/components/page/page-section";
+import { CtaBand } from "@/components/page/cta-band";
 import { CORE_PANEL_SIZE, FREE_PANEL_SIZE } from "@/lib/prompt-panels";
 
 export const metadata: Metadata = {
@@ -7,26 +9,76 @@ export const metadata: Metadata = {
   description: "AIのおすすめ獲得に向けた測定方法。固定50問のAI顧客奪還シェア、欠損の扱い、同じ条件での前後比較を説明します。",
 };
 
+const steps = [
+  { title: "お客さんの質問をつくる", body: "会社のサイトやInstagramから、買う前に聞かれそうな質問をつくります。" },
+  { title: "3つのAIに、実際に聞く", body: "ChatGPT・Gemini・Perplexityに、同じ質問を同じ条件で聞きます。" },
+  { title: "名前が出たかを数える", body: "答えに御社の名前が出たか、先に出た会社はどこか、どのページが参考にされたかを記録します。" },
+];
+
+const reading = [
+  { term: "名前が出た割合", desc: "取得できた答えのうち、御社が候補として挙がった割合。お客さんの数や市場シェアではありません。" },
+  { term: "答えの中の順番", desc: "答えに順番が書かれていた場合だけ表示します。順番のない答えを無理に順位にはしません。" },
+  { term: "参考にされたページ", desc: "AIの答えに含まれていたURLです。Rovanのページが採用された・推薦されたという意味ではありません。" },
+  { term: "取得できた割合", desc: "予定した答えのうち、実際に取得できた割合。取得できなかった分を「名前が出なかった」とは数えません。" },
+];
+
 export default function MethodologyPage() {
-  return <MarketingShell eyebrow="調べ方" title="AI回答に含まれる候補を、同じ質問で比較する。" lead="Rovanは会社サイトから、買い手が比較するときの質問を作ります。その質問を同じ条件で繰り返し、回答に含まれる候補と参照元の変化を確認します。">
-    <h2>どの質問で、候補から外れているか</h2>
-    <p>会社サイトのサービス、料金、導入事例などを確認し、購入前に出てきそうな質問を作ります。各質問への回答で、自社が候補に入ったか、先に含まれた候補はどこか、どのページが参照されたかを整理します。</p>
-    <div className="document-callout"><strong>無料診断</strong><p>現在は{FREE_PANEL_SIZE}問の質問パネルを、利用可能なAIで一度確認します。取得できなかった回答は欠損として扱い、候補外とは数えません。</p></div>
-    <div className="document-callout"><strong>毎週の確認</strong><p>有料Watchでは固定コア{CORE_PANEL_SIZE}問を使います。無料パネルから移る際は基準測定を取り直し、候補入りの増加・低下・変化なし・欠損を追います。</p></div>
+  return (
+    <MarketingShell
+      layout="sections"
+      eyebrow="調べ方"
+      title={<>同じ質問を、同じ条件で。<br />AIの答えを毎週くらべます。</>}
+      lead="Rovanは、お客さんがAIに聞きそうな質問をつくり、答えに御社の名前が出たかを数えます。条件をそろえるので、前と今をそのまま比べられます。"
+    >
+      <PageSection tone="white" eyebrow="測り方" title="やっていることは、3つだけ。">
+        <ol className="mt-steps">
+          {steps.map((step, index) => (
+            <li key={step.title}>
+              <span className="mt-step-num">{index + 1}</span>
+              <strong>{step.title}</strong>
+              <p>{step.body}</p>
+            </li>
+          ))}
+        </ol>
+        <div className="mt-panels">
+          <div><span>無料診断</span><strong>{FREE_PANEL_SIZE}問</strong><p>使えるAIで1回確かめます。</p></div>
+          <div><span>週次見守り（有料）</span><strong>{CORE_PANEL_SIZE}問</strong><p>同じ{CORE_PANEL_SIZE}問を毎週聞き直します。</p></div>
+        </div>
+      </PageSection>
 
-    <h2>AI顧客奪還シェア：固定{CORE_PANEL_SIZE}問で推薦候補に入った割合</h2>
-    <p>AI別に「自社が候補に入った質問数 ÷ 取得成功した固定パネル質問数」で算出します。全問取得時の分母は{CORE_PANEL_SIZE}。反復回答がすべて取得できた質問だけを使い、過半数で候補に入ればその質問を候補入りと判定します。同数は候補入りに数えません。</p>
-    <p>欠損時は成功分母・予定{CORE_PANEL_SIZE}問・未取得数を併記する部分観測です。分母が0なら算出しません。短い無料パネルの数値を、この指標として表示することもありません。</p>
-    <p>前後比較は同じ対象・パネル版・質問・AI・モデル・反復条件で、両時点の取得に成功した質問に揃えます。比較分母と各測定日時を示し、揃う質問がなければ比較不可とします。初回候補外の質問だけで計算する「候補回復率」は別の補助指標です。</p>
-    <p>これは測定パネル上の割合で、実際の顧客シェアではありません。自社の候補入りは競合の脱落や第一候補への変化を意味しません。</p>
+      <PageSection tone="tint" eyebrow="北極星指標" title="AI顧客奪還シェア" lead={`固定${CORE_PANEL_SIZE}問のうち、御社がAIの候補に入った質問の割合です。AIごとに出します。`}>
+        <div className="mt-formula" aria-label="計算式">
+          <div><span>名前が出た質問</span><strong>14</strong></div>
+          <b aria-hidden="true">÷</b>
+          <div><span>答えを取得できた質問</span><strong>{CORE_PANEL_SIZE}</strong></div>
+          <b aria-hidden="true">＝</b>
+          <div className="mt-formula-result"><span>AI顧客奪還シェア</span><strong>28%</strong></div>
+        </div>
+        <p className="mt-formula-note">数字は見本です。実際のお客さんの数・市場シェア・売上ではありません。</p>
+        <details className="mt-details">
+          <summary>くわしいルールを見る</summary>
+          <ul>
+            <li>各AIに同じ質問を複数回聞き、すべて取得できた質問だけを使います。過半数で名前が出れば「候補入り」と判定し、同数は候補入りに数えません。</li>
+            <li>取得できなかった質問がある場合は、成功した分母・予定の{CORE_PANEL_SIZE}問・未取得の数を並べて「部分観測」と表示します。分母が0なら計算しません。</li>
+            <li>{FREE_PANEL_SIZE}問の無料診断の数字を、この指標として表示することはありません。無料から有料に移るときは、基準の測定を取り直します。</li>
+            <li>前後の比較は、同じ対象・質問の版・AI・モデル・回数で、両方の時点で取得できた質問にそろえます。そろう質問がなければ「比較不可」とします。</li>
+            <li>初回に名前が出なかった質問だけで計算する「候補回復率」は、別の補助の数字です。</li>
+            <li>御社が候補に入っても、ライバルが外れた・1番目になったという意味ではありません。</li>
+          </ul>
+        </details>
+      </PageSection>
 
-    <h2>結果の読み方</h2>
-    <dl className="definition-list"><div><dt>候補に入った割合</dt><dd>確認できた回答のうち、自社が候補として挙げられた割合です。顧客数や市場シェアではありません。</dd></div><div><dt>回答内の掲載順</dt><dd>回答文から順序を抽出できた場合だけ表示します。順位を示していない回答は無理に順位へ変換しません。</dd></div><div><dt>確認できたページ</dt><dd>AIの回答に含まれた参照元URLです。Rovanページの採用や推薦を示すものではありません。</dd></div><div><dt>確認の確かさ</dt><dd>予定した回答のうち、実際に取得できた回答の割合です。取得できなかった分を自社の候補外とは数えません。</dd></div></dl>
+      <PageSection tone="white" eyebrow="結果の読み方" title="画面の数字の意味">
+        <dl className="mt-reading">
+          {reading.map((item) => (
+            <div key={item.term}><dt>{item.term}</dt><dd>{item.desc}</dd></div>
+          ))}
+        </dl>
+      </PageSection>
 
-    <h2>数字が変わる理由</h2>
-    <p>AIの回答、検索結果、競合サイト、モデルの更新によって見え方は変わります。Rovanはその時点で同じ条件にそろえた結果を表示しますが、売上や順位を保証するものではありません。</p>
-
-    <h2>直したあとに見ること</h2>
-    <p>追っているのはサイトの更新履歴ではなく、AIの回答に自社が含まれたかどうかです。公開情報を変更したあとに同じ質問を聞き直し、候補入り・候補外・新しく確認された参照元URLを比べます。変更だけの前後差から因果や売上を断定しません。</p>
-  </MarketingShell>;
+      <PageSection tone="tint" eyebrow="注意" title="数字は、毎週変わることがあります。" lead="AIの答えは、検索結果・ライバルのサイト・AIのモデルの更新で変わります。Rovanは条件をそろえて測りますが、順位や売上を約束するものではありません。ページを直したあとの変化だけで、原因や売上への効果を決めつけることもしません。">
+        <CtaBand />
+      </PageSection>
+    </MarketingShell>
+  );
 }

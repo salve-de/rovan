@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 import { ArrowIcon, CheckIcon, LockIcon } from "@/components/icons";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -56,9 +58,9 @@ function AiReadableContent({ sample, token, url }: { sample: boolean; token: str
   const resolvedDomain = watch ? normalizeDomain(watch.latest.targetUrl) : domain;
   const backHref = sample ? "/watch?sample=1" : token ? `/watch?token=${encodeURIComponent(token)}` : "/manage";
 
-  return <main className="document-page ai-info-page">
-    <header className="site-header site-header-compact"><div className="shell header-inner"><Link className="brand" href={backHref}><span className="brand-mark" aria-hidden="true"><i /><i /><i /></span><span><strong>Rovan</strong><small>生成AI・競合診断</small></span></Link><Link className="text-button" href={backHref}>戻る <ArrowIcon /></Link></div></header>
-    <section className="document-hero ai-info-hero"><div className="shell"><p className="overline">AI向け公開情報 / {resolvedDomain}</p><h1>AIが確認しやすい、<br />会社の事実を整える。</h1><p>公開ページから取得できた事実と参照元を、AIにも人にも読みやすい下書きにまとめます。推薦や順位を買うページではありません。</p><div className="ai-info-boundary"><LockIcon /><span><strong>公開前に確認します。</strong> Rovanが対象サイトを自動変更したり、外部の評価を装ったりすることはありません。</span></div></div></section>
+  return <main className="pg-page ai-info-page">
+    <SiteHeader compact />
+    <section className="pg-hero ai-info-hero"><div className="shell pg-hero-inner"><Link className="text-button ai-info-back" href={backHref}>← 戻る</Link><span className="pg-eyebrow">AI向け公開情報{watch || sample ? ` / ${resolvedDomain}` : ""}</span><h1>AIが確認しやすい、<br />会社の事実を整える。</h1><p>公開ページから取得できた事実と参照元を、AIにも人にも読みやすい下書きにまとめます。推薦や順位を買うページではありません。</p><div className="ai-info-boundary"><LockIcon /><span><strong>公開前に確認します。</strong> Rovanが対象サイトを自動変更したり、外部の評価を装ったりすることはありません。</span></div></div></section>
 
     <section className="document-body shell ai-info-body">
       {error ? <div className="document-callout ai-info-error"><strong>下書きを表示できません。</strong><p>{error}</p></div> : null}
@@ -72,6 +74,6 @@ function AiReadableContent({ sample, token, url }: { sample: boolean; token: str
         <section className="ai-info-next"><div><p className="overline">次にすること</p><h2>公開したあと、同じ質問で測り直す。</h2><p>AI回答に含まれた候補や参照元URLが変わったかを、前回と同じ条件で確認します。変更だけの前後差から因果は断定しません。</p></div><Link className="button button-primary" href={token ? `/watch?token=${encodeURIComponent(token)}` : "/watch?sample=1"}>変化を確認する <ArrowIcon /></Link></section>
       </>}
     </section>
-    <footer className="site-footer"><div className="shell"><p className="footer-meta">Rovan / 公開情報から、比較される根拠を整える。</p></div></footer>
+    <SiteFooter />
   </main>;
 }

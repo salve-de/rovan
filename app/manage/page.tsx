@@ -4,5 +4,5 @@ import { ManagementEntry } from "@/components/management-entry";
 
 export const metadata: Metadata = { title: "管理画面を開く", robots: { index: false, follow: false } };
 export default function ManagePage() {
-  return <MarketingShell eyebrow="管理画面" title="自分の診断・公開ページ・見守りを開く。" lead="利用開始時に保存した管理URLから、前回の続きに戻れます。見本ではなく、ご自身の情報を表示します。"><ManagementEntry /></MarketingShell>;
+  return <MarketingShell eyebrow="管理画面" title="前回の続きを、ここから開く。" lead="診断・公開ページ・週次見守りを開けます。診断のあとに表示された、またはメールで届いた「管理用リンク」を貼りつけてください。"><ManagementEntry /></MarketingShell>;
 }
