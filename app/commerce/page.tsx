@@ -25,7 +25,7 @@ const rows = [
 
 export default function CommercePage() {
   if (!sellerReady()) notFound();
-  return <MarketingShell eyebrow="COMMERCIAL DISCLOSURE" title="特定商取引法に基づく表記。" lead="有料Watchの販売者、価格、提供内容、更新、解約、返金条件を表示します。">
+  return <MarketingShell eyebrow="特定商取引法" title="特定商取引法に基づく表記。" lead="有料Watchの販売者、価格、提供内容、更新、解約、返金条件を表示します。">
     <dl className="definition-list">{rows.map(([label, content]) => <div key={label}><dt>{label}</dt><dd>{content}</dd></div>)}</dl>
     <h2>サービスの性質</h2><p>Rovanは、指定した質問・AI・日時の条件で回答を記録し、回答に含まれた候補や参照URLを比較します。公開サイトから抽出した記載候補は、内容を確認してから公開できます。AIの推薦・引用・検索順位・問い合わせ・契約・売上は保証しません。対象会社のサイトを自動変更することもありません。</p>
   </MarketingShell>;

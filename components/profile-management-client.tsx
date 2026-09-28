@@ -63,7 +63,7 @@ function ManagementSession({ query }: { query: string }) {
   const resultHref = profiles[0]?.resultUrl || "/#scan";
   return <>
     <SiteHeader context={{ resultHref, profileHref: profileManagementHref(capability), watchHref }} />
-    <main className="shell" style={{ paddingBlock: "40px", maxWidth: "900px" }}>
+    <main className="shell profile-management-main">
     <h1>公開ページの管理</h1>
     <p>公開内容・参照元を確認し、公開・停止・継続更新を管理できます。</p>
     {capability.token || capability.watchToken ? <ProfileManagementLink capability={capability} /> : null}

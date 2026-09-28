@@ -57,37 +57,29 @@ export function BillingClient() {
     <form onSubmit={submit}>
       <div className="billing-icon"><LockIcon /></div>
       {watch ? (
-        <div className="billing-watch-summary" style={{ marginBottom: "20px" }}>
+        <div className="billing-watch-summary">
           <span>ログイン中</span>
           <strong>{watch.latest.discovery.brandName}</strong>
           <small>{watch.paid ? "有料見守り契約中" : watch.status === "trial" ? "無料トライアル中" : "契約状況をご確認ください"}</small>
         </div>
       ) : (
-        <div style={{ margin: "20px 0", padding: "18px 20px", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "8px", textAlign: "left" }}>
-          <strong style={{ display: "block", color: "#0f172a", fontSize: "0.9rem", marginBottom: "6px" }}>
-            ログインが必要です
-          </strong>
-          <p style={{ margin: 0, color: "#64748b", fontSize: "0.82rem", lineHeight: 1.6 }}>
-            本画面はご契約者様専用の管理画面です。Googleアカウントまたはメールアドレスでログインしてください。
-          </p>
-          <div style={{ marginTop: "14px" }}>
-            <Link href="/login" className="button button-dark" style={{ display: "inline-block", fontSize: "0.82rem", padding: "8px 16px", textDecoration: "none" }}>
-              ログイン画面を開く →
-            </Link>
+        <div className="billing-login-required">
+          <strong>ログインが必要です</strong>
+          <p>本画面はご契約者様専用の管理画面です。Googleアカウントまたはメールアドレスでログインしてください。</p>
+          <div className="billing-login-required-action">
+            <Link href="/login" className="button button-dark">ログイン画面を開く <ArrowIcon /></Link>
           </div>
         </div>
       )}
       <input type="hidden" value={token} disabled={busy} onChange={(event) => { setWatch(null); setToken(event.target.value); }} />
-      <button className="button button-dark" type="submit" disabled={busy || !token || !watch} style={token ? undefined : { display: "none" }}>
+      <button className={`button button-dark${token ? "" : " is-hidden"}`} type="submit" disabled={busy || !token || !watch}>
         {busy ? "準備中…" : watch ? <>契約・決済管理画面を開く <ArrowIcon /></> : "契約情報を確認しています…"}
       </button>
       {message ? <p className="form-error" role="status">{message}</p> : null}
 
-      <div style={{ marginTop: "24px", padding: "16px", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "6px", textAlign: "left" }}>
-        <span style={{ display: "block", fontSize: "0.74rem", fontWeight: 700, color: "#475569", marginBottom: "8px", letterSpacing: "0.02em" }}>
-          ご解約時に何が起きるか
-        </span>
-        <ul style={{ margin: 0, paddingLeft: "18px", fontSize: "0.76rem", color: "#64748b", lineHeight: 1.6 }}>
+      <div className="billing-cancel-note">
+        <span>ご解約時に何が起きるか</span>
+        <ul>
           <li><strong>公開ページの自動更新：</strong>解約すると、AI推薦データ（公開ページ）の毎週の自動更新と掲載期限の延長が止まります。すでに設定されている掲載期限までは表示され、期限が来ると自動的に非公開になります。</li>
           <li><strong>保存データ：</strong>それまでの測定履歴・設定はRovan上に保存されたままです。削除をご希望の場合は、<Link href="/data-rights">データ管理画面</Link>からいつでも申請できます。</li>
         </ul>
