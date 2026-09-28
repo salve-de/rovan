@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>トップ 最初の画面</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&amp;family=Zen+Kaku+Gothic+New:wght@700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:"Noto Sans JP",sans-serif;background:#ffffff;color:#0f172a}
+a{color:#147a52}a:hover{color:#0f5f40}
+</style>
+</helmet>
+<div style="width: 1440px; height: 900px; box-sizing: border-box; background: #ffffff; display: flex; flex-direction: column; overflow: hidden;">
+  <header style="height: 76px; flex-shrink: 0; box-sizing: border-box; padding: 0 80px; display: flex; align-items: center; justify-content: space-between;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <div style="width: 30px; height: 30px; border-radius: 8px; background: #147a52;"></div>
+      <span style="font-family: 'Zen Kaku Gothic New', sans-serif; font-size: 21px; font-weight: 700; color: #102b43;">Rovan</span>
+    </div>
+    <nav style="display: flex; align-items: center; gap: 32px; font-size: 15px;">
+      <a href="#" style="color: #475569; text-decoration: none;">しくみ</a>
+      <a href="#" style="color: #475569; text-decoration: none;">診断結果の見本</a>
+      <a href="#" style="color: #475569; text-decoration: none;">料金</a>
+      <a href="#" style="color: #475569; text-decoration: none;">よくある質問</a>
+      <a href="#" style="color: #475569; text-decoration: none;">ログイン</a>
+      <a href="#" style="background: #102b43; color: #ffffff; text-decoration: none; font-weight: 700; padding: 11px 20px; border-radius: 10px;">無料で診断</a>
+    </nav>
+  </header>
+
+  <div style="flex-grow: 1; box-sizing: border-box; padding: 24px 80px 64px; display: grid; grid-template-columns: 600px minmax(0, 1fr); gap: 20px; align-items: center;">
+    <div style="display: flex; flex-direction: column; gap: 26px;">
+      <span style="align-self: flex-start; font-size: 14px; font-weight: 700; color: #147a52; background: #e5f5ed; padding: 6px 14px; border-radius: 999px;">ChatGPT・Gemini・Perplexity に対応</span>
+      <h1 style="margin: 0; font-family: 'Zen Kaku Gothic New', sans-serif; font-size: 42px; line-height: 1.45; font-weight: 700; color: #102b43;">AIに「おすすめは？」と<br>聞かれたとき、<br>御社の名前は<span style="color: #147a52;">出ていますか。</span></h1>
+      <div style="display: flex; flex-direction: column; gap: 8px; border-left: 4px solid #147a52; padding-left: 18px;">
+        <p style="margin: 0; font-size: 20px; line-height: 1.6; font-weight: 700; color: #102b43;">Rovanは、AIに御社をすすめてもらうためのサービスです。</p>
+        <p style="margin: 0; font-size: 16px; line-height: 1.8; color: #475569;">御社の強みをAIが読める形にまとめて公開し、毎週AIの答えを確かめます。ホームページがなくても使えます。</p>
+      </div>
+      <form style="display: flex; flex-direction: column; gap: 10px; margin-top: 4px;">
+        <label for="hero-company" style="font-size: 14px; font-weight: 700; color: #102b43;">会社名・店名、Instagram、ホームページのどれか</label>
+        <div style="display: flex; gap: 10px;">
+          <input id="hero-company" type="text" placeholder="例：山田板金製作所 大田区 ／ @aoba_bakery" style="flex-grow: 1; height: 58px; box-sizing: border-box; padding: 0 18px; font-size: 16px; font-family: inherit; border: 1.5px solid #cbd5e1; border-radius: 12px; background: #ffffff; color: #0f172a;">
+          <button type="button" style="height: 58px; padding: 0 28px; border: 0; border-radius: 12px; background: #147a52; color: #ffffff; font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer;">まずは無料で診断</button>
+        </div>
+      </form>
+      <div style="display: flex; gap: 22px; font-size: 14px; color: #475569;">
+        <span style="display: flex; align-items: center; gap: 6px;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#147a52" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5l3 3 7-7"></path></svg>登録不要</span>
+        <span style="display: flex; align-items: center; gap: 6px;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#147a52" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5l3 3 7-7"></path></svg>ホームページがなくてもOK</span>
+        <span style="display: flex; align-items: center; gap: 6px;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#147a52" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5l3 3 7-7"></path></svg>診断は無料</span>
+      </div>
+    </div>
+
+    <div style="position: relative; height: 700px;">
+      <div style="position: absolute; left: 60px; top: 40px; width: 640px; height: 640px; border-radius: 50%; background: #f1f7f4;"></div>
+
+      <img src="/_blob/c3d495e7cce8ea9be789e688a8c15138" alt="スマートフォンでAIに相談するお客さん" style="position: absolute; left: 10px; top: 190px; width: 470px; height: 470px;">
+
+      <div style="position: absolute; left: 200px; top: 128px; width: 390px; background: #ffffff; border: 2px solid #102b43; border-radius: 18px; padding: 20px 22px; box-sizing: border-box; box-shadow: 0 16px 36px rgba(16, 43, 67, 0.12); display: flex; flex-direction: column; gap: 10px; height: 186px">
+        <span style="font-size: 13px; color: #64748b;">AIの答え</span>
+        <span style="font-size: 16px; font-weight: 700; color: #0f172a;">大田区で試作を頼めるのは、この3社です。</span>
+        <div style="display: flex; flex-direction: column; gap: 6px; font-size: 15px; color: #0f172a;">
+          <span>1. 東都試作センター</span>
+          <span>2. 中央精密加工</span>
+          <span>3. 京浜メタルワークス</span>
+        </div>
+      </div>
+      <svg width="70" height="50" viewBox="0 0 70 50" aria-hidden="true" style="position: absolute; left: 318px; top: 312px;"><path d="M8 0 L48 0 L60 46 Z" fill="#ffffff"></path><path d="M10 1.5 L60 46 L46 1.5" fill="none" stroke="#102b43" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"></path></svg>
+      <img src="/_blob/adfbd0077cec058f9321479f067843b3" alt="パソコンの前で困る社長" style="position: absolute; right: -10px; top: 330px; width: 340px; height: 340px;">
+
+      <div style="position: absolute; left: 430px; top: 346px; background: #bd5a2f; color: #ffffff; border-radius: 999px; padding: 10px 20px; font-size: 16px; font-weight: 700; box-shadow: 0 10px 24px rgba(189, 90, 47, 0.28);">うちの名前が、ない…</div>
+
+      <span style="position: absolute; right: 8px; bottom: 6px; font-size: 12px; color: #64748b;">イメージです</span>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -7,15 +7,23 @@ const read = (file: string) => readFileSync(file, "utf8");
 
 test("approved marketing language is restored without replacing the product objective", () => {
   const expected: Record<string, string[]> = {
-    "app/page.tsx": ["おすすめ獲得システム", "手に入る2つの確定成果物", "専属のAI見守り体制", "明朗・適正な価格設定", "毎週の自動見守りプラン"],
     "components/brand.tsx": ["生成AI・競合診断"],
     "components/zero-effort-promise-section.tsx": ["社長は、本業（接客・施工・製造・経営）に100%専念してください。", "既存の自社サイトは1文字も触る必要がありません。"],
     "components/product-visuals.tsx": ["手に入るもの 01", "手に入るもの 02", "自社専用 AI診断レポート", "AI推薦データを配備", "毎週のAI回答を自動見守り", "社長の作業", "裏側の自動処理"],
     "app/pricing/page.tsx": ["営業マンを雇う前に。", "AI推薦・自動見守りプラン"],
     "components/result-client.tsx": ["自社専用 AI診断レポート", "今すぐできる解決アクション", "14日間無料で試してみる（メール登録不要）"],
-    "components/site-header.tsx": ["② AI推薦データ"],
-    "components/site-footer.tsx": ["推薦の変化", "AIからの推薦獲得に向けて"],
+    "components/site-header.tsx": ["② AI推薦データ", "診断結果の見本"],
+    "components/site-footer.tsx": ["AIに御社をすすめてもらうためのサービス", "毎週AIの答えを確かめます"],
     "components/scan-form.tsx": ["AI推薦の現状を無料診断"],
+    // トップページ（オーナー確定デザイン 2026-09-29、docs/design/top-page/README.md）の承認済み文言
+    "components/home/HomeHero.tsx": ["AIに「おすすめは？」と", "Rovanは、AIに御社をすすめてもらうためのサービスです。"],
+    "components/home/HomeWhyNow.tsx": ["検索で上位でも、選ばれない時代へ。"],
+    "components/home/HomeChange.tsx": ["「この相談なら、御社」。", "AIにそう答えてもらえる会社へ。"],
+    "components/home/HomeBenefits.tsx": ["Rovanを使う、3つのメリット"],
+    "components/home/HomeNoSite.tsx": ["ホームページがなくても、大丈夫です。"],
+    "components/home/HomeSteps.tsx": ["あなたがやるのは、たったこれだけ。"],
+    "components/home/HomeFaq.tsx": ["始める前の、よくある疑問"],
+    "components/home/HomeDiagnosis.tsx": ["無料の診断で、この3つが分かります。"],
   };
   for (const [file, phrases] of Object.entries(expected)) {
     const source = read(file);
@@ -24,7 +32,7 @@ test("approved marketing language is restored without replacing the product obje
 });
 
 test("public marketing surfaces do not restore unverified official status or timing guarantees", () => {
-  for (const file of ["app/page.tsx", "app/pricing/page.tsx", "app/layout.tsx", "components/product-visuals.tsx", "components/public-profile-actions.tsx", "components/zero-effort-promise-section.tsx"]) {
+  for (const file of ["app/page.tsx", "app/pricing/page.tsx", "app/layout.tsx", "components/product-visuals.tsx", "components/public-profile-actions.tsx", "components/zero-effort-promise-section.tsx", "components/home/HomeHero.tsx", "components/home/HomeWhyNow.tsx", "components/home/HomeChange.tsx", "components/home/HomeBenefits.tsx", "components/home/HomeNoSite.tsx", "components/home/HomeSteps.tsx", "components/home/HomeFaq.tsx", "components/home/HomeDiagnosis.tsx"]) {
     assert.doesNotMatch(read(file), /AI公式推薦|主要5大AI|10秒で即時発行|主要AIが常時自動参照|常時優先巡回/, file);
   }
   assert.match(read("components/public-profile-actions.tsx"), /内容を確認して公開する/);

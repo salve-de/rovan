@@ -4,10 +4,41 @@ import { Brand } from "@/components/brand";
 export type NavigationContext = { resultHref: string; profileHref: string; watchHref: string };
 
 export function SiteHeader({ compact = false, context }: { compact?: boolean; context?: NavigationContext }) {
-  const links = context ? [
+  if (!context) {
+    return (
+      <header className={`site-header ${compact ? "site-header-compact" : ""}`}>
+        <div className="shell header-inner">
+          <Brand />
+          <nav className="header-nav" aria-label="主要ナビゲーション">
+            <div className="header-nav-links">
+              <Link href="/#how">しくみ</Link>
+              <Link href="/result?sample=1" prefetch={false}>診断結果の見本</Link>
+              <Link href="/pricing">料金</Link>
+              <Link href="/#faq">よくある質問</Link>
+            </div>
+            <div className="header-nav-actions">
+              <Link href="/login" className="header-login-link">ログイン</Link>
+              <Link className="header-cta" href="/#start">無料で診断</Link>
+            </div>
+          </nav>
+          <details className="mobile-menu">
+            <summary>メニュー</summary>
+            <nav aria-label="モバイルナビゲーション">
+              <Link href="/#start">無料で診断</Link>
+              <Link href="/#how">しくみ</Link>
+              <Link href="/result?sample=1" prefetch={false}>診断結果の見本</Link>
+              <Link href="/pricing">料金</Link>
+              <Link href="/#faq">よくある質問</Link>
+              <Link href="/login">ログイン</Link>
+            </nav>
+          </details>
+        </div>
+      </header>
+    );
+  }
+
+  const links = [
     [context.resultHref, "① 診断レポート"], [context.profileHref, "② AI推薦データ"], [context.watchHref, "③ 週次見守り"],
-  ] : [
-    ["/result?sample=1", "診断レポートの見本"], ["/ai/company/aoba-souzoku?sample=1", "AI推薦データの見本"], ["/watch?sample=1", "週次見守りの見本"],
   ];
   return (
     <header className={`site-header ${compact ? "site-header-compact" : ""}`}>

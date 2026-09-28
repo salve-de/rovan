@@ -25,7 +25,7 @@ test("data management accepts whole Watch URL without asking users to extract a 
 test("public menus label samples and user-facing policies have no developer instructions", () => {
   const header = readFileSync("components/site-header.tsx", "utf8");
   assert.match(header, /context\.resultHref/);
-  assert.match(header, /診断レポートの見本/);
+  assert.match(header, /診断結果の見本/);
   assert.match(header, /管理画面を開く/);
   for (const file of ["app/privacy/page.tsx", "app/terms/page.tsx", "app/support/page.tsx", "app/commerce/page.tsx"]) {
     assert.doesNotMatch(readFileSync(file, "utf8"), /設定してください|確定してください|一般公開しないでください|製品実装用の初期ポリシー/);

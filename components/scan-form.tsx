@@ -4,7 +4,19 @@ import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowIcon } from "@/components/icons";
 
-export function ScanForm({ compact = false, hideExtraToggle = false }: { compact?: boolean; hideExtraToggle?: boolean }) {
+export function ScanForm({
+  compact = false,
+  hideExtraToggle = false,
+  submitLabel,
+  placeholder = "会社名・店舗名 ＋ 地域（例: 青葉ベーカリー 高崎、山田板金 大田区）またはURL",
+  label,
+}: {
+  compact?: boolean;
+  hideExtraToggle?: boolean;
+  submitLabel?: string;
+  placeholder?: string;
+  label?: string;
+}) {
   const router = useRouter();
   const [input, setInput] = useState("");
   const [showExtra, setShowExtra] = useState(false);
@@ -125,16 +137,16 @@ export function ScanForm({ compact = false, hideExtraToggle = false }: { compact
       >
         <div className="scan-field">
           <input
-            aria-label="会社名・店舗名・活動名・URL"
+            aria-label={label ?? "会社名・店舗名・活動名・URL"}
             autoCapitalize="none"
             autoCorrect="off"
             inputMode="text"
-            placeholder="会社名・店舗名 ＋ 地域（例: 青葉ベーカリー 高崎、山田板金 大田区）またはURL"
+            placeholder={placeholder}
             value={input}
             onChange={(event) => setInput(event.target.value)}
           />
           <button type="submit">
-            <span>{compact ? "無料診断" : "AI推薦の現状を無料診断"}</span>
+            <span>{submitLabel ?? (compact ? "無料診断" : "AI推薦の現状を無料診断")}</span>
             <ArrowIcon />
           </button>
         </div>
