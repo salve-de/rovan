@@ -4900,7 +4900,7 @@ svg { width: 1.1em; height: 1.1em; }
 /* page: watch（週次見守り） */
 .wt-hero-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; }
 .wt-hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-.wt-verdict { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 24px; background: var(--bg); border: 1px solid var(--border); border-radius: 20px; padding: 28px; }
+.wt-verdict { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 24px; align-items: center; background: var(--bg); border: 1px solid var(--border); border-radius: 20px; padding: 28px; }
 .wt-verdict-main { display: flex; flex-direction: column; gap: 10px; }
 .wt-verdict-label { font-size: 15px; font-weight: 700; color: var(--brand); }
 .wt-verdict h2 { margin: 0; font-size: clamp(22px, 2.8vw, 30px); line-height: 1.45; color: var(--navy); }
@@ -5036,3 +5036,32 @@ svg { width: 1.1em; height: 1.1em; }
 .nf-note { text-align: center; }
 .ai-info-back { align-self: center; font-size: 14px; }
 .ai-info-hero .ai-info-boundary { margin-top: 8px; text-align: left; }
+/* 週次見守りのライバル表：スマホでは1社1行のカード型にして横はみ出しをなくす */
+@media (max-width: 640px) {
+  .watch-comp-table, .watch-comp-table tbody { display: block; width: 100%; min-width: 0 !important; }
+  .watch-comp-table thead { display: none; }
+  .watch-comp-table tr { display: grid; grid-template-columns: 1fr auto auto; gap: 4px 12px; align-items: center; padding: 12px 14px; border-bottom: 1px solid var(--border); }
+  .watch-comp-table td { padding: 0 !important; border: 0 !important; font-size: 14px; }
+  .watch-comp-table td:first-child { grid-column: 1 / -1; font-weight: 700; }
+  .watch-comp-table td:nth-child(2)::before { content: "初回 "; color: var(--text-subtle); font-size: 12px; }
+  .watch-comp-table td:nth-child(3)::before { content: "今回 "; color: var(--text-subtle); font-size: 12px; }
+  .watch-comp-table-wrapper { overflow: visible !important; }
+}
+.readiness-list span.missing, .readiness-list span.ready { font-size: 12px !important; }
+/* ホーム: 実際の公開ページをスマホの枠で見せる */
+.home-phone { align-self: center; width: min(280px, 100%); border-radius: 36px; background: var(--navy); padding: 10px; box-shadow: 0 24px 50px rgba(16, 43, 67, 0.22); }
+.home-phone-screen { border-radius: 28px; overflow: hidden; aspect-ratio: 9 / 17; background: var(--bg); }
+.home-phone-screen img { width: 100%; height: auto; display: block; }
+.home-nosite-page-note { align-self: center; font-size: 12px; color: var(--text-subtle); }
+.home-nosite-page { align-items: stretch; }
+/* ホーム: 実際の画面の切り抜き */
+.home-diagnosis-shot { margin: 0; }
+.home-diagnosis-shot img { display: block; width: 100%; height: auto; border-radius: 18px; border: 1px solid var(--border); box-shadow: 0 14px 34px rgba(16, 43, 67, 0.10); background: var(--bg); }
+.home-change-weekly { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 32px; align-items: center; width: 100%; background: var(--navy); border-radius: 22px; padding: 28px 32px; }
+.home-change-weekly-copy { display: flex; flex-direction: column; gap: 10px; }
+.home-change-weekly-copy strong { font-family: var(--font-heading-family); font-size: 22px; line-height: 1.5; color: var(--bg); }
+.home-change-weekly-copy span:last-child { font-size: 15px; line-height: 1.7; color: var(--border-strong); }
+.home-change-weekly .home-diagnosis-shot img { border: 0; }
+@media (max-width: 900px) {
+  .home-change-weekly { grid-template-columns: 1fr; padding: 22px 18px; gap: 18px; }
+}

@@ -1,3 +1,4 @@
+import Image from "next/image";
 const INPUT_OPTIONS = [
   {
     icon: (
@@ -68,18 +69,12 @@ export function HomeNoSite() {
 
           <div className="home-nosite-page">
             <span className="home-nosite-page-label">Rovanがつくる、AIが読めるページ</span>
-            <div className="home-nosite-page-card">
-              <div className="home-nosite-page-header">
-                <span>お店の情報ページ</span>
-                <strong>青葉ベーカリー</strong>
-              </div>
-              <div className="home-nosite-page-body">
-                <span>場所</span><span>群馬県高崎市</span>
-                <span>得意なこと</span><span>天然酵母のパン、朝7時から営業</span>
-                <span>こんな方に</span><span>出勤前に焼きたてを買いたい方</span>
-                <span>情報のもと</span><span>Instagramの公開情報</span>
+            <div className="home-phone">
+              <div className="home-phone-screen">
+                <Image src="/screens/public-page-phone.png" alt="Rovanがつくる公開ページの実際の画面（見本の青葉ベーカリー）" width={430} height={1180} sizes="280px" />
               </div>
             </div>
+            <span className="home-nosite-page-note">実際の画面です（見本のお店）</span>
           </div>
 
           <ArrowConnector />

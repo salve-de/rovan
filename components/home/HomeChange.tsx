@@ -1,3 +1,4 @@
+import Image from "next/image";
 const ROVAN_STEPS = [
   { n: 1, text: "大手が言っていない、\n御社の強みを見つける" },
   { n: 2, text: "AIが読める御社のページに\nまとめて公開する" },
@@ -66,22 +67,18 @@ export function HomeChange() {
           </div>
         </div>
 
-        <div className="home-change-report">
-          <span className="home-change-report-label">毎週届く報告</span>
-          <span className="home-change-report-lead">同じ50の質問のうち、<b>御社の名前が出た質問</b></span>
-          <div className="home-change-report-chart" aria-hidden="true">
-            <span style={{ height: "23px" }} />
-            <span style={{ height: "26px" }} />
-            <span style={{ height: "26px" }} />
-            <span style={{ height: "31px" }} />
-            <span style={{ height: "31px" }} />
-            <span className="is-latest" style={{ height: "40px" }} />
+        <div className="home-change-weekly">
+          <div className="home-change-weekly-copy">
+            <span className="home-change-report-label">毎週届く報告</span>
+            <strong>名前が出た質問が、前と比べてどう変わったか。</strong>
+            <span>同じ質問で毎週測った結果を、この画面でお知らせします。</span>
           </div>
-          <span className="home-change-report-figure">8 → <b>14</b>問</span>
-          <span className="home-change-report-note">見本の値です</span>
+          <figure className="home-diagnosis-shot">
+            <Image src="/screens/watch-verdict.png" alt="週次見守りの実際の画面：名前が出た質問が2問から4問に増えたことを示す棒グラフ（見本）" width={912} height={348} sizes="(max-width: 1024px) 100vw, 760px" />
+          </figure>
         </div>
 
-        <p className="home-change-disclaimer">見本は分かりやすく示したもので、AIの答えや結果を約束するものではありません。</p>
+        <p className="home-change-disclaimer">画面は見本のお店のものです。AIの答えや結果を約束するものではありません。</p>
       </div>
     </section>
   );
