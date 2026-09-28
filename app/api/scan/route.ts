@@ -31,7 +31,9 @@ export async function POST(request: Request) {
     return Response.json({ error: "診断の保存先を準備中です。時間を置いてお試しください。" }, { status: 503 });
   }
   if (!env.openAiKey) {
-    return Response.json({ error: "診断に必要なAI接続を準備中です。時間を置いてお試しください。" }, { status: 503 });
+    // 開発中（AIキー未設定）だけ、見本データで流れを最後まで確認できるデモに切り替える。本番では常にfalse。
+    const demo = process.env.NODE_ENV !== "production";
+    return Response.json({ error: "診断に必要なAI接続を準備中です。時間を置いてお試しください。", demo }, { status: 503 });
   }
   let targetUrl: string;
   try {

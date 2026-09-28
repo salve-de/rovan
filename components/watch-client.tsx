@@ -47,7 +47,8 @@ export function WatchClient({ showSellerLinks = false }: { showSellerLinks?: boo
   }, [sample, urlToken]);
 
   const token = urlToken || sessionToken;
-  return <WatchViewClient key={readoutIdentity(sample, token)} sample={sample} token={token} showSellerLinks={showSellerLinks} />;
+  const demo = sample && params.get("demo") === "1";
+  return <WatchViewClient key={readoutIdentity(sample, token)} sample={sample} token={token} showSellerLinks={showSellerLinks} demo={demo} />;
 }
 
 /** ライバル表は上位5社と、変化があった会社（新規・未出現・増減）だけを出す */
@@ -470,7 +471,7 @@ function useWatchChange(watch: WatchView | null) {
   }, [watch]);
 }
 
-function WatchViewClient({ sample, token, showSellerLinks }: { sample: boolean; token: string; showSellerLinks: boolean }) {
+function WatchViewClient({ sample, token, showSellerLinks, demo = false }: { sample: boolean; token: string; showSellerLinks: boolean; demo?: boolean }) {
   const lifecycle = useRef<AbortController | null>(null);
   const emailRevision = useRef(0);
   const [watch, setWatch] = useState<WatchView | null>(sample ? toPublicWatch(sampleWatch()) : null);
@@ -633,6 +634,11 @@ function WatchViewClient({ sample, token, showSellerLinks }: { sample: boolean; 
         </div>
       </div>
 
+      {sample && demo ? (
+        <div className="rp-demo-banner" role="status">
+          <div className="shell"><strong>デモ表示です。</strong>見守りを始めると、毎週この画面で「名前が出た質問」の変化が届きます。いま見ているのは見本のお店の画面です。</div>
+        </div>
+      ) : null}
       <section className="rp-hero wt-hero">
         <div className="shell rp-hero-inner">
           <div className="wt-hero-row">
@@ -649,7 +655,7 @@ function WatchViewClient({ sample, token, showSellerLinks }: { sample: boolean; 
                 {profileUrl ? "公開中のページを見る ↗" : "診断結果から公開情報を確認 ↗"}
               </Link>
               {sample ? (
-                <Link className="button button-primary" href="/pricing">毎週、変化を見る <ArrowIcon /></Link>
+                <Link className="button button-primary" href="/pricing">料金を見る <ArrowIcon /></Link>
               ) : (
                 <button className="button button-primary" type="button" onClick={() => void manageBilling()} disabled={checkoutBusy}>
                   {checkoutBusy ? "準備中…" : watch.paid ? "契約を管理" : "毎週、変化を見る"}

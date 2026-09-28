@@ -35,7 +35,7 @@ const shot = async name => writeFile(`${output}/${name}.png`, Buffer.from(await 
 let management;
 try {
   await go(`/scan?kind=product&input=${encodeURIComponent(`動作確認用架空サービス-${Date.now()}`)}`);
-  await wait("この名前で下書きをつくる（無料）");
+  await wait("先にAIが読めるページの下書きをつくる →");
   await click("button.scan-resolve-start");
   await wait("内容を確認して公開する");
   management = await js("return document.querySelector('a[href^=\"/profile/manage?profileId=\"]').getAttribute('href')");

@@ -36,10 +36,11 @@ export function ResultClient({ showSellerLinks = false }: { showSellerLinks?: bo
   const params = useSearchParams();
   const sample = params.get("sample") === "1";
   const scanId = params.get("id");
-  return <ResultView key={readoutIdentity(sample, scanId)} sample={sample} scanId={scanId} showSellerLinks={showSellerLinks} />;
+  const demo = sample && params.get("demo") === "1";
+  return <ResultView key={readoutIdentity(sample, scanId)} sample={sample} scanId={scanId} showSellerLinks={showSellerLinks} demo={demo} />;
 }
 
-function ResultView({ sample, scanId, showSellerLinks }: { sample: boolean; scanId: string | null; showSellerLinks: boolean }) {
+function ResultView({ sample, scanId, showSellerLinks, demo = false }: { sample: boolean; scanId: string | null; showSellerLinks: boolean; demo?: boolean }) {
   const router = useRouter();
   const lifecycle = useRef<AbortController | null>(null);
   const [rawResult, setResult] = useState<ScanResult | null>(sample ? sampleResult : null);
@@ -71,7 +72,7 @@ function ResultView({ sample, scanId, showSellerLinks }: { sample: boolean; scan
 
   async function startWatch(event: FormEvent) {
     event.preventDefault();
-    if (sample) { router.push("/watch?sample=1"); return; }
+    if (sample) { router.push(demo ? "/watch?sample=1&demo=1" : "/watch?sample=1"); return; }
     if (!scanId) return;
     const signal = lifecycle.current!.signal;
     setWatchBusy(true); setError("");
@@ -100,6 +101,11 @@ function ResultView({ sample, scanId, showSellerLinks }: { sample: boolean; scan
   return <main className="report-page">
     <SiteHeader compact context={headerContext} />
     <ReportSubbar brandName={result.discovery.brandName} sample={sample} router={router} />
+    {demo ? (
+      <div className="rp-demo-banner" role="status">
+        <div className="shell"><strong>デモ表示です。</strong>AIの接続前のため、見本のお店（{result.discovery.brandName}）の結果で流れを見せています。あなたの会社の結果ではありません。</div>
+      </div>
+    ) : null}
 
     {/* ① 結論 → ② 御社は何番目か → ③ どの質問で負けているか（ホームの「無料の診断で分かる3つ」と同じ順） */}
     <ReportHero result={result} sample={sample} host={host} hasMeasurement={hasMeasurement} readout={readout} topCompetitorName={topCompetitor?.name} />
@@ -195,15 +201,15 @@ function ReportSubbar({ brandName, sample, router }: { brandName: string; sample
         </div>
 
         <nav aria-label="診断ステップ" className="report-subbar-nav">
-          <a href="#step-1">① 結論</a>
-          <a href="#step-2">② 次にやること</a>
-          <a href="#step-3">③ 週次見守り</a>
+          <a href="#step-1">結果</a>
+          <a href="#step-2">取り返す</a>
+          <a href="#step-3">毎週の見守り</a>
         </nav>
 
         <div>
           {!showCorrectionForm ? (
             <button type="button" className="report-subbar-correction-btn" onClick={() => setShowCorrectionForm(true)}>
-              ※対象店舗・地域を変更する
+              別の会社・地域で診断し直す
             </button>
           ) : (
             <form

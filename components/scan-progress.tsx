@@ -70,6 +70,7 @@ export function ScanProgress() {
     extraProduct ? extraProduct : socialInfo.username ? socialInfo.username : rawInput
   );
   const [directCreating, setDirectCreating] = useState(false);
+  const [altUrl, setAltUrl] = useState("");
   const [directDraft, setDirectDraft] = useState<{ profileId: string; token: string; slug: string } | null>(null);
 
   const createDirectProfile = useCallback(async () => {
@@ -125,9 +126,9 @@ export function ScanProgress() {
     }
   }, [directDraft, router]);
 
-  const startScan = useCallback(async (inputUrl: string) => {
+  const startScan = useCallback(async (inputUrl: string, nameOnly = "") => {
     const targetUrl = normalize(inputUrl);
-    if (!targetUrl) {
+    if (!targetUrl && !nameOnly) {
       setPhase("failed");
       setError("診断する公開サイトがありません。");
       return;
@@ -142,9 +143,30 @@ export function ScanProgress() {
     setMessage("診断を準備しています。");
     setDetail("診断先を確認しています");
     try {
-      const response = await fetch("/api/scan", { method: "POST", headers: { "content-type": "application/json", accept: "application/x-ndjson" }, body: JSON.stringify({ url: targetUrl }), signal: abort.signal });
+      const response = await fetch("/api/scan", { method: "POST", headers: { "content-type": "application/json", accept: "application/x-ndjson" }, body: JSON.stringify(targetUrl ? { url: targetUrl } : { name: nameOnly }), signal: abort.signal });
       if (!response.ok) {
-        const data = await response.json().catch(() => ({}));
+        const data = await response.json().catch(() => ({})) as { error?: string; demo?: boolean };
+        if (data.demo) {
+          // 開発中のデモ：本物と同じ段階表示のあと、見本のお店の結果へ進む（結果画面に「デモ」と明記）
+          for (const [index, item] of steps.entries()) {
+            if (abort.signal.aborted) return;
+            setStage(item.stage);
+            setProgress(Math.round(((index + 1) / steps.length) * 95));
+            setMessage(`${item.label}…（デモ）`);
+            setDetail("AIの接続前のため、見本のお店のデータで流れを表示しています");
+            await new Promise((resolve) => setTimeout(resolve, 700));
+          }
+          if (abort.signal.aborted) return;
+          setProgress(100); setStage("complete"); setMessage("結果をまとめました。");
+          router.replace("/result?sample=1&demo=1");
+          return;
+        }
+        if (!targetUrl) {
+          // ホームページなしの診断は、先に御社のページの下書きをつくってから行う
+          setPhase("no_site");
+          setError(data.error || "ホームページなしの診断は、先に御社のページの下書きをつくってから行います。");
+          return;
+        }
         throw new Error(data.error || `診断を開始できませんでした (${response.status})`);
       }
       if (!response.body) throw new Error("診断の進行状況を取得できませんでした。");
@@ -293,12 +315,12 @@ export function ScanProgress() {
       : `「${displayInput(rawInput)}」の診断を始めます`;
 
     const descText = isSocial
-      ? "Instagramの公開情報をもとに、AIが読める御社のページの下書きをつくります。載せる内容はあなたが確認してから決めます。公開したあと、そのページをもとにAIの答えを診断します。"
+      ? "このInstagramのお店の名前で、AIの答えに御社が出ているかを調べます。AIが読めるページは、結果を見たあとにつくれます。"
       : isProduct
-      ? "入力された商品・サービス名をもとに、AIが読めるページの下書きをつくります。価格・実績など、確認できない内容は補いません。公開したあと、AIの答えを診断します。"
+      ? "この商品・サービスの名前で、AIの答えに出ているかを調べます。AIが読めるページは、結果を見たあとにつくれます。"
       : isDirectPreview
       ? "下書きの内容を確かめてから公開できます。公開したあと、このページをもとにAIの答えを診断します。AIの答え・順位・集客は保証しません。"
-      : "ホームページは見つかりませんでしたが、店名だけでも大丈夫です。まずAIが読める御社のページの下書きをつくり、公開したあと、そのページをもとにAIの答えを診断します。";
+      : "ホームページが見つからなくても大丈夫です。この名前で、AIの答えに御社が出ているかを調べます。";
 
     const brandLabel = isSocial
       ? "店舗名・屋号・ブランド名"
@@ -328,7 +350,7 @@ export function ScanProgress() {
             <h1>{titleText}</h1>
             <p className="no-site-desc">{descText}</p>
 
-            <div className="no-site-form-grid no-site-form-grid--single">
+            {isDirectPreview ? <div className="no-site-form-grid no-site-form-grid--single">
               <div className="no-site-input-group">
                 <span>{isDirectPreview ? "公開する名称" : brandLabel}</span>
                 <p className="input-readonly">{directBrandName || rawInput}</p>
@@ -339,22 +361,37 @@ export function ScanProgress() {
                   <p className="no-site-input-note">入力された名称{extraSocial || socialInfo.isSocial ? "・SNS参照先" : ""}{extraProduct ? "・商品／サービス名" : ""}{extraUrl ? "・参照元URL" : ""}。未確認の業種・所在地・価格・実績は追加していません。</p>
                 </div>
               ) : null}
-            </div>
+            </div> : null}
 
             <div className="no-site-action-row">
               <div className="no-site-target-brand">
-                <span>この名前で進みます</span>
+                <span>この名前で調べます</span>
                 <strong>{socialInfo.displayLabel || directBrandName || rawInput}</strong>
               </div>
-              <button
-                className="button button-primary scan-resolve-start"
-                type="button"
-                disabled={directCreating}
-                onClick={() => void (isDirectPreview ? publishDirectProfile() : createDirectProfile())}
-              >
-                {directCreating ? (isDirectPreview ? "公開処理中…" : "下書きを作成中…") : buttonText} <ArrowIcon />
-              </button>
+              {isDirectPreview ? (
+                <button className="button button-primary scan-resolve-start" type="button" disabled={directCreating} onClick={() => void publishDirectProfile()}>
+                  {directCreating ? "公開処理中…" : buttonText} <ArrowIcon />
+                </button>
+              ) : (
+                <button className="button button-primary scan-resolve-start" type="button" disabled={directCreating} onClick={() => void startScan("", directBrandName || rawInput)}>
+                  この名前で診断する（無料） <ArrowIcon />
+                </button>
+              )}
             </div>
+            {!isDirectPreview ? (
+              <form className="no-site-url-row" onSubmit={(event) => { event.preventDefault(); if (altUrl.trim()) void startScan(altUrl.trim()); }}>
+                <label htmlFor="no-site-url">ホームページがある場合は、URLを入れるとより正確に調べられます</label>
+                <div>
+                  <input id="no-site-url" type="url" inputMode="url" placeholder="https://" value={altUrl} onChange={(event) => setAltUrl(event.target.value)} />
+                  <button className="button button-secondary" type="submit" disabled={!altUrl.trim()}>このURLで診断</button>
+                </div>
+              </form>
+            ) : null}
+            {!isDirectPreview ? (
+              <button className="text-button no-site-draft-link" type="button" disabled={directCreating} onClick={() => void createDirectProfile()}>
+                {directCreating ? "下書きを作成中…" : "先にAIが読めるページの下書きをつくる →"}
+              </button>
+            ) : null}
             {directDraft ? <ProfileManagementLink capability={{ profileId: directDraft.profileId, token: directDraft.token }} /> : null}
             {error ? <p className="form-error no-site-error">{error}</p> : null}
             <small className="no-site-small-note">{noteText}</small>
@@ -452,7 +489,7 @@ export function ScanProgress() {
     <section className="scan-stage shell">
       <div className="scan-stage-main">
         <p className="overline">診断中</p>
-        <h1>{targetHost || "会社サイト"}を確認しています。</h1>
+        <h1>{targetHost ? `${targetHost}を確認しています。` : `「${displayInput(rawInput)}」を調べています。`}</h1>
         <p className="scan-message">{message}</p>
         <div className="scan-progress-track" aria-label={`進捗 ${Math.round(progress)}%`}><span style={{ width: `${progress}%` }} /></div>
         <div className="scan-progress-summary"><strong>{Math.round(progress)}%</strong><span>{detail}</span></div>

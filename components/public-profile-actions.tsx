@@ -119,8 +119,7 @@ export function PublicProfileActions({ result, sample = false, selectedStrategyI
       {/* AI下書きガイド案内 */}
       <div className="profile-draft-guide">
         <span className="profile-draft-guide-label">
-          <span className="ui-badge">AI下書き候補</span>
-          公開情報から抽出した特徴候補（内容確認用）
+          御社の強みの候補（1つ選んでください）
         </span>
         <span className="profile-draft-guide-note">※ 公開ページに載せるのは参照元で確認できる情報だけです</span>
       </div>
@@ -147,7 +146,7 @@ export function PublicProfileActions({ result, sample = false, selectedStrategyI
             >
               {isRec ? (
               <div className="card-top-recommend-badge">
-                  分析上の候補
+                  おすすめ
                 </div>
               ) : null}
               <div className="weapon-card-header">
@@ -158,7 +157,7 @@ export function PublicProfileActions({ result, sample = false, selectedStrategyI
               </div>
               <h4>{strat.name}</h4>
               <p className="weapon-desc">{strat.coreThesis}</p>
-              <small className="weapon-target">想定ターゲット：{strat.targetMarket}</small>
+              <small className="weapon-target">こんなお客さんに：{strat.targetMarket}</small>
             </div>
           );
         })}
@@ -208,7 +207,7 @@ export function PublicProfileActions({ result, sample = false, selectedStrategyI
                 {!sample && profileToken ? <ProfileManagementLink capability={{ profileId: profile.id, token: profileToken }} /> : null}
               </div> : null}
               <span className="saved-badge">
-                {sample ? "見本です。実際の公開・契約は行われません。" : isPublished ? "公開しました：AIが読める御社のページができました。" : "AI推薦データの下書きを作成しました。公開前に内容を確認してください。"}
+                {sample ? "見本です。実際はここで下書きの中身を確かめてから公開します（見本では公開・契約は行われません）。" : isPublished ? "公開しました：AIが読める御社のページができました。" : "下書きができました。中身を確かめて、よければ公開してください。"}
               </span>
               <div className="saved-links">
                 {isPublished ? (
@@ -247,15 +246,16 @@ export function PublicProfileActions({ result, sample = false, selectedStrategyI
                     {busy === "deploy" ? "公開処理中…" : "内容を確認して公開する"} <ArrowIcon />
                   </button>
                 )}
-                <button
-                  type="button"
-                  className="text-button"
-                  disabled={busy !== "" || (!sample && profile?.status === "published")}
-                  onClick={() => setIsSaved(false)}
-                >
-                  下書きを作り直す
-                </button>
+                <a className="button button-secondary" href="#step-3">次へ：毎週の見守りを始める（14日間無料）</a>
               </div>
+              <button
+                type="button"
+                className="saved-redo"
+                disabled={busy !== "" || (!sample && profile?.status === "published")}
+                onClick={() => setIsSaved(false)}
+              >
+                別の強みで下書きを作り直す
+              </button>
 
             </div>
           )}
