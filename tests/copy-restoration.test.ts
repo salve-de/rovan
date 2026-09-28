@@ -19,9 +19,7 @@ test("approved marketing language is restored without replacing the product obje
     "components/home/HomeHero.tsx": ["AIに「おすすめは？」と", "Rovanは、AIに御社をすすめてもらうためのサービスです。"],
     "components/home/HomeWhyNow.tsx": ["検索で上位でも、選ばれない時代へ。"],
     "components/home/HomeChange.tsx": ["「この相談なら、御社」。", "AIにそう答えてもらえる会社へ。"],
-    "components/home/HomeBenefits.tsx": ["Rovanを使う、3つのメリット"],
-    "components/home/HomeNoSite.tsx": ["ホームページがなくても、大丈夫です。"],
-    "components/home/HomeSteps.tsx": ["あなたがやるのは、たったこれだけ。"],
+    "components/home/HomeEasy.tsx": ["あなたがやるのは、たったこれだけ。", "ホームページがなくても大丈夫。"],
     "components/home/HomeFaq.tsx": ["始める前の、よくある疑問"],
     "components/home/HomeDiagnosis.tsx": ["無料の診断で、この3つが分かります。"],
   };
@@ -32,7 +30,7 @@ test("approved marketing language is restored without replacing the product obje
 });
 
 test("public marketing surfaces do not restore unverified official status or timing guarantees", () => {
-  for (const file of ["app/page.tsx", "app/pricing/page.tsx", "app/layout.tsx", "components/product-visuals.tsx", "components/public-profile-actions.tsx", "components/zero-effort-promise-section.tsx", "components/home/HomeHero.tsx", "components/home/HomeWhyNow.tsx", "components/home/HomeChange.tsx", "components/home/HomeBenefits.tsx", "components/home/HomeNoSite.tsx", "components/home/HomeSteps.tsx", "components/home/HomeFaq.tsx", "components/home/HomeDiagnosis.tsx"]) {
+  for (const file of ["app/page.tsx", "app/pricing/page.tsx", "app/layout.tsx", "components/product-visuals.tsx", "components/public-profile-actions.tsx", "components/zero-effort-promise-section.tsx", "components/home/HomeHero.tsx", "components/home/HomeWhyNow.tsx", "components/home/HomeChange.tsx", "components/home/HomeEasy.tsx", "components/home/HomeFinalCta.tsx", "components/home/HomeFaq.tsx", "components/home/HomeDiagnosis.tsx"]) {
     assert.doesNotMatch(read(file), /AI公式推薦|主要5大AI|10秒で即時発行|主要AIが常時自動参照|常時優先巡回/, file);
   }
   assert.match(read("components/public-profile-actions.tsx"), /内容を確認して公開する/);

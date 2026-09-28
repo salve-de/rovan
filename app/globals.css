@@ -3510,10 +3510,6 @@ svg { width: 1.1em; height: 1.1em; }
 
 /* --- Benefits --- */
 .home-benefits { background: var(--home-surface); padding: var(--sp-8) 0; }
-.home-benefits-inner { display: flex; flex-direction: column; align-items: center; gap: var(--sp-4); }
-.home-benefits-head { display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
-.home-benefits-eyebrow { font-size: 15px; font-weight: 700; color: var(--brand); }
-.home-benefits-head h2 { font-size: clamp(26px, 3.6vw, 42px); line-height: 1.4; }
 .home-benefits-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-3); width: 100%; }
 .home-benefits-card { background: var(--bg); border-radius: 20px; padding: 28px 30px 32px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 8px 28px rgba(16, 43, 67, 0.06); }
 .home-benefits-card-img { width: 160px; height: 160px; align-self: center; }
@@ -3526,65 +3522,8 @@ svg { width: 1.1em; height: 1.1em; }
 .home-benefits-pricing b { font-size: 20px; }
 
 /* --- No site --- */
-.home-nosite { background: var(--bg); padding: var(--sp-8) 0; }
-.home-nosite-inner { display: flex; flex-direction: column; align-items: center; gap: var(--sp-4); }
-.home-nosite-head { display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center; }
-.home-nosite-eyebrow { font-size: 15px; font-weight: 700; color: var(--brand); }
-.home-nosite-head h2 { font-size: clamp(26px, 3.6vw, 42px); line-height: 1.4; }
-.home-nosite-head p { font-size: 18px; color: var(--text-muted); }
-.home-nosite-flow { display: grid; grid-template-columns: minmax(0, 300px) 56px minmax(0, 1fr) 56px minmax(0, 380px); align-items: center; width: 100%; gap: 12px; }
-.home-nosite-arrow { justify-self: center; }
-.home-nosite-inputs { display: flex; flex-direction: column; gap: 12px; }
-.home-nosite-inputs-label { font-size: 14px; font-weight: 700; color: var(--text-subtle); }
-.home-nosite-input-row { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; padding: 14px 16px; }
-.home-nosite-input-icon { color: var(--navy); flex-shrink: 0; }
-.home-nosite-input-text { display: flex; flex-direction: column; }
-.home-nosite-input-text span { font-size: 13px; color: var(--text-subtle); }
-.home-nosite-input-text strong { font-size: 16px; font-weight: 700; color: var(--text); }
-.home-nosite-page { display: flex; flex-direction: column; gap: 10px; }
-.home-nosite-page-label { font-size: 14px; font-weight: 700; color: var(--brand); }
-.home-nosite-answer { display: flex; flex-direction: column; gap: 10px; }
-.home-nosite-answer-label { font-size: 14px; font-weight: 700; color: var(--navy); }
-.home-nosite-answer-q { align-self: flex-end; background: #e8eef3; border-radius: 16px 16px 4px 16px; padding: 12px 16px; font-size: 15px; color: var(--text); }
-.home-nosite-answer-a { background: var(--bg); border: 2px solid var(--brand); border-radius: 16px 16px 16px 4px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
-.home-nosite-answer-a-label { font-size: 12px; color: var(--text-subtle); }
-.home-nosite-answer-a { font-size: 15px; color: var(--text); line-height: 1.7; }
-.home-nosite-answer-a b { color: var(--brand); }
-.home-nosite-answer-note { font-size: 12px; color: var(--text-subtle); }
 
 /* --- Steps --- */
-.home-steps { background: var(--home-surface); padding: var(--sp-8) 0; }
-.home-steps-inner { display: flex; flex-direction: column; align-items: center; gap: var(--sp-4); }
-.home-steps-head { display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
-.home-steps-eyebrow { font-size: 15px; font-weight: 700; color: var(--brand); }
-.home-steps-head h2 { font-size: clamp(26px, 3.6vw, 42px); line-height: 1.4; }
-.home-steps-head p { font-size: 18px; color: var(--text-muted); }
-.home-steps-grid { display: grid; grid-template-columns: 170px repeat(4, minmax(0, 1fr)); column-gap: 16px; row-gap: 14px; width: 100%; grid-template-areas: "corner h1 h2 h3 h4" "you y1 y2 y3 y4" "rovan r1 r2 r3 r4"; }
-.home-steps-corner { grid-area: corner; }
-.home-steps-phase-label { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700; color: var(--navy); }
-.home-steps-phase-label.is-brand { color: var(--brand); }
-.home-steps-phase-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--navy); flex-shrink: 0; }
-.home-steps-phase-label.is-brand .home-steps-phase-dot { background: var(--brand); }
-.home-steps-avatar { grid-area: you; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; background: var(--navy); border-radius: 16px; padding: 12px; }
-.home-steps-avatar img { width: 60px; height: 60px; background: var(--bg); border-radius: 50%; }
-.home-steps-avatar span { font-size: 17px; font-weight: 700; color: var(--bg); }
-.home-steps-avatar-rovan { grid-area: rovan; background: var(--brand); }
-.home-steps-avatar-mark { width: 52px; height: 52px; border-radius: 14px; background: var(--bg); position: relative; }
-.home-steps-avatar-mark::after { content: ""; position: absolute; inset: 13px; border-radius: 7px; background: var(--brand); }
-.home-steps-role-label { display: none; font-size: 12px; font-weight: 700; color: var(--text-subtle); }
-.home-steps-card { border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 8px; }
-.home-steps-card-you.is-solid { background: var(--bg); border: 2px solid var(--navy); }
-.home-steps-card-num { align-self: flex-start; width: 30px; height: 30px; border-radius: 50%; background: var(--navy); color: var(--bg); font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
-.home-steps-card-title { font-size: 18px; font-weight: 700; color: var(--navy); display: flex; align-items: center; gap: 8px; }
-.home-steps-card-body { font-size: 14px; line-height: 1.6; color: var(--text-muted); }
-.home-steps-card-you.is-dashed { border: 2px dashed var(--border-strong); align-items: center; justify-content: center; text-align: center; }
-.home-steps-card-placeholder { font-size: 15px; color: var(--text-subtle); line-height: 1.6; }
-.home-steps-card-rovan { background: var(--mint-panel); }
-.home-steps-card-rovan .home-steps-card-title { color: var(--brand); }
-.home-steps-card-rovan .home-steps-card-body { color: var(--text); }
-.home-steps-card-rovan.is-repeat { background: var(--brand); }
-.home-steps-card-rovan.is-repeat .home-steps-card-title, .home-steps-card-rovan.is-repeat .home-steps-card-body { color: var(--bg); }
-.home-steps-card-rovan.is-repeat svg { color: var(--bg); }
 
 /* --- FAQ --- */
 .home-faq { background: var(--bg); padding: var(--sp-8) 0; }
@@ -3636,7 +3575,6 @@ svg { width: 1.1em; height: 1.1em; }
 
 /* ==================== Responsive: small desktop (1025–1280px) ==================== */
 @media (min-width: 1025px) and (max-width: 1280px) {
-  .home-nosite-flow { grid-template-columns: minmax(0, 1fr) 32px minmax(0, 1.15fr) 32px minmax(0, 1.2fr); }
   .home-why-now-card { padding: 26px 24px 22px; }
   .home-why-now-result { font-size: 34px; }
   .home-change-compare { grid-template-columns: minmax(0, 1fr) 260px minmax(0, 1fr); gap: 20px; }
@@ -3655,11 +3593,9 @@ svg { width: 1.1em; height: 1.1em; }
   .home-change-compare { grid-template-columns: 1fr; }
   .home-change-steps { order: 2; }
   .home-change-report { flex-direction: column; align-items: flex-start; gap: 14px; }
-  .home-nosite-flow { grid-template-columns: 1fr; }
-  .home-nosite-arrow { transform: rotate(90deg); margin: 4px 0; }
   .home-diagnosis-row { grid-template-columns: 1fr; }
   /* 1列になった内容は読みやすい幅に抑えて中央へ */
-  .home-why-now-grid, .home-benefits-grid, .home-change-compare, .home-change-report, .home-nosite-flow, .home-diagnosis-rows, .home-benefits-pricing { max-width: 640px; margin-left: auto; margin-right: auto; }
+  .home-why-now-grid, .home-benefits-grid, .home-change-compare, .home-change-report, .home-diagnosis-rows, .home-benefits-pricing { max-width: 640px; margin-left: auto; margin-right: auto; }
   .home-benefits-card { display: grid; grid-template-columns: 120px minmax(0, 1fr); grid-template-areas: "img num" "img title" "img body"; column-gap: 24px; row-gap: 6px; align-items: start; }
   .home-benefits-card-img { grid-area: img; width: 120px; height: 120px; align-self: center; }
   .home-benefits-card-number { grid-area: num; font-size: 32px; }
@@ -3667,14 +3603,6 @@ svg { width: 1.1em; height: 1.1em; }
   .home-benefits-card p { grid-area: body; }
   .home-footer-grid { grid-template-columns: 1fr 1fr 1fr; }
   .home-footer-brand { grid-column: 1 / -1; }
-}
-
-@media (min-width: 641px) and (max-width: 1024px) {
-  .home-steps-grid { grid-template-columns: 110px repeat(4, minmax(0, 1fr)); column-gap: 10px; }
-  .home-steps-avatar img { width: 48px; height: 48px; }
-  .home-steps-card { padding: 14px; }
-  .home-steps-card-title { font-size: 16px; }
-  .home-steps-card-body, .home-steps-card-placeholder { font-size: 13px; }
 }
 
 /* ==================== Responsive: mobile (<=640px) ==================== */
@@ -3695,10 +3623,6 @@ svg { width: 1.1em; height: 1.1em; }
   .home-benefits-pricing-sep { display: none; }
   .home-change-report { align-items: flex-start; }
 
-  .home-steps-grid { grid-template-columns: 1fr; grid-template-areas: "h1" "y1" "r1" "h2" "y2" "r2" "h3" "y3" "r3" "h4" "y4" "r4"; }
-  .home-steps-corner, .home-steps-avatar { display: none; }
-  .home-steps-role-label { display: block; }
-
   .home-diagnosis-cta { padding: 22px 18px; }
   .home-diagnosis-cta-label { font-size: 17px; text-align: center; }
   .home-diagnosis-cta-note { text-align: center; }
@@ -3709,9 +3633,9 @@ svg { width: 1.1em; height: 1.1em; }
   .home-hero-lead-main { font-size: 17px; }
   .home-hero-lead-sub { font-size: 15px; }
   .home-hero-trust { gap: 8px 16px; font-size: 13px; }
-  .home-why-now, .home-change, .home-benefits, .home-nosite, .home-steps, .home-faq, .home-diagnosis { padding: var(--sp-6) 0; }
+  .home-why-now, .home-change, .home-benefits, .home-faq, .home-diagnosis { padding: var(--sp-6) 0; }
   .home-why-now-inner { gap: var(--sp-4); }
-  .home-why-now-head p, .home-nosite-head p, .home-steps-head p { font-size: 15px; }
+  .home-why-now-head p { font-size: 15px; }
   .home-why-now-bars { height: 140px; }
   .home-why-now-conclusion { font-size: 17px; }
   .home-change-head h2 { font-size: 22px; line-height: 1.5; }
@@ -3725,8 +3649,6 @@ svg { width: 1.1em; height: 1.1em; }
   .home-benefits-card h3 { grid-area: title; font-size: 19px; align-self: start; }
   .home-benefits-card p { grid-area: body; font-size: 15px; margin-top: 8px; }
   .home-benefits-pricing { text-align: center; padding: 16px; }
-
-  .home-steps-card-rovan.is-repeat .home-steps-role-label { color: var(--brand-pale); }
 
   .home-faq-card { padding: 20px; }
   .home-faq-q { font-size: 16px; }
@@ -4120,8 +4042,6 @@ svg { width: 1.1em; height: 1.1em; }
 .home-phone { align-self: center; width: min(280px, 100%); border-radius: 36px; background: var(--navy); padding: 10px; box-shadow: 0 24px 50px rgba(16, 43, 67, 0.22); }
 .home-phone-screen { border-radius: 28px; overflow: hidden; aspect-ratio: 9 / 17; background: var(--bg); }
 .home-phone-screen img { width: 100%; height: auto; display: block; }
-.home-nosite-page-note { align-self: center; font-size: 12px; color: var(--text-subtle); }
-.home-nosite-page { align-items: stretch; }
 /* ホーム: 実際の画面の切り抜き */
 .home-diagnosis-shot { margin: 0; }
 .home-diagnosis-shot img { display: block; width: 100%; height: auto; border-radius: 18px; border: 1px solid var(--border); box-shadow: 0 14px 34px rgba(16, 43, 67, 0.10); background: var(--bg); }
