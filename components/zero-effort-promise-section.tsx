@@ -43,7 +43,7 @@ export function ZeroEffortPromiseSection() {
                 letterSpacing: "0.05em",
               }}
             >
-              社長の作業ゼロ：完全放置（Zero Effort）の仕組み
+              社長の作業は、入力と初回の公開同意だけ
             </span>
           </div>
           <h2
@@ -56,7 +56,7 @@ export function ZeroEffortPromiseSection() {
               color: "#0f172a",
             }}
           >
-            URLまたは社名を入力するだけで、準備は完了。<br />
+            URLまたは社名の入力と、初回の公開同意だけ。<br />
             情報の整備と毎週の追跡を、すべてRovanに任せて本業へ。
           </h2>
           <p
@@ -71,7 +71,7 @@ export function ZeroEffortPromiseSection() {
             }}
           >
             ホームページの改修も、サーバーの設定も、面倒なブログ更新も一切不要です。<br />
-            <strong>専門知識や面倒なアンケート回答は不要。</strong> 公開情報からAI推薦データを自動構築し、初回確認だけで配備完了。
+            <strong>専門知識や面倒なアンケート回答は不要。</strong> 公開情報からAI推薦データを自動構築し、初回の公開同意だけで配備完了。以降の毎週の承認は不要です。
           </p>
         </div>
 
@@ -147,7 +147,7 @@ export function ZeroEffortPromiseSection() {
             </div>
             <p style={{ fontSize: "0.84rem", color: "#475569", lineHeight: 1.65, margin: 0 }}>
               既存の自社サイトは1文字も触る必要がありません。<br />
-              AIが1秒で検証できる確定仕様ページをRovan上に用意し、初回確認後にすぐ公開できます。
+              AIが読み取れる確定仕様ページをRovan上に用意し、内容を確認して公開に同意すればすぐ公開できます。
             </p>
           </div>
 
@@ -180,7 +180,7 @@ export function ZeroEffortPromiseSection() {
               </strong>
             </div>
             <p style={{ fontSize: "0.84rem", color: "#475569", lineHeight: 1.65, margin: 0 }}>
-              毎週同じ条件でAI回答の変化を自動追跡し、AIの回答傾向や自社情報の変化に合わせて掲載データを常に最適化。社長が毎週チェックや承認をする手間は一切ありません。
+              毎週同じ条件でAI回答の変化を自動追跡し、AIの回答傾向や自社情報の変化に合わせてRovan上の掲載データを調整します。社長が毎週チェックや承認をする手間は一切ありません。
             </p>
           </div>
         </div>

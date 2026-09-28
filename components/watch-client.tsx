@@ -173,7 +173,15 @@ function WatchViewClient({ sample, token }: { sample: boolean; token: string }) 
   }
 
   if (loading) return <div className="full-loading">AI推薦状況を読み込んでいます。</div>;
-  if (!watch || !change) return <main className="empty-page"><SiteHeader compact /><div className="shell empty-content"><h1>AI推薦状況の変化を表示できません。</h1><p>{error}</p><Link className="button button-primary" href="/">無料診断へ戻る</Link></div></main>;
+  if (!watch || !change) return <main className="empty-page"><SiteHeader compact /><div className="shell empty-content">
+    <h1>AI推薦状況の変化を表示できません。</h1>
+    <p>{error || "週次見守りを見るには、ログインまたは管理URLが必要です。"}</p>
+    <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "8px" }}>
+      <Link className="button button-primary" href="/login">ログインする</Link>
+      <Link className="button button-secondary" href="/manage">管理URLをお持ちの方はこちら</Link>
+    </div>
+    <p style={{ marginTop: "16px" }}><Link href="/">まだ診断がお済みでない方は、無料診断へ</Link></p>
+  </div></main>;
 
   const primaryLoss = watch.latest.lostPrompts[0];
   const stopped = ["expired", "cancelled", "past_due"].includes(watch.status);
@@ -396,6 +404,7 @@ function WatchViewClient({ sample, token }: { sample: boolean; token: string }) 
 
       <section className="watch-section shell" aria-label="AI顧客奪還シェア">
         <h2>AI顧客奪還シェア</h2>
+        <p style={{ color: "#64748b", fontSize: "0.85rem", margin: "-4px 0 8px" }}>毎週同じ50問をAIに聞き、自社が候補に入った割合です。</p>
         <p>固定50問で、自社が推薦候補に入った割合。実際の顧客数・市場シェアではありません。各AIの反復回答の過半数で候補入りと判定します。</p>
         {watch.northStar.status === "short-panel" ? <p>現在は{watch.latest.panel.promptCount}問の短いパネルです。有料プランの50問測定から北極星の記録を開始します。</p> : <div className="table-responsive"><table>
           <thead><tr><th scope="col">AI</th><th scope="col">候補入り／取得成功</th><th scope="col">シェア</th><th scope="col">未取得・反復不足</th><th scope="col">同条件の推移</th></tr></thead>
@@ -407,11 +416,11 @@ function WatchViewClient({ sample, token }: { sample: boolean; token: string }) 
       <ExecutiveReferralCard />
       {/* 今週の週次モニタリングタイムライン */}
       <section className="watch-section shell" style={{ marginBottom: "24px" }}>
-        <div style={{ background: "#ffffff", border: "1px solid var(--border-subtle, #e2e8f0)", borderRadius: "var(--radius-card, 10px)", padding: "24px 28px", boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04), 0 8px 24px -4px rgba(15, 23, 42, 0.05)" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px", borderBottom: "1px solid #e2e8f0", paddingBottom: "16px", marginBottom: "20px" }}>
+        <details open style={{ background: "#ffffff", border: "1px solid var(--border-subtle, #e2e8f0)", borderRadius: "var(--radius-card, 10px)", padding: "24px 28px", boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04), 0 8px 24px -4px rgba(15, 23, 42, 0.05)" }}>
+          <summary style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px", cursor: "pointer" }}>
             <div>
               <span style={{ fontSize: "0.72rem", fontWeight: 800, background: "#0f172a", color: "#ffffff", padding: "3px 8px", borderRadius: "4px", letterSpacing: "0.06em" }}>
-                THIS WEEK / 週次モニタリングレポート
+                週次モニタリングレポート
               </span>
               <h3 style={{ margin: "8px 0 0", fontSize: "1.2rem", color: "#0f172a", fontWeight: 800, letterSpacing: "-0.02em" }}>
                 今週の実行内容と、AI回答の変化
@@ -420,9 +429,9 @@ function WatchViewClient({ sample, token }: { sample: boolean; token: string }) 
             <span style={{ fontSize: "0.78rem", fontWeight: 700, color: "#16a34a", background: "#f0fdf4", border: "1px solid #bbf7d0", padding: "4px 10px", borderRadius: "6px" }}>
               ✓ 自社サイトの改修は不要
             </span>
-          </div>
+          </summary>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "18px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "18px", marginTop: "20px", paddingTop: "16px", borderTop: "1px solid #e2e8f0" }}>
             <div style={{ background: "#f8fafc", padding: "16px", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
               <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "#dc2626", textTransform: "uppercase", letterSpacing: "0.05em" }}>1. 競合のAI推薦状況</span>
               <strong style={{ display: "block", fontSize: "0.92rem", color: "#0f172a", margin: "6px 0 4px" }}>
@@ -457,16 +466,16 @@ function WatchViewClient({ sample, token }: { sample: boolean; token: string }) 
               </p>
             </div>
           </div>
-        </div>
+        </details>
       </section>
 
-      {/* 月次レポート総括（MONTHLY VALUE REPORT: 期間内の実測総括） */}
+      {/* 月次レポート総括 */}
       {watch.monthlyReport ? (<section className="watch-section shell" style={{ marginBottom: "36px" }}>
-        <div style={{ background: "#ffffff", border: "1px solid #cbd5e1", borderRadius: "12px", padding: "24px 28px", boxShadow: "0 2px 8px rgba(15,23,42,0.04)" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px", borderBottom: "1px solid #e2e8f0", paddingBottom: "16px", marginBottom: "20px" }}>
+        <details style={{ background: "#ffffff", border: "1px solid #cbd5e1", borderRadius: "12px", padding: "24px 28px", boxShadow: "0 2px 8px rgba(15,23,42,0.04)" }}>
+          <summary style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px", cursor: "pointer" }}>
             <div>
               <span style={{ fontSize: "0.72rem", fontWeight: 800, background: "#0f172a", color: "#ffffff", padding: "3px 8px", borderRadius: "4px", letterSpacing: "0.06em" }}>
-                MONTHLY VALUE REPORT / 月次レポート総括
+                月次レポート総括
               </span>
               <h3 style={{ margin: "8px 0 0", fontSize: "1.25rem", color: "#0f172a" }}>
                 期間内の情報補強とAI回答の変化
@@ -475,9 +484,9 @@ function WatchViewClient({ sample, token }: { sample: boolean; token: string }) 
             <span style={{ fontSize: "0.78rem", color: "#64748b" }}>
               対象期間：{watch.monthlyReport.period}（{sample ? "表示用の固定値" : "取得できた測定値"}）
             </span>
-          </div>
+          </summary>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "12px", marginBottom: "20px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "12px", marginTop: "20px", marginBottom: "20px", paddingTop: "16px", borderTop: "1px solid #e2e8f0" }}>
             <div style={{ background: "#f8fafc", padding: "14px", borderRadius: "8px", border: "1px solid #e2e8f0", textAlign: "center" }}>
               <span style={{ fontSize: "0.72rem", color: "#64748b" }}>AI観測回数</span>
               <strong style={{ display: "block", fontSize: "1.4rem", color: "#0f172a", marginTop: "4px" }}>
@@ -530,7 +539,7 @@ function WatchViewClient({ sample, token }: { sample: boolean; token: string }) 
               </ul>
             </div>
           </div>
-        </div>
+        </details>
       </section>) : null}
 
       {/* 週次推移ダッシュボード（リッチカード ＆ グラフ対比） */}
@@ -793,7 +802,7 @@ function WatchViewClient({ sample, token }: { sample: boolean; token: string }) 
               </article>
             ))}
           </div>
-        ) : <p role="status">未作成：公開前の変更案（Change Pack）はまだありません。</p>}
+        ) : <p role="status">未作成：公開前の変更案はまだありません。</p>}
       </section>
 
       {error ? <p className="floating-error" role="alert">{error}</p> : null}

@@ -35,8 +35,8 @@ export function BillingClient() {
     setMessage("");
     if (!token) return;
     fetch(`/api/watch?token=${encodeURIComponent(token)}`, { cache: "no-store", signal: controller.signal })
-      .then(async (response) => { const data = await response.json(); if (!response.ok) throw new Error(data.error || "Watchを取得できませんでした。"); if (!stale) setWatch(data); })
-      .catch((error) => { if (!stale) setMessage(error instanceof Error ? error.message : "Watchを取得できませんでした。"); });
+      .then(async (response) => { const data = await response.json(); if (!response.ok) throw new Error(data.error || "週次見守りの情報を取得できませんでした。"); if (!stale) setWatch(data); })
+      .catch((error) => { if (!stale) setMessage(error instanceof Error ? error.message : "週次見守りの情報を取得できませんでした。"); });
     return () => { stale = true; controller.abort(); };
   }, [token]);
 
@@ -73,8 +73,7 @@ export function BillingClient() {
             ログインが必要です
           </strong>
           <p style={{ margin: 0, color: "#64748b", fontSize: "0.82rem", lineHeight: 1.6 }}>
-            本画面はご契約者様専用の管理画面です。<br />
-            Googleアカウントまたはメールアドレスでログインしてアクセスしてください。
+            本画面はご契約者様専用の管理画面です。Googleアカウントまたはメールアドレスでログインしてください。
           </p>
           <div style={{ marginTop: "14px" }}>
             <Link href="/login" className="button button-dark" style={{ display: "inline-block", fontSize: "0.82rem", padding: "8px 16px", textDecoration: "none" }}>
@@ -84,19 +83,20 @@ export function BillingClient() {
         </div>
       )}
       <input type="hidden" value={token} disabled={busy} onChange={(event) => { setWatch(null); setToken(event.target.value); }} />
-      <button className="button button-dark" type="submit" disabled={busy || !token || !watch}>
-        {busy ? "準備中…" : watch ? <>契約・決済管理画面を開く <ArrowIcon /></> : "ログインリンクから開いてください"}
-      </button>
+      {watch ? (
+        <button className="button button-dark" type="submit" disabled={busy || !token}>
+          {busy ? "準備中…" : <>契約・決済管理画面を開く <ArrowIcon /></>}
+        </button>
+      ) : null}
       {message ? <p className="form-error" role="status">{message}</p> : null}
 
       <div style={{ marginTop: "24px", padding: "16px", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "6px", textAlign: "left" }}>
         <span style={{ display: "block", fontSize: "0.74rem", fontWeight: 700, color: "#475569", marginBottom: "8px", letterSpacing: "0.02em" }}>
-          ご解約・契約終了時のデータ取り扱いについて
+          ご解約時に何が起きるか
         </span>
         <ul style={{ margin: 0, paddingLeft: "18px", fontSize: "0.76rem", color: "#64748b", lineHeight: 1.6 }}>
-          <li><strong>公開ページの停止：</strong>解約に伴い、AI向け公開ページは非公開となり、毎週の自動調整が停止します。</li>
-          <li><strong>30日間のデータ保持：</strong>解約後30日間は設定および過去ログが安全に保持され、期間内であればいつでも即座に再開可能です。</li>
-          <li><strong>期限後の完全消去：</strong>解約から30日を経過すると蓄積データは完全に消去され、再契約時は初期状態からの再測定となります。</li>
+          <li><strong>公開ページの自動更新：</strong>解約すると、AI推薦データ（公開ページ）の毎週の自動更新と掲載期限の延長が止まります。すでに設定されている掲載期限までは表示され、期限が来ると自動的に非公開になります。</li>
+          <li><strong>保存データ：</strong>それまでの測定履歴・設定はRovan上に保存されたままです。削除をご希望の場合は、<Link href="/data-rights">データ管理画面</Link>からいつでも申請できます。</li>
         </ul>
       </div>
 

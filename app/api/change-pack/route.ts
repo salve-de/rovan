@@ -2,6 +2,13 @@ import { generateChangePack } from "@/lib/change-pack";
 import { crawlCompanySite } from "@/lib/crawler";
 import { getWatch, updateWatch } from "@/lib/storage";
 import { toPublicChangePack } from "@/lib/public-dto";
+import { safeErrorMessage } from "@/lib/safe-error";
+
+// Only our own crawler validation message is safe to show verbatim; anything
+// else (AI provider error text, HTTP status codes, storage errors) is internal.
+const SAFE_CHANGE_PACK_MESSAGES = [
+  "公開ページを取得できませんでした。robots.txt、URL、サイト構成を確認してください。",
+];
 
 export const runtime = "nodejs";
 
@@ -33,6 +40,7 @@ export async function POST(request: Request) {
     if (!updated) return Response.json({ error: "Change Packを保存できませんでした。" }, { status: 500 });
     return Response.json({ changePack: updated.changePack ? toPublicChangePack(updated.changePack) : null }, { headers: { "cache-control": "private, no-store", "referrer-policy": "no-referrer" } });
   } catch (error) {
-    return Response.json({ error: error instanceof Error ? error.message : "Change Packを生成できませんでした。" }, { status: 400 });
+    console.error("Change Pack generation failed:", error);
+    return Response.json({ error: safeErrorMessage(error, "Change Packを生成できませんでした。", SAFE_CHANGE_PACK_MESSAGES) }, { status: 400 });
   }
 }

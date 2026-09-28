@@ -32,7 +32,11 @@ export const env = {
   watchResumeMinutes: Math.min(60, Math.max(5, integer("WATCH_RESUME_MINUTES", 15))),
   googleClientId: text("GOOGLE_CLIENT_ID"),
   googleClientSecret: text("GOOGLE_CLIENT_SECRET"),
-  authSecret: text("AUTH_SECRET", text("RATE_LIMIT_SALT", "rovan-auth-secret-fallback")),
+  // Intentionally no hardcoded fallback here: a missing AUTH_SECRET in
+  // production must make session signing fail closed, not sign with a
+  // guessable default. lib/auth.ts decides the safe fallback per environment
+  // at call time. See lib/auth.ts#getSecretKey.
+  authSecret: text("AUTH_SECRET"),
 };
 
 export function providerReadiness() {

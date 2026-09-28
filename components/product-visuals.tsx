@@ -194,8 +194,8 @@ export function ProductOutputPreview() {
           <div className="deliv-features-list">
             <span className="deliv-features-heading">レポートで確認すること</span>
             <ul className="deliv-check-items">
-              <li>測定対象にしたAIの回答と参照元</li>
-              <li>自社が推薦されず、ライバルが推薦された質問の分析</li>
+              <li>買い手が聞きそうな質問を設計し、複数のAIで実際に測定した回答と参照元</li>
+              <li>自社が推薦されず、ライバルが推薦された質問の分析（不足情報の特定）</li>
               <li>AIに選ばれるための自社専用の改善方針</li>
             </ul>
           </div>
@@ -208,7 +208,7 @@ export function ProductOutputPreview() {
             <ArrowIcon />
           </Link>
           <div className="deliv-guarantee-note">
-            ✓ URL・社名入力 • ✓ 無料診断 • ✓ 公開は確認後
+            ✓ URL・社名入力 • ✓ 無料診断 • ✓ 公開は同意後
           </div>
         </div>
       </div>
@@ -225,7 +225,7 @@ export function ProductOutputPreview() {
           </div>
           <h4 className="deliv-card-title">自社専用 AI推薦データ</h4>
           <p className="deliv-card-desc">
-            会社の強み・対応条件・参照元をまとめた、AI向けの公開データです。御社の強みを、AIが参照できる構造化データとして公開。既存ホームページの改修は不要です。公開は内容を確認してから行えます。
+            会社の強み・対応条件・参照元をまとめた、Rovan上の公開データです。御社の強みを、AIが参照できる構造化データと、そのまま使える文案として整理します。既存の自社サイトやCMSを自動で書き換えることはありません。公開は内容を確認・同意してから行えます。
           </p>
         </div>
 
@@ -308,17 +308,17 @@ export function ProductProcessVisual() {
     },
     {
       label: "03",
-      userTime: "承認",
-      userAction: "下書きを確認して公開",
+      userTime: "公開同意",
+      userAction: "内容を確認し、公開に同意",
       title: "AI推薦データを配備",
-      systemAction: "確認できた事実だけを機械可読形式にまとめ、公開前に内容を確認できます。",
-      tag: "社長の作業",
+      systemAction: "確認できた事実だけを機械可読形式にまとめ、そのまま使える文案として整理します。",
+      tag: "社長の作業（最初の1回だけ）",
       tagSystem: "裏側の自動処理",
     },
     {
       label: "04",
-      userTime: "継続",
-      userAction: "必要な時だけ結果を確認",
+      userTime: "以降は自動",
+      userAction: "毎週の承認は不要",
       title: "毎週のAI回答を自動見守り",
       systemAction: "同じ質問パネルで回答の変化を確認し、公開情報の見直し候補を記録します。",
       tag: "社長の作業",

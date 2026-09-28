@@ -6,7 +6,6 @@ import { SiteHeader } from "@/components/site-header";
 import { HeroChatDiagnosticCard, ProductOutputPreview, ProductProcessVisual, WatchTrendVisual } from "@/components/product-visuals";
 import { VerifiedCompaniesGallery } from "@/components/verified-companies-gallery";
 import { GoogleDeclineProblemSection } from "@/components/google-decline-problem-section";
-import { ZeroEffortPromiseSection } from "@/components/zero-effort-promise-section";
 import { FREE_PANEL_SIZE } from "@/lib/prompt-panels";
 import { WATCH_MONTHLY_PRICE_LABEL } from "@/lib/pricing";
 
@@ -28,8 +27,8 @@ export default function HomePage() {
                 <em>あなたの会社ではなく、大手ばかり紹介されていませんか？</em>
               </h1>
               <p className="landing-hero-lead">
-                ホームページの改修はもちろん、サイトをお持ちでない場合も新たな作成は不要です。あなた側の作業は一切ありません。<br />
-                社名や店名を入力するだけで、ChatGPTなどのAIが御社をおすすめするための公開ページを開設し、毎週の推薦状況を自動で追跡します。
+                ホームページの改修はもちろん、サイトをお持ちでない場合も新たな作成は不要です。お願いするのは、社名やURLの入力と、公開前の内容確認だけ。<br />
+                ChatGPTなどのAIが御社をおすすめするための公開ページを整え、毎週の推薦状況を自動で追跡します。
               </p>
 
             </div>
@@ -62,6 +61,11 @@ export default function HomePage() {
                 完全無料（自動課金なし）
               </span>
             </div>
+
+            {/* 入力後の流れ（誇張のない事実ベースの手順） */}
+            <p className="hero-next-steps" style={{ fontSize: "0.8rem", color: "#64748b", marginTop: "10px" }}>
+              入力後は、公開ページの確認 → AIへの質問 → 結果の整理の順に自動で進みます。
+            </p>
 
             {/* 調査対象AI（モデル番号なし・主要サービス名を堂々提示） */}
             <div className="hero-ai-targets-clean" aria-label="調査対象AI">
@@ -102,26 +106,35 @@ export default function HomePage() {
       <GoogleDeclineProblemSection />
 
       {/* ================================================================= */}
-      {/* 3. このサービスで手に入るもの（社名を入れるだけで届く「2大成果物」） */}
+      {/* 3. 何が手に入るか・どう進むか（2大成果物＋4ステップを1セクションに統合） */}
       {/* ================================================================= */}
       <section className="landing-deliverables-section shell" style={{ marginTop: "48px", marginBottom: "48px" }}>
         <div className="section-head-center" style={{ marginBottom: "32px" }}>
           <span className="pill-badge">手に入る2つの確定成果物</span>
           <h2>社名を入力するだけで、<br />手元に届く「2大成果物」</h2>
           <p>
-            今のホームページの改修も、専門知識も一切不要。<br />
-            「推薦の現状がわかる診断レポート」と「御社の強みをAIに伝える推薦データ」。ページは初回確認後に公開できます。
+            今のホームページの改修も、専門知識も一切不要です。<br />
+            買い手が聞きそうな質問を設計し、複数のAIで実際に回答を確認。競合と比べて足りない情報を特定し、「推薦の現状がわかる診断レポート」と「そのまま使える完成文案付きの推薦データ」にまとめます。ページは初回の公開同意後に公開できます。
+          </p>
+          <p style={{ fontSize: "0.78rem", color: "#64748b", marginTop: "10px" }}>
+            診断（現状把握）→ 打ち手（完成文案の推薦データ）→ 毎週の再測定、の順で自動的に進みます。
           </p>
         </div>
 
         {/* 左右2大成果物プレミアムショーケース */}
-        <div style={{ marginBottom: "32px" }}>
+        <div style={{ marginBottom: "40px" }}>
           <ProductOutputPreview />
         </div>
 
+        {/* 進み方（4ステップ） */}
+        <div className="section-head-center" style={{ marginBottom: "24px" }}>
+          <h3 style={{ fontSize: "1.15rem", fontWeight: 800, color: "#0f172a", margin: 0 }}>どう進むか：4ステップ</h3>
+        </div>
+        <ProductProcessVisual />
+
         {/* 法的免責・客観性保証の注記 */}
-        <p style={{ textAlign: "center", fontSize: "0.72rem", color: "#64748b", margin: "0 auto", maxWidth: "780px", lineHeight: 1.6 }}>
-          ※ AI回答は質問や測定時点で変わります。変化は同じ条件で比較します。
+        <p style={{ textAlign: "center", fontSize: "0.72rem", color: "#64748b", margin: "24px auto 0", maxWidth: "780px", lineHeight: 1.6 }}>
+          ※ AI回答は質問や測定時点で変わります。変化は同じ条件で比較します。社長が行うのは、入力と公開前の内容確認だけです。
         </p>
       </section>
 
@@ -129,16 +142,6 @@ export default function HomePage() {
       {/* 4. ウチの業種だとどうなる？（主要業種シミュレーション） */}
       {/* ================================================================= */}
       <VerifiedCompaniesGallery />
-
-      {/* ================================================================= */}
-      {/* 5. なぜ社長は何もしなくていいのか？（完全放置の理由と4ステップ） */}
-      {/* ================================================================= */}
-      <section className="landing-architecture-section shell" style={{ marginTop: "48px", marginBottom: "48px" }}>
-        <ZeroEffortPromiseSection />
-        <div style={{ marginTop: "24px" }}>
-          <ProductProcessVisual />
-        </div>
-      </section>
 
       {/* ================================================================= */}
       {/* 6. 継続的な安心と明朗価格（「これなら払うわ」の安心アンカー） */}

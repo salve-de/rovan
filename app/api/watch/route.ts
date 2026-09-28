@@ -2,9 +2,14 @@ import { createWatch, getScan, getWatch, updateWatch, getPublishedProfileForScan
 import { toPublicWatch, toPublicWatchMeasurementRun } from "@/lib/public-dto";
 import { sendWatchStarted } from "@/lib/watch-email";
 import { getActiveWatchRun } from "@/lib/watch-runs";
+import { safeErrorMessage } from "@/lib/safe-error";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+// Only our own validation message is safe to show verbatim; storage/provider
+// errors raised deeper in createWatch/updateWatch must not leak to the client.
+const SAFE_WATCH_MESSAGES = ["有効な会社メールを入力してください。"];
 
 function normalizeEmail(value: string) {
   const email = value.trim().toLowerCase().slice(0, 254);
@@ -25,7 +30,8 @@ export async function POST(request: Request) {
     const delivery = email ? await sendWatchStarted(watch) : { sent: false };
     return Response.json({ token: watch.token, watchUrl: `/watch?token=${encodeURIComponent(watch.token)}`, emailSent: delivery.sent }, { headers: { "cache-control": "no-store", "referrer-policy": "no-referrer" } });
   } catch (error) {
-    return Response.json({ error: error instanceof Error ? error.message : "Watchを開始できませんでした。" }, { status: 400 });
+    console.error("Watch creation failed:", error);
+    return Response.json({ error: safeErrorMessage(error, "Watchを開始できませんでした。", SAFE_WATCH_MESSAGES) }, { status: 400 });
   }
 }
 
@@ -38,7 +44,8 @@ export async function PATCH(request: Request) {
     if (!updated) return Response.json({ error: "Watchが見つかりません。" }, { status: 404 });
     return Response.json({ ok: true, email: updated.email }, { headers: { "cache-control": "no-store" } });
   } catch (error) {
-    return Response.json({ error: error instanceof Error ? error.message : "通知先メールの設定に失敗しました。" }, { status: 400 });
+    console.error("Watch email update failed:", error);
+    return Response.json({ error: safeErrorMessage(error, "通知先メールの設定に失敗しました。", SAFE_WATCH_MESSAGES) }, { status: 400 });
   }
 }
 

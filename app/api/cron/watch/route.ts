@@ -26,9 +26,10 @@ export async function GET(request: Request) {
       const result = await processWatchMeasurement(watch);
       results.push({ token: watch.token, ...result });
     } catch (error) {
+      console.error(`Watch measurement failed for ${watch.token}:`, error);
       const retryAt = new Date(Date.now() + 60 * 60_000).toISOString();
       await updateWatch(watch.token, { nextRunAt: retryAt });
-      results.push({ token: watch.token, status: "failed", retryAt, error: error instanceof Error ? error.message : String(error) });
+      results.push({ token: watch.token, status: "failed", retryAt, error: "measurement_failed" });
     }
   }
 

@@ -39,6 +39,13 @@ function displayInput(value: string) {
   return value.length > 72 ? `${value.slice(0, 72)}…` : value;
 }
 
+// The scan and resolve APIs return operator-facing messages (e.g. "AI接続を準備中です")
+// when a required credential or connection isn't ready yet. Users should see a plain
+// "please try again later" message instead of that internal wording.
+function isServiceUnavailableError(message: string) {
+  return /準備中/.test(message);
+}
+
 export function ScanProgress() {
   const router = useRouter();
   const params = useSearchParams();
@@ -51,7 +58,7 @@ export function ScanProgress() {
   const directUrl = useMemo(() => isUrlInput(rawInput) ? normalize(rawInput) : extraUrl && isUrlInput(extraUrl) ? normalize(extraUrl) : "", [extraUrl, rawInput]);
   const controller = useRef<AbortController | null>(null);
   const resolvedInput = useRef("");
-  const [phase, setPhase] = useState<"resolving" | "choose" | "scanning" | "failed" | "no_site" | "social_site" | "product_site" | "direct_preview">("resolving");
+  const [phase, setPhase] = useState<"resolving" | "choose" | "scanning" | "failed" | "no_input" | "no_site" | "social_site" | "product_site" | "direct_preview">("resolving");
   const [candidates, setCandidates] = useState<InputResolutionCandidate[]>([]);
   const [selectedUrl, setSelectedUrl] = useState("");
   const [stage, setStage] = useState<ScanStage>("created");
@@ -183,8 +190,10 @@ export function ScanProgress() {
   useEffect(() => {
     controller.current?.abort();
     if (!rawInput) {
-      setPhase("failed");
-      setError("会社名・商品名・サービス名・URLがありません。");
+      // No diagnosis target was given — send the user back to the input form
+      // instead of showing a dead-end error screen.
+      router.replace("/");
+      setPhase("no_input");
       return () => undefined;
     }
     if (socialInfo.isSocial) {
@@ -240,13 +249,27 @@ export function ScanProgress() {
     }
     void resolve();
     return () => abort.abort();
-  }, [candidates.length, directUrl, inputKind, rawInput, socialInfo.isSocial, startScan]);
+  }, [candidates.length, directUrl, inputKind, rawInput, router, socialInfo.isSocial, startScan]);
 
   const targetHost = hostOf(selectedUrl || directUrl);
   const isDirectTarget = isUrlInput(rawInput);
   const hasInput = Boolean(rawInput);
   const activeIndex = steps.findIndex((item) => item.stage === stage);
   const completedCount = stage === "complete" ? steps.length : Math.max(0, activeIndex);
+
+  if (phase === "no_input") {
+    return <main className="scan-page">
+      <SiteHeader compact />
+      <section className="scan-stage shell scan-resolve-stage">
+        <div className="scan-stage-main scan-resolve-main">
+          <p className="overline">診断先が未入力です</p>
+          <h1>診断する会社名・店舗名・サービス名またはURLを入力してください。</h1>
+          <p className="scan-message">ホーム画面に移動します。移動しない場合は下のボタンからお進みください。</p>
+          <button className="button button-primary scan-resolve-start" type="button" onClick={() => router.push("/")}>ホームへ移動する <ArrowIcon /></button>
+        </div>
+      </section>
+    </main>;
+  }
 
   if (phase === "social_site" || phase === "product_site" || phase === "no_site" || phase === "direct_preview") {
     const isSocial = phase === "social_site";

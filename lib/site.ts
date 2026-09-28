@@ -35,4 +35,5 @@ export const privateRoutes = [
   "/data-rights",
   "/manage",
   "/profile/manage",
+  "/login",
 ] as const;

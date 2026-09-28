@@ -5,8 +5,20 @@ export const SESSION_COOKIE_NAME = "rovan_session";
 const SESSION_TTL_SECONDS = 30 * 24 * 60 * 60; // 30 days
 const LOGIN_LINK_TTL_SECONDS = 15 * 60; // 15 minutes
 
+/**
+ * Production must never sign or verify session/login tokens with a
+ * hardcoded fallback secret — that would let anyone forge a session. If
+ * AUTH_SECRET is missing in production, fail closed (login/verification
+ * throws) instead of silently signing with a guessable value. This is
+ * evaluated per call, not at module load, so a missing AUTH_SECRET does not
+ * break the build — it only breaks login, which is the safe direction.
+ */
 function getSecretKey(): string {
-  return env.authSecret || env.rateLimitSalt || "rovan-secret-fallback";
+  if (env.authSecret) return env.authSecret;
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("AUTH_SECRET が設定されていないため、ログイン機能を安全に提供できません。");
+  }
+  return env.rateLimitSalt || "rovan-dev-only-insecure-secret";
 }
 
 function base64UrlEncode(str: string): string {
