@@ -11,11 +11,12 @@ export function SiteFooter({ watchToken = "" }: { watchToken?: string }) {
         </div>
         <nav aria-label="製品">
           <strong>製品</strong>
-          <Link href="/result?sample=1">結果の例</Link>
-          <Link href="/watch?sample=1">推薦の変化の見本</Link>
+          <Link href="/result?sample=1">診断レポートの見本</Link>
+          <Link href="/ai/company/aoba-souzoku?sample=1">AI推薦データの見本</Link>
+          <Link href="/watch?sample=1">週次見守りの見本（推薦の変化）</Link>
           <Link href="/login">ログイン</Link>
           <Link href="/manage">管理画面を開く</Link>
-          <Link href="/pricing">料金</Link>
+          <Link href="/pricing">料金プラン</Link>
           <Link href="/methodology">調べ方</Link>
         </nav>
         <nav aria-label="サポート">

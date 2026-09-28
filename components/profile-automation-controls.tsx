@@ -51,7 +51,7 @@ export function ProfileAutomationControls({ scanId, watchToken, sample = false }
     <p>会社の強み・対応条件・参照元をまとめた、AI向けの公開データです。Rovanの公開情報参照ページであり、AI事業者による認定・登録を示すものではありません。</p>
     <p>一度許可すれば、有効な有料Watchの週次処理で、同じサイトの料金・対応地域・専門分野などの短い原文を出典付きで追加・更新します。会社紹介文や顧客サイトは書き換えません。掲載維持も許可され、有料契約中は週次処理で掲載期限を更新します。</p>
     {!sample ? <a href={profileManagementHref({ watchToken })} referrerPolicy="no-referrer">公開ページの管理画面を開く</a> : null}
-    {sample ? <p>見本です。実際の自動更新・公開操作は行われません。</p> : !management ? <p>保存した公開ページの管理リンクから、このWatchの管理リンクを指定して紐付けてください。紐付け後は新しいタブでも管理できます。</p> : <>
+    {sample ? <p>見本です。実際の自動更新・公開操作は行われません。</p> : !management ? <p>保存した公開ページの管理リンクから、この週次見守りの管理リンクを指定して紐付けてください。紐付け後は新しいタブでも管理できます。</p> : <>
       <p role="status">自動更新：{state ? state.enabled ? "許可済み" : "停止中" : "確認中"}{state?.lastUpdatedAt ? `／直近の反映：${new Date(state.lastUpdatedAt).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })}（${state.changedFactCount}件の差分）` : ""}</p>
       <button type="button" className="button button-primary" disabled={busy || !state} onClick={() => void operate(state?.enabled ? "disable" : "enable")}>{state?.enabled ? "自動更新を停止する" : "参照元の記載の自動更新を許可する"}</button>
       <p>内容の自動更新を停止しても、許可済みの掲載維持は継続します。掲載維持の停止・公開停止は管理画面で行えます。</p>

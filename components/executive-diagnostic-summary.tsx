@@ -39,13 +39,13 @@ export function ExecutiveDiagnosticSummary({
       >
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px", marginBottom: "18px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <span style={{ background: "var(--bg-surface, #f1f5f9)", color: "var(--navy, #0f172a)", fontFamily: "var(--font-mono, monospace)", fontSize: "0.72rem", fontWeight: 800, padding: "3px 10px", borderRadius: "4px", border: "1px solid var(--border-subtle, #e2e8f0)", letterSpacing: "0.06em", textTransform: "uppercase" }}>
-              Measurement Summary / 測定要約
+            <span style={{ background: "var(--bg-surface, #f1f5f9)", color: "var(--navy, #0f172a)", fontSize: "0.72rem", fontWeight: 800, padding: "3px 10px", borderRadius: "4px", border: "1px solid var(--border-subtle, #e2e8f0)", letterSpacing: "0.04em" }}>
+              測定結果の要約
             </span>
             <span style={{ color: "var(--text-muted, #64748b)", fontSize: "0.82rem", fontWeight: 600 }}>AI推薦の獲得に向けた現状診断</span>
           </div>
-          <div style={{ fontSize: "0.76rem", color: "var(--text-secondary, #475569)", background: "var(--bg-surface, #f8fafc)", border: "1px solid var(--border-subtle, #e2e8f0)", padding: "4px 12px", borderRadius: "6px", fontFamily: "var(--font-mono, monospace)" }}>
-            TARGET: <strong style={{ color: "var(--navy, #0f172a)" }}>{brandName}</strong>
+          <div style={{ fontSize: "0.76rem", color: "var(--text-secondary, #475569)", background: "var(--bg-surface, #f8fafc)", border: "1px solid var(--border-subtle, #e2e8f0)", padding: "4px 12px", borderRadius: "6px" }}>
+            対象: <strong style={{ color: "var(--navy, #0f172a)" }}>{brandName}</strong>
           </div>
         </div>
 
@@ -61,9 +61,9 @@ export function ExecutiveDiagnosticSummary({
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "16px", marginBottom: "24px" }}>
           <div className="shadow-ambient-sm" style={{ background: "var(--bg-surface, #f8fafc)", border: "1px solid var(--border-subtle, #e2e8f0)", borderRadius: "10px", padding: "22px", display: "flex", flexDirection: "column", gap: "10px" }}>
-            <strong style={{ fontSize: "0.98rem", color: "var(--navy, #0f172a)", lineHeight: 1.4 }}>目指す変化：AI顧客奪還シェア</strong>
+            <strong style={{ fontSize: "0.98rem", color: "var(--navy, #0f172a)", lineHeight: 1.4 }}>次に確認すること</strong>
             <p style={{ fontSize: "0.85rem", color: "var(--text-secondary, #475569)", lineHeight: 1.7, margin: 0 }}>
-              固定50問で、自社が推薦候補に入った質問の割合をAI別に追います。全問取得時の分母は50、欠損時は取得成功した質問数です。無料の短いパネルとは区別し、前後比較は両時点で条件が揃う質問に限定します。実際の顧客シェアではありません。
+              週次見守りに登録すると、毎週同じ質問で自社が候補に入ったかどうかの推移を追えます。
             </p>
           </div>
           <div className="shadow-ambient-sm" style={{ background: "var(--bg-surface, #f8fafc)", border: "1px solid var(--border-subtle, #e2e8f0)", borderRadius: "10px", padding: "22px", display: "flex", flexDirection: "column", gap: "10px" }}>
@@ -74,27 +74,13 @@ export function ExecutiveDiagnosticSummary({
           </div>
         </div>
 
-        <div className="shadow-ambient-sm" style={{ background: "var(--bg-base, #ffffff)", border: "1.5px solid var(--navy, #0f172a)", borderRadius: "10px", padding: "24px 26px", marginBottom: "26px", boxShadow: "0 4px 12px rgba(15, 23, 42, 0.05)" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "8px", marginBottom: "10px" }}>
-            <strong style={{ fontSize: "1.05rem", color: "var(--navy, #0f172a)", letterSpacing: "-0.01em" }}>自社サイト改修ゼロで、AI推薦データを配備</strong>
-            <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--text-secondary, #475569)", fontFamily: "var(--font-mono, monospace)", background: "var(--bg-surface, #f1f5f9)", border: "1px solid var(--border-subtle, #e2e8f0)", padding: "3px 10px", borderRadius: "4px" }}>確認・承認が必要</span>
-          </div>
-          <p style={{ fontSize: "0.88rem", color: "var(--text-secondary, #475569)", lineHeight: 1.75, margin: "0 0 16px" }}>
-            会社の強み・対応条件・参照元をまとめた、AI向けの公開データを作成します。初回に内容を確認して公開します。自社サイトの改修や、一から文章を作る作業は不要です。
-          </p>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", fontSize: "0.78rem" }}>
-            {["URLまたは社名の入力", "参照元リンクを保持", "未確認の情報は推測しない", "公開後に同じ条件で再測定"].map((label) => <span key={label} style={{ background: "var(--bg-surface, #f8fafc)", border: "1px solid var(--border-subtle, #e2e8f0)", padding: "4px 10px", borderRadius: "6px", color: "var(--text-primary, #1e293b)", fontWeight: 600 }}>✓ {label}</span>)}
-          </div>
-        </div>
-
         <div id="executive-summary-comparison">
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "14px" }}>
             <strong style={{ fontSize: "0.95rem", color: "var(--navy, #0f172a)" }}>公開情報整理の前後で変わる作業</strong>
-            <span style={{ fontSize: "0.74rem", color: "var(--text-muted, #64748b)", fontFamily: "var(--font-mono, monospace)" }}>WORKFLOW</span>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "14px" }}>
             <div className="shadow-ambient-sm" style={{ background: "#fafafa", border: "1px solid var(--border-subtle, #e2e8f0)", borderRadius: "10px", padding: "20px" }}>
-              <span style={{ color: "#dc2626", fontWeight: 800, fontSize: "0.78rem", fontFamily: "var(--font-mono, monospace)", background: "#fef2f2", border: "1px solid #fee2e2", padding: "2px 8px", borderRadius: "4px" }}>BEFORE / 整理前</span>
+              <span style={{ color: "#dc2626", fontWeight: 800, fontSize: "0.78rem", background: "#fef2f2", border: "1px solid #fee2e2", padding: "2px 8px", borderRadius: "4px" }}>整理前</span>
               <ul style={{ margin: "12px 0 0", paddingLeft: "18px", fontSize: "0.84rem", color: "var(--text-secondary, #475569)", lineHeight: 1.7 }}>
                 <li>名称・分野・条件が複数ページに分かれている</li>
                 <li>どの情報を参照したかをたどりにくい</li>
@@ -102,7 +88,7 @@ export function ExecutiveDiagnosticSummary({
               </ul>
             </div>
             <div className="shadow-ambient-sm" style={{ background: "var(--bg-base, #ffffff)", border: "1px solid #86efac", borderRadius: "10px", padding: "20px", boxShadow: "0 2px 8px rgba(34, 197, 94, 0.08)" }}>
-              <span style={{ color: "#16a34a", fontWeight: 800, fontSize: "0.78rem", fontFamily: "var(--font-mono, monospace)", background: "#f0fdf4", border: "1px solid #bbf7d0", padding: "2px 8px", borderRadius: "4px" }}>AFTER / 整理後</span>
+              <span style={{ color: "#16a34a", fontWeight: 800, fontSize: "0.78rem", background: "#f0fdf4", border: "1px solid #bbf7d0", padding: "2px 8px", borderRadius: "4px" }}>整理後</span>
               <ul style={{ margin: "12px 0 0", paddingLeft: "18px", fontSize: "0.84rem", color: "var(--text-primary, #1e293b)", lineHeight: 1.7 }}>
                 <li>確認できた事実を参照元付きで一つに整理</li>
                 <li>未確認の料金・資格・実績などは追加しない</li>

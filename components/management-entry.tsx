@@ -16,8 +16,8 @@ export function ManagementEntry() {
     router.push(destination);
   }
   return <form onSubmit={open} className="management-entry">
-    <label htmlFor="management-url">保存した管理URL</label>
-    <input id="management-url" required type="text" autoComplete="off" spellCheck={false} value={value} onChange={event => setValue(event.target.value)} placeholder="診断結果・見守り・公開ページ管理のURL" style={{ width: "100%", padding: "12px", margin: "12px 0" }} />
+    <label htmlFor="management-url">診断後に表示・メールで届いた「管理用リンク」</label>
+    <input id="management-url" required type="text" autoComplete="off" spellCheck={false} value={value} onChange={event => setValue(event.target.value)} placeholder="https://rovan.jp/watch?token=... など" style={{ width: "100%", padding: "12px", margin: "12px 0" }} />
     <button className="button button-primary" type="submit">自分の管理画面を開く</button>
     {error ? <p role="alert" className="form-error">{error}</p> : null}
     <div style={{ marginTop: "20px", paddingTop: "16px", borderTop: "1px solid #e2e8f0", fontSize: "0.82rem" }}>

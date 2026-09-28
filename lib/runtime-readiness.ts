@@ -5,9 +5,10 @@ export function isProductionRuntime(source: Configuration = process.env) {
 }
 
 export function configurationFailures(source: Configuration = process.env) {
-  const required = ["OPENAI_API_KEY", "SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY", "RATE_LIMIT_SALT", "NEXT_PUBLIC_SITE_URL"];
+  const required = ["OPENAI_API_KEY", "SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY", "RATE_LIMIT_SALT", "NEXT_PUBLIC_SITE_URL", "AUTH_SECRET"];
   const failures = required.filter((key) => !source[key]?.trim());
   if (source.RATE_LIMIT_SALT && (source.RATE_LIMIT_SALT === "development-only" || source.RATE_LIMIT_SALT.length < 32)) failures.push("RATE_LIMIT_SALT:too-short");
+  if (source.AUTH_SECRET && source.AUTH_SECRET.length < 32) failures.push("AUTH_SECRET:too-short");
   if (source.NEXT_PUBLIC_SITE_URL) {
     try {
       const url = new URL(source.NEXT_PUBLIC_SITE_URL);

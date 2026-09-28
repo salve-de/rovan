@@ -42,10 +42,10 @@ function AiReadableContent({ sample, token, url }: { sample: boolean; token: str
       .then(async (response) => {
         const data = await response.json() as WatchRecord & { error?: string };
         if (controller.signal.aborted) return;
-        if (!response.ok) throw new Error(data.error || "Watchを取得できませんでした。");
+        if (!response.ok) throw new Error(data.error || "週次見守りの情報を取得できませんでした。");
         setWatch(data);
       })
-      .catch((caught) => { if (!controller.signal.aborted) setError(caught instanceof Error ? caught.message : "Watchを取得できませんでした。"); })
+      .catch((caught) => { if (!controller.signal.aborted) setError(caught instanceof Error ? caught.message : "週次見守りの情報を取得できませんでした。"); })
       .finally(() => { if (!controller.signal.aborted) setLoading(false); });
     return () => controller.abort();
   }, [sample, token]);

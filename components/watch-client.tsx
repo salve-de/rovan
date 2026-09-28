@@ -74,12 +74,12 @@ function WatchViewClient({ sample, token }: { sample: boolean; token: string }) 
     fetch(`/api/watch?token=${encodeURIComponent(token)}`, { cache: "no-store", signal: controller.signal })
       .then(async (response) => {
         const data = await response.json() as WatchView & { error?: string };
-        if (!response.ok) throw new Error(data.error || "Watchを取得できませんでした。");
+        if (!response.ok) throw new Error(data.error || "週次見守りの情報を取得できませんでした。");
         if (!cancelled) {
           setWatch(data);
         }
       })
-      .catch((caught) => { if (!cancelled) setError(caught instanceof Error ? caught.message : "Watchを取得できませんでした。"); })
+      .catch((caught) => { if (!cancelled) setError(caught instanceof Error ? caught.message : "週次見守りの情報を取得できませんでした。"); })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; controller.abort(); };
   }, [sample, token]);
@@ -97,7 +97,7 @@ function WatchViewClient({ sample, token }: { sample: boolean; token: string }) 
       try {
         const response = await fetch(`/api/watch?token=${encodeURIComponent(token)}`, { cache: "no-store", signal: controller.signal });
         const data = await response.json() as WatchView & { error?: string };
-        if (!response.ok) throw new Error(data.error || "Watchを取得できませんでした。");
+        if (!response.ok) throw new Error(data.error || "週次見守りの情報を取得できませんでした。");
         if (!cancelled) {
           setWatch((previous) => previous && requestedEmailRevision !== emailRevision.current ? { ...data, emailConfigured: previous.emailConfigured, maskedEmail: previous.maskedEmail } : data);
           setError("");
@@ -105,7 +105,7 @@ function WatchViewClient({ sample, token }: { sample: boolean; token: string }) 
       } catch (caught) {
         // Keep the current result visible while a transient poll fails. The
         // next interval can recover without interrupting the measurement.
-        if (!cancelled) setError(caught instanceof Error ? caught.message : "Watchを取得できませんでした。");
+        if (!cancelled) setError(caught instanceof Error ? caught.message : "週次見守りの情報を取得できませんでした。");
       } finally {
         busy = false;
       }

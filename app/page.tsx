@@ -6,7 +6,7 @@ import { SiteHeader } from "@/components/site-header";
 import { HeroChatDiagnosticCard, ProductOutputPreview, ProductProcessVisual, WatchTrendVisual } from "@/components/product-visuals";
 import { VerifiedCompaniesGallery } from "@/components/verified-companies-gallery";
 import { GoogleDeclineProblemSection } from "@/components/google-decline-problem-section";
-import { FREE_PANEL_SIZE } from "@/lib/prompt-panels";
+import { FREE_PANEL_SIZE, CORE_PANEL_SIZE } from "@/lib/prompt-panels";
 import { WATCH_MONTHLY_PRICE_LABEL } from "@/lib/pricing";
 
 export default function HomePage() {
@@ -282,10 +282,11 @@ export default function HomePage() {
                 <span style={{ fontSize: "2rem", fontWeight: 800, color: "var(--text-primary, #0f172a)" }}>{WATCH_MONTHLY_PRICE_LABEL}</span>
               </div>
               <ul style={{ margin: "0 0 24px", paddingLeft: "18px", fontSize: "0.84rem", color: "var(--text-secondary, #475569)", lineHeight: 1.8, flex: 1 }}>
+                <li>最初の14日間は無料。期間終了後に自動で課金されることはありません</li>
                 <li>1日約330円（税別9,800円・月単位でいつでも解約可能）</li>
                 <li>自社サイトの改修不要・サイトをお持ちでない場合も開設不要</li>
-                <li>御社の強みをAIが正しく読む公開ページの常時維持</li>
-                <li>毎週の推薦状況を自動チェック・変化時の自動調整</li>
+                <li>固定{CORE_PANEL_SIZE}問のパネルで、自社が候補に入った割合を毎週追跡</li>
+                <li>毎週の推薦状況を自動チェック・Rovan上の公開データを自動調整（毎週の承認は不要）</li>
               </ul>
 
               <Link
@@ -337,7 +338,7 @@ export default function HomePage() {
               <svg className="badge-check" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M3 8.5L6.5 12L13 4" />
               </svg>
-              <span>HPの改修・開設も不要</span>
+              <span>公開は初回の同意後</span>
             </div>
             <div className="trust-badge">
               <svg className="badge-check" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

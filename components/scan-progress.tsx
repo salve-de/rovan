@@ -253,7 +253,6 @@ export function ScanProgress() {
 
   const targetHost = hostOf(selectedUrl || directUrl);
   const isDirectTarget = isUrlInput(rawInput);
-  const hasInput = Boolean(rawInput);
   const activeIndex = steps.findIndex((item) => item.stage === stage);
   const completedCount = stage === "complete" ? steps.length : Math.max(0, activeIndex);
 
@@ -401,19 +400,17 @@ export function ScanProgress() {
             {phase === "failed" ? "診断を開始できませんでした" : phase === "resolving" ? "診断先を検索中" : "診断先の確認"}
           </p>
           <h1>
-            {phase === "failed" ? "時間を置いて、もう一度お試しください。" : phase === "resolving"
+            {phase === "failed"
+              ? (isServiceUnavailableError(error) ? "現在診断を受け付けられません。" : isDirectTarget ? "診断を開始できませんでした。" : "公開サイトを見つけられませんでした。")
+              : phase === "resolving"
               ? `「${displayInput(rawInput)}」の公開サイトを探しています。`
-              : hasInput
-              ? `「${displayInput(rawInput)}」の公開サイトを確認してください`
-              : "診断する会社名・店舗名・サービス名またはURLを入力してください。"}
+              : `「${displayInput(rawInput)}」の公開サイトを確認してください`}
           </h1>
-          <p className="scan-message">
+          {phase !== "failed" ? <p className="scan-message">
             {phase === "resolving"
               ? "会社名・商品名から、診断できる公開サイトを調べています。"
-              : hasInput
-              ? "AIが同名の別会社と取り違えないよう、ドメインとページ内容を確認して診断先を確定します。"
-              : "ホーム画面で、診断したい対象の名称または公開URLを入力してください。"}
-          </p>
+              : "AIが同名の別会社と取り違えないよう、ドメインとページ内容を確認して診断先を確定します。"}
+          </p> : null}
           {phase === "resolving" ? <div className="scan-resolve-loading" role="status"><span className="scan-resolve-spinner" aria-hidden="true" />公開情報を検索しています…</div> : null}
           {phase === "choose" ? <>
             <div className="disambiguation-guide-box">
@@ -439,8 +436,7 @@ export function ScanProgress() {
             <p className="scan-resolve-note">※ドメインとサイト内容を確認してから確定するため、同名他社との取り違えを避けやすくなります。</p>
           </> : null}
           {phase === "failed" ? <div className="scan-error" role="alert">
-            <strong>{!hasInput ? "診断対象が入力されていません。" : isDirectTarget ? "診断を開始できませんでした。" : "公開サイトを見つけられませんでした。"}</strong>
-            <p>{error}</p>
+            <p>{isServiceUnavailableError(error) ? "時間を置いてもう一度お試しください。" : error}</p>
             <div style={{ display: "flex", gap: "12px", marginTop: "16px", flexWrap: "wrap" }}>
               <button className="button button-secondary" type="button" onClick={() => router.push("/")}>入力をやり直す</button>
             </div>
@@ -475,8 +471,8 @@ export function ScanProgress() {
         <div className="scan-progress-summary"><strong>{Math.round(progress)}%</strong><span>{detail}</span></div>
         {!error ? <button className="scan-cancel" type="button" onClick={() => { controller.current?.abort(); router.push("/"); }}>診断をやめる</button> : null}
         {error ? <div className="scan-error" role="alert">
-          <strong>診断を完了できませんでした。</strong>
-          <p>{error}</p>
+          <strong>{isServiceUnavailableError(error) ? "現在診断を受け付けられません。" : "診断を完了できませんでした。"}</strong>
+          <p>{isServiceUnavailableError(error) ? "時間を置いてもう一度お試しください。" : error}</p>
           <div style={{ display: "flex", gap: "12px", marginTop: "16px", flexWrap: "wrap" }}>
             <button className="button button-secondary" type="button" onClick={() => window.location.reload()}>もう一度試す</button>
           </div>

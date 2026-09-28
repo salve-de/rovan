@@ -32,7 +32,7 @@ const INDUSTRY_SHOWCASES: CompanyCase[] = [
     industry: "自家焙煎・スペシャリティ珈琲",
     featureNote: "AI推薦データ配備の見本",
     beforeProblem: "電源や作業利用の設備情報が埋もれ、AIに「近くの作業カフェ」として認識されない。",
-    afterSolution: "全席電源・高速Wi-Fiの確定データを配備。作業カフェを探すAI相談で確実に選ばれる状態へ。",
+    afterSolution: "全席電源・高速Wi-Fiの確定データを配備。作業カフェを探すAI相談で候補に選ばれやすい状態を目指す。",
     registeredSpecs: "全席電源・高速Wi-Fi / 自家焙煎豆 / 作業利用歓迎",
     href: "/ai/company/aoba-cafe?sample=1",
   },
@@ -66,8 +66,8 @@ export function VerifiedCompaniesGallery() {
       <div className="shell">
         <div className="section-head-center">
           <span className="pill-badge">業種別の実装シミュレーション</span>
-          <h2>町工場も、士業も、カフェも、農園も。<br />あらゆる業種で「選ばれるAI推薦データ」を即座に配備。</h2>
-          <p>サンプルデータを使った表示例です。各業種の強み・実績・対応条件をAIが1秒で検証できる確定仕様へ整理し、推薦有力候補への浮上を狙います。</p>
+          <h2>町工場も、士業も、カフェも、農園も。<br />あらゆる業種で「選ばれるAI推薦データ」を整理・配備。</h2>
+          <p>サンプルデータを使った表示例です。各業種の強み・実績・対応条件をAIが読み取れる確定仕様へ整理し、推薦候補入りを目指します。</p>
         </div>
 
         <div className="verified-cards-grid">

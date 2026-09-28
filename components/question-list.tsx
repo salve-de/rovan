@@ -125,7 +125,7 @@ export function QuestionList({ result }: { result: ScanResult }) {
             transition: "all 0.15s ease",
           }}
         >
-          {expandedIds.size === filtered.length ? "全問の判定根拠を閉じる" : "全問の判定根拠を一括表示（検証ログ）"}
+          {expandedIds.size === filtered.length ? "全問の判定根拠を閉じる" : "全問の判定根拠をまとめて表示"}
         </button>
       </div>
 

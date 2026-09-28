@@ -47,14 +47,14 @@ function ManagementSession({ query }: { query: string }) {
       let watchToken = capability.watchToken || "";
       if (watchLink.trim()) {
         const url = new URL(watchLink.trim(), window.location.origin);
-        if (url.origin !== window.location.origin || !["/watch", "/profile/manage"].includes(url.pathname)) throw new Error("このRovanサイトのWatch管理リンクを入力してください。");
+        if (url.origin !== window.location.origin || !["/watch", "/profile/manage"].includes(url.pathname)) throw new Error("このRovanサイトの週次見守り管理リンクを入力してください。");
         watchToken = url.searchParams.get("watchToken") || (url.pathname === "/watch" ? url.searchParams.get("token") : "") || "";
         if (!watchToken) throw new Error("Watch管理リンクを確認してください。");
       }
       await request({ action, ...capability, profileId: profile.id, watchToken });
       const data = await request({ action: "manage", ...capability });
       setProfiles(data.profiles);
-      setMessage(action === "bind_watch" ? "Watchを紐付けました。自動更新は別途許可してください。" : "管理状態を保存しました。");
+      setMessage(action === "bind_watch" ? "週次見守りを紐付けました。自動更新は別途許可してください。" : "管理状態を保存しました。");
     } catch (error) { setMessage(error instanceof Error ? error.message : "操作できませんでした。"); }
     finally { setBusy(false); }
   }
@@ -87,10 +87,10 @@ function ManagementSession({ query }: { query: string }) {
             try { sessionStorage.setItem(`rovan:pending-profile:${profile.targetUrl}`, JSON.stringify({ id: profile.id, token: capability.token })); } catch { /* Saved management link remains usable. */ }
           }
         }}>公開ページを対象にAI回答の診断を開始する</a> : null}
-        <p>自動更新：{automation.enabled ? "許可済み" : "停止中"}。有効な有料Watchとの紐付け・許可に基づき、同じ参照元の記載と掲載期限を週次で更新します。</p>
+        <p>自動更新：{automation.enabled ? "許可済み" : "停止中"}。有効な有料の週次見守りとの紐付け・許可に基づき、同じ参照元の記載と掲載期限を週次で更新します。</p>
         <p>契約中の掲載維持：{automation.maintenanceEnabled ? "許可済み" : "停止中"}。内容の自動更新とは別に管理できます。掲載維持を停止すると無料公開期限に戻ります。</p>
         {capability.token ? <label>同じ対象のWatch管理リンク<input type="url" value={watchLink} onChange={(event) => setWatchLink(event.target.value)} autoComplete="off" /></label> : null}
-        {capability.token ? <button disabled={busy || !watchLink.trim()} onClick={() => void operate(profile, "bind_watch")}>このWatchに管理権限を紐付ける</button> : null}
+        {capability.token ? <button disabled={busy || !watchLink.trim()} onClick={() => void operate(profile, "bind_watch")}>この週次見守りに管理権限を紐付ける</button> : null}
         <button disabled={busy || (!automation.enabled && !capability.watchToken && !watchLink.trim())} onClick={() => void operate(profile, automation.enabled ? "automation_disable" : "automation_enable")}>{automation.enabled ? "自動更新を停止する" : "参照元の記載・掲載期限の継続更新を許可する"}</button>
         <button disabled={busy || (!automation.maintenanceEnabled && !capability.watchToken && !watchLink.trim())} onClick={() => void operate(profile, automation.maintenanceEnabled ? "maintenance_disable" : "maintenance_enable")}>{automation.maintenanceEnabled ? "掲載維持を停止し無料期限に戻す" : "有料契約中の掲載維持だけを許可する"}</button>
         {automation.canRollback ? <button disabled={busy} onClick={() => void operate(profile, "automation_rollback")}>直前の更新を取り消して停止する</button> : null}

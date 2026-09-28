@@ -3,6 +3,7 @@ import Link from "next/link";
 import { MarketingShell } from "@/components/marketing-shell";
 import { ArrowIcon, CheckIcon } from "@/components/icons";
 import { WATCH_MONTHLY_PRICE_LABEL, WATCH_MONTHLY_PRICE_TAX_EXCLUSIVE_LABEL, WATCH_MONTHLY_PRICE_TAX_INCLUSIVE } from "@/lib/pricing";
+import { FREE_PANEL_SIZE, CORE_PANEL_SIZE } from "@/lib/prompt-panels";
 
 export const metadata: Metadata = {
   title: "料金プラン",
@@ -11,26 +12,26 @@ export const metadata: Metadata = {
 
 const free = [
   "社名またはURL 1件の初回診断",
-  "公開情報をもとにした購入検討向け質問パネルでの比較",
+  `固定${FREE_PANEL_SIZE}問の購入検討向け質問パネルで、複数のAIに実際に質問`,
   "AI回答に自社が含まれた質問・含まれなかった質問の確認",
   "大手ライバルが推薦された回答と、その根拠の確認",
-  "自社専用のAI推薦データ（自動下書き）",
+  "そのまま使える完成文案付きのAI推薦データ（自動下書き）",
 ];
 
 const paid = [
+  "最初の14日間は無料。期間終了後に自動で課金されることはありません",
   "1日約330円（税別9,800円 / 税込10,780円）",
-  "自社サイトの改修不要・サイトをお持ちでない場合も新たな開設不要",
-  "ChatGPTなどのAIが御社をおすすめするための公開ページを常時維持",
-  "毎週の推薦状況を自動チェック（AI回答の変化を追跡）",
-  "AIの回答傾向や競合の変化に合わせた掲載情報の自動調整",
+  "自社サイトの改修不要・サイトをお持ちでない場合も新たな開設不要（お客様のサイトやCMSは変更しません）",
+  `固定${CORE_PANEL_SIZE}問のパネルで、自社が推薦候補に入った割合（AI顧客奪還シェア）を毎週追跡`,
+  "AIの回答傾向や競合の変化に合わせ、Rovan上の公開データを自動調整（毎週の承認は不要）",
   "月単位で利用でき、管理画面からいつでも解約可能",
 ];
 
 export default function PricingPage() {
   return <MarketingShell
     eyebrow="料金プラン"
-    title="営業マンを雇う前に。1日あたり約330円、ホームページ改修不要でAI推薦の獲得と維持を自動化。"
-    lead="専門知識も、事前の準備も必要ありません。社名や店名を入力するだけで、ChatGPTなどのAIが御社をおすすめするための公開ページを開設し、毎週の推薦状況を自動で追跡します。"
+    title="営業マンを雇う前に。1日約330円で、AI推薦の獲得と維持を自動化。"
+    lead="専門知識も、事前の準備も必要ありません。社名や店名を入力し、内容を確認して公開に同意するだけ。ChatGPTなどのAIが御社をおすすめするための公開ページを整え、毎週の推薦状況を自動で追跡します。"
   >
     <div className="pricing-compare" aria-label="料金比較">
       <div className="pricing-plan pricing-free">

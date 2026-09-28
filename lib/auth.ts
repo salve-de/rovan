@@ -119,3 +119,37 @@ export function parseSessionCookie(cookieHeader: string | null): string | null {
   if (!found) return null;
   return decodeURIComponent(found.slice(`${SESSION_COOKIE_NAME}=`.length));
 }
+
+// Google OAuth login-CSRF protection: a random state is stored in a
+// short-lived HttpOnly cookie when the flow starts and must match the
+// `state` query parameter the provider echoes back on callback.
+export const OAUTH_STATE_COOKIE_NAME = "rovan_oauth_state";
+const OAUTH_STATE_TTL_SECONDS = 10 * 60; // 10 minutes
+
+export function createOAuthState(): string {
+  return crypto.randomBytes(24).toString("base64url");
+}
+
+export function buildOAuthStateCookieHeader(state: string, secure = process.env.NODE_ENV === "production"): string {
+  const secureFlag = secure ? "; Secure" : "";
+  return `${OAUTH_STATE_COOKIE_NAME}=${state}; Path=/; Max-Age=${OAUTH_STATE_TTL_SECONDS}; HttpOnly; SameSite=Lax${secureFlag}`;
+}
+
+export function buildClearOAuthStateCookieHeader(): string {
+  return `${OAUTH_STATE_COOKIE_NAME}=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax`;
+}
+
+export function parseOAuthStateCookie(cookieHeader: string | null): string | null {
+  if (!cookieHeader) return null;
+  const cookies = cookieHeader.split(";").map((c) => c.trim());
+  const found = cookies.find((c) => c.startsWith(`${OAUTH_STATE_COOKIE_NAME}=`));
+  if (!found) return null;
+  return decodeURIComponent(found.slice(`${OAUTH_STATE_COOKIE_NAME}=`.length));
+}
+
+export function verifyOAuthState(cookieValue: string | null, queryValue: string | null): boolean {
+  if (!cookieValue || !queryValue) return false;
+  const cookieBuf = Buffer.from(cookieValue);
+  const queryBuf = Buffer.from(queryValue);
+  return cookieBuf.length === queryBuf.length && crypto.timingSafeEqual(cookieBuf, queryBuf);
+}
