@@ -86,7 +86,7 @@ export function HomeDiagnosis() {
 
         <div id="diagnosis-start" className="home-diagnosis-cta">
           <span className="home-diagnosis-cta-label">御社の結果を、いますぐ無料で見る</span>
-          <ScanForm hideExtraToggle submitLabel="無料で診断" placeholder="例: 青葉ベーカリー 高崎、@aoba_bakery、URL" label="会社名・店名、Instagram、ホームページのどれか" />
+          <ScanForm hideExtraToggle formId={null} submitLabel="無料で診断" placeholder="例: 青葉ベーカリー 高崎、@aoba_bakery、URL" label="会社名・店名、Instagram、ホームページのどれか" />
           <span className="home-diagnosis-cta-note">登録不要・ホームページがなくてもOK　｜　上の画面は見本です</span>
         </div>
       </div>

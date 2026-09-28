@@ -116,14 +116,6 @@ export function PublicProfileActions({ result, sample = false, selectedStrategyI
 
   return (
     <section className="public-profile-interactive-card" aria-label="AI推薦データの作成・公開">
-      <div className="profile-interactive-header">
-        <p className="overline profile-interactive-eyebrow">AI推薦データの生成・配備プレビュー</p>
-        <h3>自社の強みが、AIの比較候補から埋もれないように。</h3>
-        <p className="profile-interactive-lead">
-          会社の強み・対応条件・参照元をまとめた、AI向けの公開データを作成します。自社サイトの改修は不要です。公開後はWatchで自動更新を許可し、AI回答の変化を追えます。
-        </p>
-      </div>
-
       {/* AI下書きガイド案内 */}
       <div className="profile-draft-guide">
         <span className="profile-draft-guide-label">
@@ -185,71 +177,6 @@ export function PublicProfileActions({ result, sample = false, selectedStrategyI
       </div>
 
       {/* 無料枠 vs フル見守りプラン 機能格差スペック表 */}
-      <div className="plan-comparison-box">
-        <div className="plan-comparison-header">
-          <span className="spec-table-tag">無料診断と週次見守りの違い</span>
-          <h4>無料診断と週次見守りの提供範囲</h4>
-          <p>公開情報の下書き確認と、同じ条件でのAI回答の継続測定を分けて案内しています。</p>
-        </div>
-
-        <div className="table-responsive">
-          <table className="plan-comparison-table">
-            <thead>
-              <tr>
-                <th>提供機能・運用仕様</th>
-                <th className="th-free">無料診断</th>
-                <th className="th-pro">週次見守り</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>AI推薦データの公開ページ</strong></td>
-                <td>確認・同意後に公開（作成から30日）</td>
-                <td className="col-highlight"><strong>対象の紐付け・掲載維持への同意後、有効な有料契約中に維持</strong></td>
-              </tr>
-              <tr>
-                <td><strong>AI回答の測定</strong></td>
-                <td>初回の比較</td>
-                <td className="col-highlight"><strong>同じパネルを週次で再測定</strong></td>
-              </tr>
-              <tr>
-                <td><strong>データの鮮度管理</strong></td>
-                <td>参照元を確認</td>
-                <td className="col-highlight"><strong>許可した参照元の記載を自動更新</strong></td>
-              </tr>
-              <tr>
-                <td><strong>比較候補の変化</strong></td>
-                <td>初回に確認</td>
-                <td className="col-highlight"><strong>週次の変化を通知</strong></td>
-              </tr>
-              <tr>
-                <td><strong>Webサイトをお持ちの企業様</strong></td>
-                <td>自社サイトの改修不要</td>
-                <td className="col-highlight"><strong>自社サイトへの自動書き込みなし</strong></td>
-              </tr>
-              <tr>
-                <td><strong>Webサイトをお持ちでない企業様</strong></td>
-                <td>公開前に内容確認</td>
-                <td className="col-highlight"><strong>承認後の公開ページを維持</strong></td>
-              </tr>
-              <tr>
-                <td><strong>AI回答の測定頻度</strong></td>
-                <td>—</td>
-                <td className="col-highlight"><strong>毎週の再測定予定</strong></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        {/* 自社サイトがない企業様への案内 */}
-        <div className="no-website-benefit-note">
-          <span className="benefit-badge">自社サイトをお持ちでない企業様へ</span>
-          <p>
-            初期制作費用をかけずに、承認したRovan公開情報ページを案内できます。掲載内容は参照元付きの公開情報で、AIの推薦や問い合わせを保証するものではありません。
-          </p>
-        </div>
-      </div>
-
       {/* 書き込み実行アクション */}
       <div className="weapon-action-box">
         <div className="weapon-action-status">
@@ -330,26 +257,6 @@ export function PublicProfileActions({ result, sample = false, selectedStrategyI
                 </button>
               </div>
 
-              {/* 公開情報ページの役割 */}
-              <div className="profile-role-card">
-                <div className="profile-role-head">
-                  <span className="ui-badge ui-badge--success">自社サイトの改修は不要</span>
-                  <strong>このAI推薦データで、御社の強みをどう伝えるのか？</strong>
-                </div>
-                <div className="profile-role-grid">
-                  <div className="profile-role-before">
-                    <span>これまでの自社サイト</span>
-                    <p>参照元ページの情報が分散していると、会社の分野や用途を比較しにくい場合があります。</p>
-                  </div>
-                  <div className="profile-role-after">
-                    <span>AI推薦データの公開ページ</span>
-                    <p>参照元付きの公開情報をSchema.org形式などで整理します。AIや人が確認しやすくなりますが、推薦や回答を保証するものではありません。</p>
-                  </div>
-                </div>
-                <p className="profile-role-note">
-                  ※公開前の下書き確認と明示的な公開操作を分けています。Rovanは自社サイトへ書き込みません。
-                </p>
-              </div>
             </div>
           )}
           {error ? <p className="form-error" role="alert">{error}</p> : null}

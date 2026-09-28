@@ -31,15 +31,8 @@ export function PositioningPanel({ positioning }: { positioning?: PositioningAdv
 
   return (
     <section className="positioning-section shell" aria-label="ポジショニング診断および戦略提言">
-      {/* ポジショニング戦略の選定軸 */}
-      <div className="section-heading-simple positioning-heading">
-        <p className="overline">【差別化戦略】AIに伝える「自社固有の強み」を選ぶ</p>
-        <h2>大手と同じ土俵だけで競わず、専門分野や細かな対応条件で選ばれる軸を選びましょう。</h2>
-        <p>目指すのは「この相談なら御社」とAIに推薦されること。以下は公開情報と測定結果をもとに検討する戦略案です。強みや他社の弱点を推測せず、内容を確認してから公開します。推薦・順位・成果は保証しません。</p>
-      </div>
-
-      {/* 3つの戦略タブ（サイト解析から動的生成） */}
-      <p className="positioning-tabs-hint">タブを選択すると、推薦獲得を目指す強みと紹介文案が切り替わります：</p>
+      {/* 3つの強み候補（サイト解析から動的生成）。見出しは親セクションが持つ */}
+      <p className="positioning-tabs-hint">強みを選ぶと、その強みで書いた紹介文に切り替わります</p>
       <div className="strategy-selector-tabs" role="tablist" aria-label="戦略方針の選択">
         {strategies.map((item, index) => {
           const isActive = selectedIndex === index;

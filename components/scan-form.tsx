@@ -10,12 +10,15 @@ export function ScanForm({
   submitLabel,
   placeholder = "会社名・店舗名 ＋ 地域（例: 青葉ベーカリー 高崎、山田板金 大田区）またはURL",
   label,
+  formId = "scan",
 }: {
   compact?: boolean;
   hideExtraToggle?: boolean;
   submitLabel?: string;
   placeholder?: string;
   label?: string;
+  /** ページ内で一意にする。2つ目以降のフォームは null を渡す */
+  formId?: string | null;
 }) {
   const router = useRouter();
   const [input, setInput] = useState("");
@@ -131,7 +134,7 @@ export function ScanForm({
     <div className="scan-form-outer">
       <form
         className={`scan-form ${compact ? "scan-form-compact" : ""}`}
-        id={compact ? undefined : "scan"}
+        id={compact || !formId ? undefined : formId}
         onSubmit={submit}
         noValidate
       >

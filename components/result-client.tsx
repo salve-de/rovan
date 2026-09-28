@@ -101,34 +101,26 @@ function ResultView({ sample, scanId, showSellerLinks }: { sample: boolean; scan
     <SiteHeader compact context={headerContext} />
     <ReportSubbar brandName={result.discovery.brandName} sample={sample} router={router} />
 
-    {/* ① 結論：何問中何問が候補外で、主な競合は誰か */}
-    <ReportConclusion
-      result={result}
-      sample={sample}
-      host={host}
-      hasMeasurement={hasMeasurement}
-      readout={readout}
-      topCompetitorName={topCompetitor?.name}
-      primaryLoss={primaryLoss}
-      primaryWinner={primaryWinner}
-      citationCount={citationCount}
-    />
-
-    {/* ② どこで負けているか：質問ごとの候補入り状況。詳細は折りたたみ */}
-    <ReportQuestions result={result} sample={sample} primaryLoss={primaryLoss} primaryGap={primaryGap} />
+    {/* ① 結論 → ② 御社は何番目か → ③ どの質問で負けているか（ホームの「無料の診断で分かる3つ」と同じ順） */}
+    <ReportHero result={result} sample={sample} host={host} hasMeasurement={hasMeasurement} readout={readout} topCompetitorName={topCompetitor?.name} />
+    <ReportRanking result={result} />
+    <ReportLosses result={result} primaryLoss={primaryLoss} primaryWinner={primaryWinner} />
 
     {/* ③ 次にやること：AI推薦データの完成文案 */}
-    <div id="step-2" className="report-publish-section">
+    <div id="step-2" className="report-publish-section rp-section rp-section--white">
       <div className="shell">
-        <div className="report-publish-head">
-          <span className="step-badge">【ステップ 2】今すぐできる解決アクション</span>
-          <h2>自社サイト改修ゼロで、AI推薦データを配備</h2>
-          <p>会社の強み・対応条件・参照元をまとめた、AI向けの公開データを作成します。自社サイトの改修も、一から文章を作る作業も不要です。内容を確認・承認した後に公開できます。</p>
+        <div className="rp-head">
+          <span className="rp-eyebrow">3. 何をすれば、名前が出る？ ─ 今すぐできる解決アクション</span>
+          <h2>御社の強みを、AIが読めるページにします。</h2>
+          <p>大手が言っていない御社の強みを、出典つきでまとめました。御社のサイトは書きかえません。内容を確認してから公開できます。</p>
         </div>
-        <PositioningPanel positioning={result.positioning} />
         <div className="report-publish-actions">
           <PublicProfileActions result={result} sample={sample} />
         </div>
+        <details className="positioning-more">
+          <summary>ホームページやチラシにも使える、紹介文の下書きを見る（コピーできます）</summary>
+          <PositioningPanel positioning={result.positioning} />
+        </details>
       </div>
     </div>
 
@@ -137,10 +129,9 @@ function ResultView({ sample, scanId, showSellerLinks }: { sample: boolean; scan
       <section className="report-watch" id="watch-plan">
         <div className="shell report-watch-inner">
           <div>
-            <span className="step-badge">【ステップ 3】継続・品質維持</span>
-            <p className="overline">週次自動見守りプラン（14日間無料トライアル）</p>
-            <h2>AIの推薦状況を、<br />毎週自動で追跡・チェック。</h2>
-            <p>同じ質問パネルで、自社の候補入り状況と参照元の変化を記録します。毎回自分でAIに質問して比べる手間を抑え、選ばれる理由の見直しに役立てます。</p>
+            <span className="rp-eyebrow">4. このあとは、毎週おまかせ</span>
+            <h2>同じ質問で、毎週AIに聞き直します。</h2>
+            <p>名前が出た質問の数がどう変わったかを、毎週お知らせします。ページも自動で最新に保ちます。</p>
             <ul>
               <li>{WATCH_MONTHLY_PRICE_LABEL} / 週次の回答測定と差分確認</li>
               <li>月単位で利用でき、管理画面から解約手続きが可能</li>
@@ -148,8 +139,9 @@ function ResultView({ sample, scanId, showSellerLinks }: { sample: boolean; scan
             </ul>
           </div>
           <form onSubmit={startWatch}>
+            <span className="rp-watch-flag">週次自動見守りプラン（14日間無料トライアル）</span>
             <label htmlFor="watch-email">
-              AI推薦状況の変化通知メールアドレス <span className="watch-email-optional">（任意・空欄のままでも開始できます）</span>
+              結果を受け取るメールアドレス <span className="watch-email-optional">（空欄でも始められます）</span>
             </label>
             <input
               id="watch-email"
@@ -163,11 +155,13 @@ function ResultView({ sample, scanId, showSellerLinks }: { sample: boolean; scan
               {watchBusy ? "準備しています…" : "14日間無料で試してみる（メール登録不要）"}
               <ArrowIcon />
             </button>
-            <small>※ メール入力は任意です。空欄のままでも週次測定を開始できます。</small>
+            <small>14日間は無料。終わっても自動で課金されません。</small>
           </form>
         </div>
       </section>
     </div>
+
+    <ReportDetails result={result} sample={sample} primaryLoss={primaryLoss} primaryGap={primaryGap} citationCount={citationCount} />
 
     {/* 注意書きはページ下部に1回だけ */}
     {!sample && displayWarnings.length ? (
@@ -240,16 +234,14 @@ function ReportSubbar({ brandName, sample, router }: { brandName: string; sample
 
 type Readout = ReturnType<typeof measurementReadout>;
 
-function ReportConclusion({
+/** ① 結論：名前が出なかった質問の数と、いちばんすすめられた会社 */
+function ReportHero({
   result,
   sample,
   host,
   hasMeasurement,
   readout,
   topCompetitorName,
-  primaryLoss,
-  primaryWinner,
-  citationCount,
 }: {
   result: ScanResult;
   sample: boolean;
@@ -257,213 +249,196 @@ function ReportConclusion({
   hasMeasurement: boolean;
   readout: Readout;
   topCompetitorName?: string;
-  primaryLoss?: LostPrompt;
-  primaryWinner: string | null;
-  citationCount: number;
 }) {
   return (
-    <div id="step-1">
-      <section className="report-header">
-        <div className="shell">
-          <div className="report-header-top">
-            <div>
-              <p className="overline">自社専用 AI診断レポート</p>
-              <h1>{result.discovery.brandName}</h1>
-              <p className="report-host">{host}</p>
-            </div>
-            <span className="report-date">{sample ? "診断レポートの見本" : `実測日: ${formatDate(result.measuredAt)}`}</span>
-          </div>
-
-          <p className="report-headline">
-            {hasMeasurement ? (
-              <>
-                回答を取得した<strong>{readout.successful}問</strong>中、<span><strong>{readout.excluded}問</strong>で自社が候補外でした。</span>
-              </>
-            ) : (
-              "公開ページの情報を確認しました。AI回答の測定は未完了です。"
-            )}
+    <section id="step-1" className="rp-hero">
+      <div className="shell rp-hero-inner">
+        <div className="rp-hero-head">
+          <span className="rp-eyebrow">自社専用 AI診断レポート{sample ? <em className="rp-sample">見本</em> : null}</span>
+          <h1>{result.discovery.brandName}</h1>
+          <p className="rp-hero-meta">
+            <span>{host}</span>
+            <span>{result.discovery.market}</span>
+            <span>{sample ? "診断レポートの見本" : `実測日: ${formatDate(result.measuredAt)}`}</span>
           </p>
-
-          <div className="report-meta">
-            <span>対象分野: {result.discovery.market}</span>
-            <span>測定対象AI: ChatGPT / Perplexity / Gemini</span>
-            <span>比較質問: 全{result.panel.promptCount}問</span>
-          </div>
-
-          <ReportActions result={result} sample={sample} />
         </div>
-      </section>
 
-      <section className="report-summary shell">
-        <div className="summary-copy">
-          <p className={`overline${primaryLoss ? " summary-urgent-label" : ""}`}>{primaryLoss ? "AI回答の測定結果" : "測定結果"}</p>
-          <h2>
-            {!hasMeasurement
-              ? "AI回答は未取得です。候補入りは未判定です。"
-              : primaryLoss
-              ? <>AI回答では、<strong>{primaryWinner || "他社候補"}</strong>が先に表示されました。</>
-              : "測定した質問で、自社も候補に含まれました。"}
-          </h2>
-          <p>
-            {!hasMeasurement
-              ? "AI回答の取得後に候補入り状況を確認できます。"
-              : primaryLoss
-              ? "この相談でも自社が推薦候補に入ることを目指し、専門分野や対応条件で選ばれる理由を探します。今回の観測だけで候補外の原因や顧客の流出は断定せず、参照元と質問条件を確認します。"
-              : "測定した質問では、自社が候補に含まれました。回答は質問・参照元・モデルの更新で変わるため、必要に応じて同じ条件で再測定します。"}
-          </p>
-
-          {primaryLoss ? (
-            <div className="summary-loss-box">
-              <span className="summary-loss-label">他社候補が先に表示された質問の例</span>
-              <p className="summary-loss-prompt">「{primaryLoss.prompt}」</p>
-              <p className="summary-loss-detail">
-                {primaryWinner ? `今回の回答では「${primaryWinner}」が先に候補に含まれました。` : "今回の回答では他社候補が先に含まれました。"}
-                {primaryLoss.summary ? ` （判定理由：${primaryLoss.summary}）` : ""}
-              </p>
+        {hasMeasurement ? (
+          <div className="rp-verdict">
+            <div className="rp-verdict-card rp-verdict-card--warn">
+              <span>名前が出なかった質問</span>
+              <strong>{readout.excluded}<small>問</small></strong>
+              <em>回答を取得した{readout.successful}問のうち</em>
             </div>
-          ) : null}
-        </div>
-        <div>
-          <div className="summary-stats">
-            <div><span>自社が候補に含まれた質問（AIの回答の過半数で判定）</span><strong>{readout.label}</strong></div>
-            <div><span>回答に多く含まれた他社候補</span><strong>{topCompetitorName || "—"}</strong></div>
-            <div><span>確認した参照元URL</span><strong>{citationCount}件</strong></div>
-            <div><span>週次見守り</span><strong className="summary-unconnected">登録後に毎週測定</strong></div>
+            <div className="rp-verdict-card">
+              <span>名前が出た質問</span>
+              <strong className="rp-verdict-label">{readout.label}</strong>
+              <em>AIの答えの過半数で判定</em>
+            </div>
+            <div className="rp-verdict-card">
+              <span>いちばん多くすすめられた会社</span>
+              <strong className="rp-verdict-name">{topCompetitorName || "—"}</strong>
+              <em>ChatGPT・Gemini・Perplexity の答えから</em>
+            </div>
           </div>
-        </div>
-      </section>
-    </div>
+        ) : (
+          <p className="rp-verdict-empty">公開ページの情報は確認しました。AIの答えの測定はまだ終わっていないため、名前が出たかどうかは未判定です。</p>
+        )}
+
+        <ReportActions result={result} sample={sample} />
+      </div>
+    </section>
   );
 }
 
-function ReportQuestions({
+/** ② 御社は何番目か：AIの答えに候補として出た回数をライバルと比べる */
+function ReportRanking({ result }: { result: ScanResult }) {
+  const own = { name: result.discovery.brandName, count: result.ownRecommendationCount, own: true };
+  const rivals = result.competitors.map((competitor) => ({ name: competitor.name, count: competitor.recommendedCount, own: false }));
+  if (!rivals.length) return null;
+  const rank = 1 + rivals.filter((rival) => rival.count > own.count).length;
+  const total = rivals.length + 1;
+  const shown = [...rivals.slice(0, 5), own].sort((a, b) => b.count - a.count);
+  const hidden = rivals.length - Math.min(5, rivals.length);
+  const max = Math.max(1, ...shown.map((row) => row.count));
+
+  return (
+    <section className="rp-section rp-section--white">
+      <div className="shell">
+        <div className="rp-head">
+          <span className="rp-eyebrow">1. 御社は、何番目？</span>
+          <h2>AIの答えに名前が出た回数を、ライバルと比べました。</h2>
+        </div>
+        <div className="rp-rank">
+          <div className="rp-rank-list">
+            {shown.map((row) => (
+              <div className={`rp-rank-row${row.own ? " is-own" : ""}`} key={`${row.own ? "own" : "rival"}-${row.name}`}>
+                <span className="rp-rank-name">{row.own ? `${row.name}（御社）` : row.name}</span>
+                <span className="rp-rank-bar"><i style={{ width: `${Math.max(4, (row.count / max) * 100)}%` }} /></span>
+                <span className="rp-rank-count">{row.count}回</span>
+              </div>
+            ))}
+            {hidden > 0 ? <span className="rp-rank-more">… ほか{hidden}社</span> : null}
+          </div>
+          <div className="rp-rank-badge">
+            <span>今回の答えでは</span>
+            <strong>{total}社中{rank}番目</strong>
+            <em>取得できた{result.successfulObservations}件の回答で数えた回数です。お客さんの数や市場シェアではありません。</em>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/** ③ どの質問で負けているか：代表例を1つ大きく見せ、一覧を続ける */
+function ReportLosses({ result, primaryLoss, primaryWinner }: { result: ScanResult; primaryLoss?: LostPrompt; primaryWinner: string | null }) {
+  return (
+    <section className="rp-section rp-section--tint">
+      <div className="shell">
+        <div className="rp-head">
+          <span className="rp-eyebrow">2. どの質問で、負けている？</span>
+          <h2>お客さんが聞きそうな質問ごとに、AIの答えを見ました。</h2>
+        </div>
+        {primaryLoss ? (
+          <div className="rp-loss">
+            <div className="rp-loss-q">「{primaryLoss.prompt}」</div>
+            <svg className="rp-loss-arrow" width="36" height="20" viewBox="0 0 36 20" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 10h24M22 4l6 6-6 6" /></svg>
+            <div className="rp-loss-a">
+              <span>AIの答え</span>
+              <strong>{primaryWinner || "他社の候補"}</strong>
+              <em>御社の名前は出ていません</em>
+            </div>
+          </div>
+        ) : null}
+        <QuestionList result={result} />
+      </div>
+    </section>
+  );
+}
+
+/** くわしいデータ：測定条件・参照元・AIの回答履歴は最後にまとめて折りたたむ */
+function ReportDetails({
   result,
   sample,
   primaryLoss,
   primaryGap,
+  citationCount,
 }: {
   result: ScanResult;
   sample: boolean;
   primaryLoss?: LostPrompt;
   primaryGap?: EvidenceGap;
+  citationCount: number;
 }) {
   const [openObservation, setOpenObservation] = useState("");
-
   return (
-    <>
-      {/* 測定条件（詳細は折りたたみ） */}
-      <section className="shell report-measurement-note">
+    <section className="rp-section rp-section--tint rp-details">
+      <div className="shell">
         <details>
-          <summary>測定条件と参照元を確認する</summary>
-          <div className="report-measurement-grid">
-            <div><small>調査対象AI</small><span>ChatGPT / Perplexity / Google Gemini</span></div>
-            <div><small>測定母数</small><span>質問{result.panel.promptCount}問 × AI回答（成功{result.successfulObservations}件）</span></div>
-            <div><small>調査方法</small><span>{sample ? "サンプルデータを使った表示例" : "各AIに同一条件で質問し、取得できた回答を記録"}</span></div>
-            <div><small>判定基準</small><span>回答内で自社が候補に含まれたかを分析</span></div>
-          </div>
-          <p className="report-measurement-caveat">
-            測定日時: {formatDate(result.measuredAt)} JST。候補名は指定したAI回答に含まれた文字列を測定ログとして表示しています。他社の品質・市場全体の順位・顧客の流出を評価するものではありません。公開情報ページには測定ログや他社名を自動掲載しません。
-          </p>
-        </details>
-      </section>
+          <summary>くわしいデータを見る（測定条件・AIが参考にしたページ・回答の記録）</summary>
+          <div className="rp-details-body">
+            <div className="report-measurement-grid">
+              <div><small>調べたAI</small><span>ChatGPT / Perplexity / Google Gemini</span></div>
+              <div><small>質問と回答</small><span>質問{result.panel.promptCount}問 × AIの回答（成功{result.successfulObservations}件）</span></div>
+              <div><small>調べ方</small><span>{sample ? "見本のデータを使った表示例" : "各AIに同じ条件で質問し、取得できた回答を記録"}</span></div>
+              <div><small>参考にされたページ</small><span>{citationCount}件</span></div>
+            </div>
+            <p className="report-measurement-caveat">
+              測定日時: {formatDate(result.measuredAt)} JST。候補名はAIの回答に含まれた文字列をそのまま記録したものです。他社の品質・市場全体の順位・お客さんの流出を評価するものではありません。公開情報ページには測定ログや他社名を載せません。
+            </p>
 
-      {/* 買い手がAIに聞く質問一覧 */}
-      <section className="report-section shell">
-        <div className="section-heading-simple">
-          <p className="overline">買い手がAIに聞く質問</p>
-          <h2>どの比較で、ライバルが推薦されているか。</h2>
-          <p>質問ごとの候補入り状況から、御社の専門性を伝えるべき場面を探します。未確認の対応分野を強みとして断定するものではありません。</p>
-        </div>
-        <QuestionList result={result} />
-      </section>
-
-      {/* 回答に含まれた候補の比較グラフ */}
-      <section className="report-section report-compare">
-        <div className="shell">
-          <div className="section-heading-simple">
-            <p className="overline">回答に含まれた候補</p>
-            <h2>回答に含まれた候補の件数を比べる。</h2>
-            <p>今回取得できたAI回答で、候補として抽出された回数を比較しています。顧客数や市場シェアではありません。</p>
-          </div>
-          <div className="compare-table">
-            <div className="compare-table-head"><span>会社・商品名</span><span>選ばれた回答</span><span>割合</span></div>
-            {result.competitors.slice(0, 6).map((competitor, index) => (
-              <div className="compare-row" key={competitor.name}>
-                <strong><i>{index + 1}</i>{competitor.name}</strong>
-                <div className="compare-bar"><span style={{ width: `${Math.max(3, competitor.coverage)}%` }} /></div>
-                <b>{competitor.recommendedCount} / {result.successfulObservations}</b>
+            <div className="evidence-layout">
+              <div className="evidence-main">
+                <h3>{primaryGap?.label || "選ぶ前に確認したい情報"}</h3>
+                <p>{primaryGap?.whyItMatters || "この情報が参照元に記載されているか、未確認かを分けて表示します。"}</p>
+                {primaryGap?.competitorEvidence ? <p className="evidence-competitor">回答に含まれた参照情報: {primaryGap.competitorEvidence}</p> : null}
               </div>
-            ))}
-            <div className="compare-row compare-own">
-              <strong><i>対象</i>{result.discovery.brandName}</strong>
-              <div className="compare-bar"><span style={{ width: `${Math.max(3, result.recommendationCoverage)}%` }} /></div>
-              <b>{result.ownRecommendationCount} / {result.successfulObservations}</b>
+              <div className="citation-box">
+                <h3>AIが参考にしたページ</h3>
+                {primaryLoss?.citations.length ? (
+                  <ul>
+                    {primaryLoss.citations.slice(0, 5).map((citation) => (
+                      <li key={citation.url}>
+                        <a href={citation.url} target="_blank" rel="noreferrer"><QuoteIcon />{citation.title || citation.domain}<span>↗</span></a>
+                      </li>
+                    ))}
+                  </ul>
+                ) : <p>引用元ページはありません。</p>}
+              </div>
             </div>
-          </div>
-        </div>
-      </section>
+            <CitationMap result={result} />
 
-      {/* 診断詳細：直すべきポイントと引用元証拠 */}
-      <section className="report-section shell report-evidence">
-        <div className="section-heading-simple">
-          <p className="overline">公開情報の確認ポイント</p>
-          <h2>参照元で確認したい情報。</h2>
-          <p>今回の質問で確認しにくかった項目を、公開できる事実と参照元に分けて整理しました。掲載や効果は保証しません。</p>
-        </div>
-        <div className="evidence-layout">
-          <div className="evidence-main">
-            <h3>{primaryGap?.label || "選ぶ前に確認したい情報"}</h3>
-            <p>{primaryGap?.whyItMatters || "この情報が参照元に記載されているか、未確認かを分けて表示します。"}</p>
-            {primaryGap?.competitorEvidence ? <p className="evidence-competitor">回答に含まれた参照情報: {primaryGap.competitorEvidence}</p> : null}
-          </div>
-          <div className="citation-box">
-            <h3>AIが参考にしたページ</h3>
-            {primaryLoss?.citations.length ? (
-              <ul>
-                {primaryLoss.citations.slice(0, 5).map((citation) => (
-                  <li key={citation.url}>
-                    <a href={citation.url} target="_blank" rel="noreferrer"><QuoteIcon />{citation.title || citation.domain}<span>↗</span></a>
-                  </li>
+            {primaryLoss ? (
+              <div className="observation-list">
+                <h3>AIの回答の記録</h3>
+                {primaryLoss.observations.map((observation: Observation) => (
+                  <article key={observation.id}>
+                    <button type="button" onClick={() => setOpenObservation(openObservation === observation.id ? "" : observation.id)} aria-expanded={openObservation === observation.id}>
+                      <span>{providerLabel(observation.provider)}</span>
+                      <strong>{observation.ownPosition ? `自社 ${observation.ownPosition}番目` : "自社は候補外"}</strong>
+                      <em>回答 {observation.repetition}</em>
+                      <ArrowIcon />
+                    </button>
+                    {openObservation === observation.id ? (
+                      <div className="observation-body">
+                        {observation.rawText ? <p>{observation.rawText}</p> : <p className="observation-safe-note">引用元情報のみ表示しています。</p>}
+                        {observation.citations.length ? (
+                          <ul>
+                            {observation.citations.map((citation) => (
+                              <li key={citation.url}><a href={citation.url} target="_blank" rel="noreferrer">{citation.title || citation.domain}</a></li>
+                            ))}
+                          </ul>
+                        ) : null}
+                      </div>
+                    ) : null}
+                  </article>
                 ))}
-              </ul>
-            ) : <p>引用元ページはありません。</p>}
+              </div>
+            ) : null}
           </div>
-        </div>
-        <CitationMap result={result} />
-      </section>
-
-      {/* AI回答履歴（アコーディオン） */}
-      {primaryLoss ? (
-        <section className="report-section shell report-details">
-          <details>
-            <summary>AIの回答履歴と詳しい判定理由を確認する</summary>
-            <div className="observation-list">
-              {primaryLoss.observations.map((observation: Observation) => (
-                <article key={observation.id}>
-                  <button type="button" onClick={() => setOpenObservation(openObservation === observation.id ? "" : observation.id)} aria-expanded={openObservation === observation.id}>
-                    <span>{providerLabel(observation.provider)}</span>
-                    <strong>{observation.ownPosition ? `自社 ${observation.ownPosition}番目` : "自社は候補外"}</strong>
-                    <em>回答 {observation.repetition}</em>
-                    <ArrowIcon />
-                  </button>
-                  {openObservation === observation.id ? (
-                    <div className="observation-body">
-                      {observation.rawText ? <p>{observation.rawText}</p> : <p className="observation-safe-note">引用元情報のみ表示しています。</p>}
-                      {observation.citations.length ? (
-                        <ul>
-                          {observation.citations.map((citation) => (
-                            <li key={citation.url}><a href={citation.url} target="_blank" rel="noreferrer">{citation.title || citation.domain}</a></li>
-                          ))}
-                        </ul>
-                      ) : null}
-                    </div>
-                  ) : null}
-                </article>
-              ))}
-            </div>
-          </details>
-        </section>
-      ) : null}
-    </>
+        </details>
+      </div>
+    </section>
   );
 }
