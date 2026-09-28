@@ -50,41 +50,74 @@ export function WatchClient({ showSellerLinks = false }: { showSellerLinks?: boo
   return <WatchViewClient key={readoutIdentity(sample, token)} sample={sample} token={token} showSellerLinks={showSellerLinks} />;
 }
 
-/** ① 今週の結論: 北極星（AI顧客奪還シェア）と、比較サマリー。 */
-function TodayConclusion({ watch, change, meaningfulChanges, changeHeadline, changeDescription, stopped }: {
-  watch: WatchView;
+/** ライバル表は上位5社と、変化があった会社（新規・未出現・増減）だけを出す */
+type RivalMovement = { newcomer?: boolean; departed?: boolean; diff: number | null };
+function visibleRivals<T extends RivalMovement>(rows: T[]) {
+  return rows.filter((row, index) => index < 5 || row.newcomer || row.departed || (row.diff !== null && row.diff !== 0));
+}
+function hiddenRivalCount(rows: RivalMovement[]) {
+  return rows.length - visibleRivals(rows).length;
+}
+
+/** ① 今週の結論: 名前が出た質問の数の「前 → 今」を大きく見せる。 */
+function TodayVerdict({ change, meaningfulChanges, changeHeadline, changeDescription, stopped }: {
   change: NonNullable<ReturnType<typeof useWatchChange>>;
   meaningfulChanges: boolean;
   changeHeadline: string;
   changeDescription: string;
   stopped: boolean;
 }) {
+  const before = change.baselineShortlisted;
+  const after = change.latestShortlisted;
+  const total = Math.max(1, change.after.successful || 0, before, after);
+  const diff = after - before;
   return (
-    <>
-      <section className={`watch-change-hero ${meaningfulChanges ? "has-change" : "no-change"}`}>
-        <div className="shell watch-change-hero-inner">
-          <div>
-            <p className="overline">今週の結論</p>
-            <h2>{changeHeadline}</h2>
-            <p>{changeDescription}</p>
-          </div>
-          <div className="watch-change-hero-state">
-            <span className="watch-change-state-dot" aria-hidden="true" />
-            <strong>{!change.comparable ? "比較不可" : meaningfulChanges ? "測定結果に変化" : "変化なし"}</strong>
-            <small>{!change.comparable ? "測定条件・取得状況をご確認ください" : meaningfulChanges ? "同じ条件で差分を確認" : stopped ? "自動見守り停止中" : "次回の測定を待機"}</small>
-          </div>
-        </div>
-      </section>
+    <div className={`wt-verdict ${meaningfulChanges ? "has-change" : "no-change"}`}>
+      <div className="wt-verdict-main">
+        <span className="wt-verdict-label">今週の結論</span>
+        <h2>{changeHeadline}</h2>
+        <p>{changeDescription}</p>
+        <span className="wt-verdict-state">
+          <i aria-hidden="true" />
+          <strong>{!change.comparable ? "比較不可" : meaningfulChanges ? "測定結果に変化" : "変化なし"}</strong>
+          <small>{!change.comparable ? "測定条件・取得状況をご確認ください" : meaningfulChanges ? "同じ条件で差分を確認" : stopped ? "自動見守り停止中" : "次回の測定を待機"}</small>
+        </span>
+      </div>
+      <div className="wt-verdict-figure" aria-label="名前が出た質問の数の変化">
+        <span className="wt-verdict-figure-label">名前が出た質問</span>
+        {change.comparable ? (
+          <>
+            <div className="wt-bars" aria-hidden="true">
+              <span className="wt-bar wt-bar--before" style={{ height: `${Math.max(6, (before / total) * 100)}%` }}><b>{before}</b></span>
+              <span className="wt-bar wt-bar--after" style={{ height: `${Math.max(6, (after / total) * 100)}%` }}><b>{after}</b></span>
+            </div>
+            <div className="wt-bars-axis"><span>初回（基準）</span><span>今回</span></div>
+            <strong className="wt-verdict-diff">{before}問 → {after}問{diff ? `（${diff > 0 ? "+" : ""}${diff}）` : ""}</strong>
+          </>
+        ) : <strong className="wt-verdict-diff">比較不可</strong>}
+        <small>{change.after.label}</small>
+      </div>
+    </div>
+  );
+}
 
-      <section className="watch-section shell" aria-label="AI顧客奪還シェア">
-        <p className="overline">北極星指標</p>
-        <h2>AI顧客奪還シェア</h2>
-        <p className="watch-north-star-lead">毎週同じ50問をAIに聞き、自社が候補に入った割合です。初回（基準）からの推移も確認できます。</p>
-        <p>固定50問で、自社が推薦候補に入った割合。実際の顧客数・市場シェアではありません。各AIの反復回答の過半数で候補入りと判定します。</p>
+/** ② 北極星（AI顧客奪還シェア）と、補助の数字 */
+function NorthStar({ watch, change }: {
+  watch: WatchView;
+  change: NonNullable<ReturnType<typeof useWatchChange>>;
+}) {
+  return (
+    <section className="rp-section rp-section--white">
+      <div className="shell">
+        <div className="rp-head">
+          <span className="rp-eyebrow">北極星指標</span>
+          <h2>AI顧客奪還シェア</h2>
+          <p>毎週同じ50問をAIに聞き、御社が候補に入った割合です。実際のお客さんの数や市場シェアではありません。各AIの答えの過半数で判定します。</p>
+        </div>
         {watch.northStar.status === "short-panel" ? (
-          <p>現在は{watch.latest.panel.promptCount}問の短いパネルです。有料プランの50問測定から北極星の記録を開始します。</p>
+          <p className="wt-note">現在は{watch.latest.panel.promptCount}問の短いパネルです。有料プランの50問測定から北極星の記録を開始します。</p>
         ) : (
-          <div className="table-responsive">
+          <div className="table-responsive wt-table">
             <table>
               <thead><tr><th scope="col">AI</th><th scope="col">候補入り／取得成功</th><th scope="col">シェア</th><th scope="col">未取得・反復不足</th><th scope="col">同条件の推移</th></tr></thead>
               <tbody>
@@ -101,32 +134,31 @@ function TodayConclusion({ watch, change, meaningfulChanges, changeHeadline, cha
             </table>
           </div>
         )}
-        <p>今回：{formatDate(watch.northStar.measuredAt)}{watch.northStar.baselineMeasuredAt ? `／基準：${formatDate(watch.northStar.baselineMeasuredAt)}` : ""}。条件が一致しない回答は推移に含めません。</p>
-      </section>
-
-      <section className="watch-summary shell">
-        <div>
-          <span>自社が候補に含まれた質問</span>
-          <strong>{change.after.label}</strong>
-          <small>{change.comparable ? `初回（基準）${change.baselineShortlisted}問 → 今回${change.latestShortlisted}問（AIの回答の過半数で判定）` : "比較不可・今回の取得成功分のみ表示"}</small>
+        <div className="wt-stats">
+          <div>
+            <span>名前が出た質問</span>
+            <strong>{change.after.label}</strong>
+            <small>{change.comparable ? `初回（基準）${change.baselineShortlisted}問 → 今回${change.latestShortlisted}問` : "比較不可・今回の取得成功分のみ表示"}</small>
+          </div>
+          <div>
+            <span>名前が出なかった質問</span>
+            <strong>{change.after.successful ? `${change.latestLost} / ${change.after.successful}問` : "未測定"}</strong>
+            <small>{change.newPromptWins ? `初回（基準）候補外から変化 ${change.newPromptWins}問` : "候補外の質問"}</small>
+          </div>
+          <div>
+            <span>AIが参考にしたページ</span>
+            <strong>{change.comparable ? <>{change.baselineCitationCount} → {change.latestCitationCount}件</> : "比較不可"}</strong>
+            <small>{!change.comparable ? "取得状況・測定条件が一致せず比較不可" : change.newCitations ? `新しく確認 ${change.newCitations}件` : "取得した回答の参照元"}</small>
+          </div>
+          <div>
+            <span>候補回復率（補助指標）</span>
+            <strong>{!change.comparable || change.takeBackShare.value === null ? "—" : `${change.takeBackShare.value}%`}</strong>
+            <small>{!change.comparable || change.takeBackShare.value === null ? change.note : `${change.takeBackShare.recoveredPromptCount}/${change.takeBackShare.eligiblePromptCount}問を回復`}</small>
+          </div>
         </div>
-        <div>
-          <span>自社が候補外だった質問</span>
-          <strong>{change.after.successful ? `${change.latestLost} / ${change.after.successful}問` : "未測定"}</strong>
-          <small>{change.newPromptWins ? `初回（基準）候補外から変化 ${change.newPromptWins}問` : "候補外の質問"}</small>
-        </div>
-        <div>
-          <span>参照元URLの件数</span>
-          <strong>{change.comparable ? <>{change.baselineCitationCount} <b>→ {change.latestCitationCount}件</b></> : "比較不可"}</strong>
-          <small>{!change.comparable ? "取得状況・測定条件が一致せず比較不可" : change.newCitations ? `新しく確認 ${change.newCitations}件` : "取得した回答の参照元"}</small>
-        </div>
-        <div>
-          <span>候補回復率（補助指標）</span>
-          <strong><b>{!change.comparable || change.takeBackShare.value === null ? "—" : `${change.takeBackShare.value}%`}</b></strong>
-          <small>{!change.comparable || change.takeBackShare.value === null ? change.note : `${change.takeBackShare.recoveredPromptCount}/${change.takeBackShare.eligiblePromptCount}問を回復`}</small>
-        </div>
-      </section>
-    </>
+        <p className="wt-note">今回：{formatDate(watch.northStar.measuredAt)}{watch.northStar.baselineMeasuredAt ? `／基準：${formatDate(watch.northStar.baselineMeasuredAt)}` : ""}。条件が一致しない回答は推移に含めません。</p>
+      </div>
+    </section>
   );
 }
 
@@ -139,73 +171,11 @@ function WhatChanged({ watch, change, profileDestination, profileUrl }: {
 }) {
   return (
     <>
-      <section className="watch-chart-section">
-        <div className="shell">
-          <div className="section-heading-simple">
-            <p className="overline">AI推薦の推移レポート</p>
-            <h2>AI推薦枠の獲得と、ライバルとの比較</h2>
-            <p>{change.comparable ? `初回（基準）と同じ${watch.latest.panel.promptCount}問・同じ測定条件で、観測結果の変化を確認できます。` : `比較できませんでした。${change.note}`}</p>
-          </div>
-
-          {change.comparable ? (
-            <div className="watch-trend-cards-grid">
-              <div className="watch-trend-card trend-card-primary">
-                <div className="trend-card-head">
-                  <span className="trend-tag">候補回復率（補助指標）</span>
-                  <span className="trend-diff">{change.takeBackShare.value === null ? "比較不可" : `${change.takeBackShare.value}%`}</span>
-                </div>
-                <div className="trend-card-body">
-                  <div className="trend-num-row">
-                    <span className="trend-num-base">{change.takeBackShare.value === null ? "—" : `${change.takeBackShare.baselineLostPromptCount}問`}</span>
-                    <span className="trend-arrow">→</span>
-                    <span className="trend-num-latest">{change.takeBackShare.value === null ? "—" : `${change.takeBackShare.recoveredPromptCount}問回復`}</span>
-                  </div>
-                  <p className="trend-desc">初回に他社候補が先に含まれた質問のうち、今回、自社が候補に入った割合です。実顧客数・売上のシェアではありません。</p>
-                </div>
-              </div>
-
-              <div className="watch-trend-card">
-                <div className="trend-card-head">
-                  <span className="trend-tag">自社が候補外だった質問</span>
-                  <span className="trend-diff text-green">{change.latestLost - change.baselineLost > 0 ? "+" : ""}{change.latestLost - change.baselineLost}問</span>
-                </div>
-                <div className="trend-card-body">
-                  <div className="trend-num-row">
-                    <span className="trend-num-base">{change.baselineLost}問</span>
-                    <span className="trend-arrow">→</span>
-                    <span className="trend-num-latest text-green">{change.latestLost}問</span>
-                  </div>
-                  <p className="trend-desc">初回（基準）と今回で、自社が候補に含まれなかった質問の件数を比較しています。</p>
-                </div>
-              </div>
-
-              <div className="watch-trend-card">
-                <div className="trend-card-head">
-                  <span className="trend-tag">AI回答の参照元URL</span>
-                  <span className="trend-diff text-blue">{change.latestCitationCount - change.baselineCitationCount > 0 ? "+" : ""}{change.latestCitationCount - change.baselineCitationCount}件</span>
-                </div>
-                <div className="trend-card-body">
-                  <div className="trend-num-row">
-                    <span className="trend-num-base">{change.baselineCitationCount}件</span>
-                    <span className="trend-arrow">→</span>
-                    <span className="trend-num-latest text-blue">{change.latestCitationCount}件</span>
-                  </div>
-                  <p className="trend-desc">AI回答に含まれた参照元URLの件数です。Rovanページの採用や推薦を示すものではありません。</p>
-                  <Link href={profileDestination} target="_blank" rel="noreferrer" className="watch-inline-link">
-                    {profileUrl ? "配備したAI推薦データを確認 ↗" : "診断結果から公開情報を確認 ↗"}
-                  </Link>
-                </div>
-              </div>
-            </div>
-          ) : <p>比較値は未確定です。{change.note}</p>}
-        </div>
-      </section>
-
       <section className="watch-section shell">
         <div className="section-heading-simple">
-          <p className="overline">候補入りの変化</p>
-          <h2>初回（基準）と今回で、候補入り状況は変わったか。</h2>
-          <p>同じ質問・同じ測定条件で、今回新しく自社が候補に含まれた質問を記録しています。</p>
+          <p className="overline">今週の変化</p>
+          <h2>名前が出るようになった質問</h2>
+          <p>初回（基準）と同じ質問・同じ条件で比べています。名前が出た理由は、この結果だけでは断定できません。</p>
         </div>
 
         <div className="watch-won-prompts-container">
@@ -221,12 +191,6 @@ function WhatChanged({ watch, change, profileDestination, profileUrl }: {
                   <span className="won-tag-status">初回（基準）は自社が候補外 → 今回は候補に含まれた</span>
                 </div>
                 <p className="won-prompt-text">「{prompt.text}」</p>
-                <div className="won-item-foot">
-                  <span className="foot-reason-label">今回の観測：</span>
-                  <p className="foot-reason-text">
-                    この質問では、今回の測定で自社が候補に含まれました。理由や因果はこの結果だけでは断定できません。
-                  </p>
-                </div>
               </div>
             )) : <p className="watch-muted-note">{change.comparable ? "今回、新しく候補に入った質問はありません。" : `候補入りの変化は未確定です。${change.note}`}</p>}
           </div>
@@ -235,9 +199,9 @@ function WhatChanged({ watch, change, profileDestination, profileUrl }: {
 
       <section className="watch-section shell watch-competitor-monitor">
         <div className="section-heading-simple">
-          <p className="overline">回答に含まれた候補</p>
-          <h2>候補入り率と、初回（基準）からの変化。</h2>
-          <p>毎週の測定で、AI回答に含まれた対象企業と比較候補の変化を記録しています。実際の顧客シェアや市場順位ではありません。</p>
+          <p className="overline">ライバルとの比較</p>
+          <h2>ライバルと比べて、どう変わったか</h2>
+          <p>AIの答えに名前が出た割合です。お客さんの数や市場シェアではありません。</p>
         </div>
 
         {change.comparable ? (
@@ -266,7 +230,7 @@ function WhatChanged({ watch, change, profileDestination, profileUrl }: {
                   <td><strong>{watch.latest.recommendationCoverage}%</strong></td>
                   <td><span className="badge-gain">{watch.latest.recommendationCoverage - watch.baseline.recommendationCoverage > 0 ? "+" : ""}{watch.latest.recommendationCoverage - watch.baseline.recommendationCoverage}%</span></td>
                 </tr>
-                {change.competitorMovements.map((comp) => (
+                {visibleRivals(change.competitorMovements).map((comp) => (
                   <tr key={comp.name}>
                     <td><span>{comp.name}</span></td>
                     <td>{comp.baselineCoverage}%</td>
@@ -284,6 +248,7 @@ function WhatChanged({ watch, change, profileDestination, profileUrl }: {
                 ))}
               </tbody>
             </table>
+            {hiddenRivalCount(change.competitorMovements) ? <p className="wt-note wt-rival-more">ほか{hiddenRivalCount(change.competitorMovements)}社は、初回（基準）から変化がありません。</p> : null}
           </div>
         ) : <p>比較できませんでした。{change.note} 候補入り率の変化は未確定です。</p>}
       </section>
@@ -301,8 +266,8 @@ function NextActions({ change, primaryLoss, visibleChangePack }: {
     <section className="watch-section shell watch-change-pack">
       <div className="section-heading-simple">
         <p className="overline">次にやること</p>
-        <h2>次回の巡回で選ばれるための、優先度の高い一手</h2>
-        <p>今回の測定結果から、参照元ページに追加確認できる項目の案を作成します。公開プロフィールへは自動反映しません。</p>
+        <h2>来週に向けた、次の一手</h2>
+        <p>名前が出なかった質問に向けて、ページに足す内容の案をつくりました。この案は自動では公開されません。確認してから反映します。</p>
       </div>
 
       {change.comparable && primaryLoss ? (
@@ -345,7 +310,7 @@ function NextActions({ change, primaryLoss, visibleChangePack }: {
               ) : null}
               <footer>
                 <span>反映状況</span>
-                公開前の確認待ち（JSON-LD / Markdown）
+                公開前の確認待ち
               </footer>
             </article>
           ))}
@@ -668,26 +633,21 @@ function WatchViewClient({ sample, token, showSellerLinks }: { sample: boolean; 
         </div>
       </div>
 
-      <section className="watch-header">
-        <div className="shell">
-          <div className="watch-header-row">
-            <div>
-              <div className="watch-badge-wrap">
-                <span className="pill-badge">週次自動モニタリング</span>
-                <span className="pill-badge pill-badge-outline">{stopped ? "自動見守り停止中" : `${panelDescription(watch)} 毎週自動見守り`}</span>
-              </div>
+      <section className="rp-hero wt-hero">
+        <div className="shell rp-hero-inner">
+          <div className="wt-hero-row">
+            <div className="rp-hero-head">
+              <span className="rp-eyebrow">週次見守り ─ 毎週の報告{sample ? <em className="rp-sample">見本</em> : null}</span>
               <h1>{watch.latest.discovery.brandName}</h1>
-              <p>{stopped ? "自動見守りは停止中です。保存済みの測定結果を表示しています。" : `${watch.latest.panel.promptCount}問の固定パネルを同じ条件で毎週再測定し、AI回答の変化と比較候補の動きを記録しています。`}</p>
+              <p className="rp-hero-meta">
+                <span>{stopped ? "自動見守りは停止中です（保存済みの結果を表示）" : `${panelDescription(watch)}を同じ条件で毎週測定`}</span>
+                {stopped ? <span className="watch-status stopped"><i />停止中</span> : <span className="watch-status"><i />次の測定 {formatDate(watch.nextRunAt)}</span>}
+              </p>
             </div>
-            <div className="watch-header-actions">
+            <div className="wt-hero-actions">
               <Link className="button button-secondary" href={profileDestination} target="_blank" rel="noreferrer">
-                {profileUrl ? "配備したAI推薦データを確認 ↗" : "診断結果から公開情報を確認 ↗"}
+                {profileUrl ? "公開中のページを見る ↗" : "診断結果から公開情報を確認 ↗"}
               </Link>
-              {stopped ? (
-                <span className="watch-status stopped"><i />停止中</span>
-              ) : (
-                <span className="watch-status"><i />次回巡回 {formatDate(watch.nextRunAt)}</span>
-              )}
               {sample ? (
                 <Link className="button button-primary" href="/pricing">毎週、変化を見る <ArrowIcon /></Link>
               ) : (
@@ -698,6 +658,7 @@ function WatchViewClient({ sample, token, showSellerLinks }: { sample: boolean; 
               )}
             </div>
           </div>
+          {TodayVerdict({ change, meaningfulChanges, changeHeadline, changeDescription, stopped })}
         </div>
       </section>
 
@@ -716,13 +677,9 @@ function WatchViewClient({ sample, token, showSellerLinks }: { sample: boolean; 
         </section>
       ) : null}
 
-      {TodayConclusion({ watch, change, meaningfulChanges, changeHeadline, changeDescription, stopped })}
-
-      <ValueProofBoard key={readoutIdentity(sample, token)} sample={sample} token={token} revision={watch.updatedAt} />
+      {NextActions({ change, primaryLoss, visibleChangePack })}
 
       {WhatChanged({ watch, change, profileDestination, profileUrl })}
-
-      {NextActions({ change, primaryLoss, visibleChangePack })}
 
       <ProfileAutomationControls scanId={new URL(resultHref, "https://rovan.invalid").searchParams.get("id") || watch.baseline.scanId} watchToken={token} sample={sample} />
 
@@ -775,7 +732,22 @@ function WatchViewClient({ sample, token, showSellerLinks }: { sample: boolean; 
         ) : null}
       </section>
 
-      {DetailLog({ watch, stopped, sample })}
+      {/* くわしいデータ（北極星の表・回答ごとの結果・測定の記録）は最後にまとめて折りたたむ */}
+      <section className="rp-section rp-section--tint rp-details">
+        <div className="shell">
+          <details>
+            <summary>くわしいデータを見る（北極星の推移・質問ごとの結果・測定の記録）</summary>
+            <div className="rp-details-body">
+              {NorthStar({ watch, change })}
+
+              <ValueProofBoard key={readoutIdentity(sample, token)} sample={sample} token={token} revision={watch.updatedAt} />
+
+              {DetailLog({ watch, stopped, sample })}
+
+            </div>
+          </details>
+        </div>
+      </section>
 
       <ExecutiveReferralCard />
 

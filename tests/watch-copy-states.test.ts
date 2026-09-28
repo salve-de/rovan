@@ -84,7 +84,8 @@ test("incomplete Watch results do not turn missing answers into recommendation w
   const html = renderWatch(watch);
   assert.match(html, /比較できませんでした。/);
   assert.doesNotMatch(html, /問で、自社が新しく推薦候補に入りました。/);
-  const summary = html.match(/<section class="watch-summary shell">([\s\S]*?)<\/section>/)?.[1] || "";
+  // 補助の数字（名前が出た質問・出なかった質問・参照元・回復率）の欄
+  const summary = html.match(/<div class="wt-stats">([\s\S]*?)<p class="wt-note">/)?.[1] || "";
   assert.match(summary, /未取得|未確定|比較不可/);
 });
 

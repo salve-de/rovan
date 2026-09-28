@@ -4896,3 +4896,55 @@ svg { width: 1.1em; height: 1.1em; }
 @media (max-width: 900px) {
   .report-page .report-watch-inner { grid-template-columns: 1fr; gap: 28px; }
 }
+
+/* page: watch（週次見守り） */
+.wt-hero-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; }
+.wt-hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.wt-verdict { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 24px; background: var(--bg); border: 1px solid var(--border); border-radius: 20px; padding: 28px; }
+.wt-verdict-main { display: flex; flex-direction: column; gap: 10px; }
+.wt-verdict-label { font-size: 15px; font-weight: 700; color: var(--brand); }
+.wt-verdict h2 { margin: 0; font-size: clamp(22px, 2.8vw, 30px); line-height: 1.45; color: var(--navy); }
+.wt-verdict p { margin: 0; font-size: 14px; line-height: 1.7; color: var(--text-subtle); }
+.wt-verdict-state { display: inline-flex; align-items: center; gap: 8px; margin-top: 4px; font-size: 14px; }
+.wt-verdict-state i { width: 10px; height: 10px; border-radius: 50%; background: var(--border-strong); }
+.wt-verdict.has-change .wt-verdict-state i { background: var(--brand); }
+.wt-verdict-state small { color: var(--text-subtle); }
+.wt-verdict-figure { display: flex; flex-direction: column; align-items: center; gap: 8px; background: var(--mint-panel); border-radius: 16px; padding: 18px; }
+.wt-verdict-figure-label { font-size: 14px; font-weight: 700; color: var(--navy); }
+.wt-bars { display: flex; align-items: flex-end; justify-content: center; gap: 28px; height: 120px; width: 100%; }
+.wt-bar { position: relative; width: 64px; border-radius: 8px 8px 0 0; }
+.wt-bar b { position: absolute; top: -24px; left: 0; right: 0; text-align: center; font-size: 16px; color: var(--navy); }
+.wt-bar--before { background: var(--border-strong); }
+.wt-bar--after { background: var(--brand); }
+.wt-bars-axis { display: flex; justify-content: center; gap: 28px; width: 100%; font-size: 12px; color: var(--text-subtle); }
+.wt-bars-axis span { width: 64px; text-align: center; }
+.wt-verdict-diff { font-family: var(--font-heading-family); font-size: 22px; color: var(--navy); }
+.wt-verdict-figure small { font-size: 12px; color: var(--text-subtle); text-align: center; }
+.wt-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; width: 100%; }
+.wt-stats > div { display: flex; flex-direction: column; gap: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 18px; }
+.wt-stats span { font-size: 14px; font-weight: 700; color: var(--text-muted); }
+.wt-stats strong { font-family: var(--font-heading-family); font-size: 22px; color: var(--navy); line-height: 1.3; }
+.wt-stats small { font-size: 12px; color: var(--text-subtle); line-height: 1.6; }
+.wt-note { margin: 0; text-align: center; font-size: 13px; color: var(--text-subtle); }
+.wt-table { width: 100%; }
+@media (max-width: 900px) {
+  .wt-verdict { grid-template-columns: 1fr; }
+  .wt-stats { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 640px) {
+  .wt-verdict { padding: 18px; }
+  .wt-stats { grid-template-columns: 1fr; }
+}
+/* 週次見守り・診断レポート内の見出しをホームと同じ書体・大きさに統一 */
+.watch-page h1, .watch-page h2, .watch-page h3 { font-family: var(--font-heading-family); word-break: auto-phrase; text-wrap: balance; }
+.watch-page p, .watch-page li, .watch-page td { word-break: auto-phrase; text-wrap: pretty; }
+.watch-page .watch-section { padding-top: var(--sp-8); padding-bottom: var(--sp-2); }
+.watch-page .section-heading-simple, .watch-page .watch-section > .overline + h2 { margin-bottom: var(--sp-3); }
+.watch-page .section-heading-simple .overline, .watch-page .watch-section > .overline { font-size: 15px; font-weight: 700; color: var(--brand); letter-spacing: 0; text-transform: none; }
+.watch-page .section-heading-simple h2, .watch-page .watch-section > h2 { font-size: clamp(22px, 2.8vw, 30px); line-height: 1.45; color: var(--navy); letter-spacing: 0; margin: 8px 0; }
+.watch-page .section-heading-simple p { font-size: 15px; line-height: 1.8; color: var(--text-muted); }
+.wt-bars-axis span { width: 84px; }
+.wt-bars { gap: 48px; }
+.wt-bars-axis { gap: 28px; }
+.wt-auto-note { font-size: 13px !important; color: var(--text-subtle) !important; }
+.wt-rival-more { margin-top: 12px; text-align: left; }
