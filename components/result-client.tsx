@@ -62,7 +62,7 @@ function ResultView({ sample, scanId }: { sample: boolean; scanId: string | null
     const controller = new AbortController();
     lifecycle.current = controller;
     if (sample) return () => controller.abort();
-    if (!scanId) { setError("診断IDがありません。"); setLoading(false); return () => controller.abort(); }
+    if (!scanId) { setError("開いたリンクに診断結果の情報が含まれていません。"); setLoading(false); return () => controller.abort(); }
     fetch(`/api/scans/${encodeURIComponent(scanId)}`, { cache: "no-store", signal: controller.signal })
       .then(async (response) => {
         const data = await response.json() as ScanRecord & { error?: string };
@@ -91,7 +91,7 @@ function ResultView({ sample, scanId }: { sample: boolean; scanId: string | null
   }
 
   if (loading) return <div className="full-loading">診断結果を読み込んでいます。</div>;
-  if (!result) return <main className="empty-page"><SiteHeader compact /><div className="shell empty-content"><h1>診断結果を表示できません。</h1><p>{error}</p><Link className="button button-primary" href="/">診断へ戻る</Link></div></main>;
+  if (!result) return <main className="empty-page"><SiteHeader compact /><div className="shell empty-content"><h1>診断結果を表示できません。</h1><p>{error}</p><p><Link className="button button-primary" href="/">新しく無料診断する</Link> <Link className="button" href="/manage">過去の結果を開く</Link></p></div></main>;
 
   const topCompetitor = result.competitors[0];
   const primaryLoss = result.lostPrompts[0];
@@ -271,7 +271,7 @@ function ResultView({ sample, scanId }: { sample: boolean; scanId: string | null
         </div>
         <div>
           <div className="summary-stats">
-            <div><span>自社が候補に含まれた質問（成功回答の多数決）</span><strong>{readout.label}</strong></div>
+            <div><span>自社が候補に含まれた質問（AIの回答の過半数で判定）</span><strong>{readout.label}</strong></div>
             <div><span>回答に多く含まれた他社候補</span><strong>{topCompetitor?.name || "—"}</strong></div>
             <div><span>確認した参照元URL</span><strong>{citationCount}件</strong></div>
             <div><span>週次見守り</span><strong className="summary-unconnected">登録後に毎週測定</strong></div>

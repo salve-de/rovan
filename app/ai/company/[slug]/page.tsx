@@ -225,7 +225,7 @@ export default async function PublicCompanyPage({ params, searchParams }: PagePr
           <p>Rovan 公開情報参照ページ · 最終更新: {dateLabel(profile.updatedAt)}</p>
           {seller.email ? <p className="disclaimer-text" style={{ fontSize: "0.72rem", color: "#64748b", marginTop: "10px", lineHeight: 1.6 }}>
             【掲載照会・非公開申請】本ページは、{sourceTargetIsRovan ? "入力された内容を整理したページ" : "確認時点に参照元ページから整理した公開情報のスナップショット"}です。特定の生成AIによる回答・推薦・掲載順位、問い合わせ数、売上を保証するものではありません。掲載内容の確認・非公開（掲載停止）のご要望、最新情報への更新照会は{" "}
-            <a href={seller.email ? `mailto:${seller.email}?subject=${encodeURIComponent(`【掲載照会・非公開申請】${profile.brandName}の公開情報参照ページについて`)}` : "/support"} style={{ color: "#0284c7", textDecoration: "underline" }}>
+            <a href={seller.email ? `mailto:${seller.email}?subject=${encodeURIComponent(`【掲載照会・非公開申請】${profile.brandName}の公開情報参照ページについて`)}` : "/manage"} style={{ color: "#0284c7", textDecoration: "underline" }}>
               お問い合わせ窓口{seller.email ? `（${seller.email}）` : ""}
             </a>
             {" "}までご連絡ください。

@@ -246,10 +246,10 @@ export function QuestionList({ result }: { result: ScanResult }) {
                   aria-expanded={isExpanded}
                 >
                   <span>{isExpanded ? "▲" : "▼"}</span>
-                  <span>{isExpanded ? "判定根拠・参照元を閉じる" : "判定根拠・参照元を確認する（検証ログ）"}</span>
+                  <span>{isExpanded ? "AIの回答と参照元を閉じる" : "AIの回答と参照元を見る"}</span>
                 </button>
                 <span style={{ fontSize: "0.72rem", color: "var(--text-muted, #94a3b8)", fontFamily: "var(--font-mono, monospace)" }}>
-                  AUDIT: {loss.observations.length} MODELS OBSERVED
+                  {loss.observations.length}件のAI回答を確認
                 </span>
               </div>
 
@@ -268,7 +268,7 @@ export function QuestionList({ result }: { result: ScanResult }) {
                 >
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px", borderBottom: "1px solid #e2e8f0", paddingBottom: "8px", flexWrap: "wrap", gap: "6px" }}>
                     <strong style={{ color: "var(--navy, #0f172a)", fontSize: "0.84rem" }}>
-                      AI回答ログ ＆ 参照元URL一覧（検証ログ）
+                      AIの回答と参照元URL
                     </strong>
                     <span style={{ fontSize: "0.74rem", color: "var(--text-muted, #64748b)" }}>
                       入力質問: 「{loss.prompt}」

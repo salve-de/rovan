@@ -56,11 +56,6 @@ export function BillingClient() {
   return <div className="billing-panel">
     <form onSubmit={submit}>
       <div className="billing-icon"><LockIcon /></div>
-      <span style={{ fontSize: "0.75rem", fontWeight: 800, background: "#0f172a", color: "#ffffff", padding: "3px 10px", borderRadius: "4px", display: "inline-block", marginBottom: "8px" }}>
-        画面種別：ご契約・お支払い管理
-      </span>
-      <h2>AI推薦・自動見守りプランのご契約管理</h2>
-      <p>お支払い方法の変更、請求書・領収書の発行、次回更新日の確認、解約手続きをStripeの管理画面で行えます。</p>
       {watch ? (
         <div className="billing-watch-summary" style={{ marginBottom: "20px" }}>
           <span>ログイン中</span>
@@ -83,7 +78,7 @@ export function BillingClient() {
         </div>
       )}
       <input type="hidden" value={token} disabled={busy} onChange={(event) => { setWatch(null); setToken(event.target.value); }} />
-      <button className="button button-dark" type="submit" disabled={busy || !token || !watch} hidden={!token}>
+      <button className="button button-dark" type="submit" disabled={busy || !token || !watch} style={token ? undefined : { display: "none" }}>
         {busy ? "準備中…" : watch ? <>契約・決済管理画面を開く <ArrowIcon /></> : "契約情報を確認しています…"}
       </button>
       {message ? <p className="form-error" role="status">{message}</p> : null}

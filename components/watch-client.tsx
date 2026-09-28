@@ -383,7 +383,7 @@ function WatchViewClient({ sample, token }: { sample: boolean; token: string }) 
         <div>
           <span>自社が候補に含まれた質問</span>
           <strong>{change.after.label}</strong>
-          <small>{change.comparable ? `初回（基準）${change.baselineShortlisted}問 → 今回${change.latestShortlisted}問（成功回答の多数決）` : "比較不可・今回の取得成功分のみ表示"}</small>
+          <small>{change.comparable ? `初回（基準）${change.baselineShortlisted}問 → 今回${change.latestShortlisted}問（AIの回答の過半数で判定）` : "比較不可・今回の取得成功分のみ表示"}</small>
         </div>
         <div>
           <span>自社が候補外だった質問</span>

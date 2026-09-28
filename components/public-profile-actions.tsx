@@ -179,7 +179,7 @@ export function PublicProfileActions({ result, sample = false, selectedStrategyI
       {/* Rovanからの分析所見 */}
       <div className="rovan-hot-advice-card">
         <div className="hot-advice-header">
-          <span className="hot-advice-tag">戦略分析所見：看板選定の論理的根拠</span>
+          <span className="hot-advice-tag">この強みを選んだ理由</span>
           <h4>「{strategies[selectedStrategy]?.name || "固有の特徴"}」を軸に、大手と差別化する</h4>
         </div>
         <p className="hot-advice-body">
@@ -191,7 +191,7 @@ export function PublicProfileActions({ result, sample = false, selectedStrategyI
       {/* 無料枠 vs フル見守りプラン 機能格差スペック表 */}
       <div className="plan-comparison-box">
         <div className="plan-comparison-header">
-          <span className="spec-table-tag">運用仕様・スペック比較</span>
+          <span className="spec-table-tag">無料診断と週次見守りの違い</span>
           <h4>無料診断と週次見守りの提供範囲</h4>
           <p>公開情報の下書き確認と、同じ条件でのAI回答の継続測定を分けて案内しています。</p>
         </div>
