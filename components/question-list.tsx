@@ -128,7 +128,7 @@ export function QuestionList({ result }: { result: ScanResult }) {
               {isExpanded ? (
                 <div className="question-evidence-panel">
                   <div className="question-evidence-head">
-                    <strong>AIの回答と参照元URL</strong>
+                    <strong>AIの答えと、参考にされたページ</strong>
                     <span>入力質問: 「{loss.prompt}」</span>
                   </div>
 
@@ -154,7 +154,7 @@ export function QuestionList({ result }: { result: ScanResult }) {
                         {/* AI回答に含まれた参照元URL */}
                         {obs.citations && obs.citations.length > 0 ? (
                           <div>
-                            <span className="question-evidence-citations-label">AI回答に含まれた参照元URL（Web Search Sources）:</span>
+                            <span className="question-evidence-citations-label">AIが参考にしたページ:</span>
                             <ul className="question-evidence-citations">
                               {obs.citations.map((cite: Citation, cIdx: number) => (
                                 <li key={cIdx}>
@@ -166,7 +166,7 @@ export function QuestionList({ result }: { result: ScanResult }) {
                             </ul>
                           </div>
                         ) : (
-                          <span className="question-evidence-citations-empty">※ この回答では参照元URLを取得できませんでした。</span>
+                          <span className="question-evidence-citations-empty">※ この答えでは、参考にしたページを取得できませんでした。</span>
                         )}
                       </div>
                     ))}

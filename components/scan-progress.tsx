@@ -259,6 +259,7 @@ export function ScanProgress() {
   if (phase === "no_input") {
     return <main className="scan-page">
       <SiteHeader compact />
+      <ScanSteps current={1} />
       <section className="scan-stage shell scan-resolve-stage">
         <div className="scan-stage-main scan-resolve-main">
           <p className="overline">診断先が未入力です</p>
@@ -276,28 +277,28 @@ export function ScanProgress() {
     const isDirectPreview = phase === "direct_preview";
 
     const badgeText = isSocial
-      ? (socialInfo.displayLabel || "Instagram連携")
+      ? (socialInfo.displayLabel || "Instagramから")
       : isProduct
       ? "商品・サービス"
       : isDirectPreview
       ? "公開前の確認"
-      : "参照元サイト未指定";
+      : "ホームページなし";
 
     const titleText = isSocial
-      ? `Instagram「${displayInput(rawInput)}」の公開情報ページを確認`
+      ? `Instagram「${displayInput(rawInput)}」から診断を始めます`
       : isProduct
-      ? `商品「${displayInput(rawInput)}」の公開情報ページを確認`
+      ? `「${displayInput(rawInput)}」の診断を始めます`
       : isDirectPreview
-      ? `「${displayInput(directBrandName || rawInput)}」の公開前確認`
-      : `「${displayInput(rawInput)}」の公開情報ページを下書き作成`;
+      ? `「${displayInput(directBrandName || rawInput)}」のページを確認してください`
+      : `「${displayInput(rawInput)}」の診断を始めます`;
 
     const descText = isSocial
-      ? "入力されたSNS情報をもとに、公開情報ページの下書きを作成します。SNSの投稿内容を自動で事実として転載せず、公開する内容は確認後に決められます。"
+      ? "Instagramの公開情報をもとに、AIが読める御社のページの下書きをつくります。載せる内容はあなたが確認してから決めます。公開したあと、そのページをもとにAIの答えを診断します。"
       : isProduct
-      ? "入力された商品・サービス名をもとに、公開情報ページの下書きを作成します。用途・価格・実績など、入力や参照元で確認できない内容は補いません。"
+      ? "入力された商品・サービス名をもとに、AIが読めるページの下書きをつくります。価格・実績など、確認できない内容は補いません。公開したあと、AIの答えを診断します。"
       : isDirectPreview
-      ? "下書きの内容を確認してから公開できます。公開後も、AIの回答・推薦・順位や集客成果は保証されません。"
-      : "参照元サイトが見つからない場合も、入力された名称だけで公開情報ページの下書きを作成できます。内容は公開前に確認してください。";
+      ? "下書きの内容を確かめてから公開できます。公開したあと、このページをもとにAIの答えを診断します。AIの答え・順位・集客は保証しません。"
+      : "ホームページは見つかりませんでしたが、店名だけでも大丈夫です。まずAIが読める御社のページの下書きをつくり、公開したあと、そのページをもとにAIの答えを診断します。";
 
     const brandLabel = isSocial
       ? "店舗名・屋号・ブランド名"
@@ -305,7 +306,7 @@ export function ScanProgress() {
       ? "商品名・サービス名（ブランド名）"
       : "会社名・屋号（表示名）";
 
-    const buttonText = isDirectPreview ? "内容を確認して公開する" : "公開情報ページの下書きを作成する";
+    const buttonText = isDirectPreview ? "内容を確認して公開する" : "この名前で下書きをつくる（無料）";
 
     const noteText = isSocial
       ? "※公開する情報は事実確認後に決めてください。RovanはAIの回答・推薦・順位や成果を保証しません。"
@@ -317,6 +318,7 @@ export function ScanProgress() {
       <main className="scan-page">
         <SiteHeader compact />
         <section className="direct-entry-stage shell">
+          <ScanSteps current={1} />
           <div className="no-site-card">
             <div className="no-site-tag-row">
               <span className={`no-site-tag${isSocial ? " no-site-tag--social" : isProduct ? " no-site-tag--product" : ""}`}>
@@ -341,7 +343,7 @@ export function ScanProgress() {
 
             <div className="no-site-action-row">
               <div className="no-site-target-brand">
-                <span>登録対象：</span>
+                <span>この名前で進みます</span>
                 <strong>{socialInfo.displayLabel || directBrandName || rawInput}</strong>
               </div>
               <button
@@ -415,7 +417,7 @@ export function ScanProgress() {
             </fieldset>
             <div className="scan-resolve-actions">
               <button className="button button-primary scan-resolve-start" type="button" disabled={!selectedUrl} onClick={() => void startScan(selectedUrl)}>このサイトを確定して診断する <span aria-hidden="true">→</span></button>
-              <button className="button button-secondary scan-resolve-alt-btn" type="button" onClick={() => setPhase("no_site")}>自社サイトがない・候補にない（直接発行する）</button>
+              <button className="button button-secondary scan-resolve-alt-btn" type="button" onClick={() => setPhase("no_site")}>この中にない・ホームページがない</button>
             </div>
             <p className="scan-resolve-note">※ドメインとサイト内容を確認してから確定するため、同名他社との取り違えを避けやすくなります。</p>
           </> : null}
@@ -446,6 +448,7 @@ export function ScanProgress() {
 
   return <main className="scan-page">
     <SiteHeader compact />
+    <ScanSteps current={2} />
     <section className="scan-stage shell">
       <div className="scan-stage-main">
         <p className="overline">診断中</p>
@@ -468,4 +471,18 @@ export function ScanProgress() {
       })}</ol><p className="scan-stage-note">サイトの内容とAIの回答を順番に照合しています。完了すると結果ページへ移動します。</p></div>
     </section>
   </main>;
+}
+
+/** 診断までの3ステップと現在地（「無料で診断」を押した約束と画面をつなぐ） */
+function ScanSteps({ current }: { current: 1 | 2 | 3 }) {
+  const labels = ["診断先の確認", "AIに聞いて調べる", "結果を見る"];
+  return (
+    <ol className="scan-steps shell" aria-label="診断の流れ">
+      {labels.map((label, index) => {
+        const step = index + 1;
+        const state = step < current ? "done" : step === current ? "current" : "todo";
+        return <li key={label} className={`scan-steps-item is-${state}`} aria-current={state === "current" ? "step" : undefined}><span>{state === "done" ? "✓" : step}</span>{label}{state === "current" ? <em>今ここ</em> : null}</li>;
+      })}
+    </ol>
+  );
 }

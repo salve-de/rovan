@@ -15,6 +15,7 @@ export function MarketingShell({
   art,
   heroExtra,
   layout = "document",
+  compact = false,
   children,
 }: {
   eyebrow: ReactNode;
@@ -23,12 +24,14 @@ export function MarketingShell({
   art?: ReactNode;
   heroExtra?: ReactNode;
   layout?: "document" | "sections";
+  /** ログイン・管理など作業するページ。見出しを小さくし、入力欄を最初の画面に入れる */
+  compact?: boolean;
   children: ReactNode;
 }) {
   return (
     <main className="pg-page">
       <SiteHeader compact />
-      <section className="pg-hero">
+      <section className={`pg-hero${compact ? " pg-hero--compact" : ""}`}>
         <div className={`shell pg-hero-inner${art ? " pg-hero-inner--art" : ""}`}>
           <div className="pg-hero-copy">
             <span className="pg-eyebrow">{eyebrow}</span>

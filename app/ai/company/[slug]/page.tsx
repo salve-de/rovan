@@ -57,7 +57,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
 
   const description = profile.summary || `${profile.brandName}の公開情報を確認できます。`;
   return {
-    title: sample ? `${profile.brandName} AI推薦データ（見本）` : profile.title,
+    title: sample ? `${profile.brandName} 公開情報ページ（見本）` : profile.title,
     description,
     alternates: { canonical: `${siteUrl}/ai/company/${encodeURIComponent(profile.slug)}` },
     robots: sample ? { index: false, follow: false, noarchive: true } : { index: true, follow: true, noarchive: true },

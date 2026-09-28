@@ -272,8 +272,8 @@ function ReportHero({
             </div>
             <div className="rp-verdict-card">
               <span>名前が出た質問</span>
-              <strong className="rp-verdict-label">{readout.label}</strong>
-              <em>AIの答えの過半数で判定</em>
+              <strong>{readout.included}<small>問</small></strong>
+              <em>{readout.label}・AIの答えの過半数で判定</em>
             </div>
             <div className="rp-verdict-card">
               <span>いちばん多くすすめられた会社</span>
@@ -284,6 +284,16 @@ function ReportHero({
         ) : (
           <p className="rp-verdict-empty">公開ページの情報は確認しました。AIの答えの測定はまだ終わっていないため、名前が出たかどうかは未判定です。</p>
         )}
+
+        {hasMeasurement && readout.excluded > 0 ? (
+          <div className="rp-hero-cta">
+            <p><strong>大手と戦わなくても、御社の強みで取り返せます。</strong>名前が出なかった質問に向けて、AIが読めるページを無料でつくれます。</p>
+            <div className="rp-hero-cta-actions">
+              <a className="button button-primary" href="#step-2">取り返す準備を始める（無料） <ArrowIcon /></a>
+              <a className="button button-secondary" href="#step-1-details">先にくわしく見る</a>
+            </div>
+          </div>
+        ) : null}
 
         <ReportActions result={result} sample={sample} />
       </div>
@@ -303,7 +313,7 @@ function ReportRanking({ result }: { result: ScanResult }) {
   const max = Math.max(1, ...shown.map((row) => row.count));
 
   return (
-    <section className="rp-section rp-section--white">
+    <section id="step-1-details" className="rp-section rp-section--white">
       <div className="shell">
         <div className="rp-head">
           <span className="rp-eyebrow">1. 御社は、何番目？</span>

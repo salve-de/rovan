@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { MarketingShell } from "@/components/marketing-shell";
@@ -13,8 +14,8 @@ export const metadata: Metadata = {
 export default function LoginPage() {
   const googleEnabled = Boolean(env.googleClientId);
   return (
-    <MarketingShell
-      eyebrow="ログイン"
+    <MarketingShell compact
+      art={<Image src="/illustrations/phone-in-hand.svg" alt="" width={300} height={300} priority />} eyebrow="ログイン"
       title="Rovan アカウントへログイン。"
       lead={googleEnabled
         ? "パスワードの記憶は不要です。Googleアカウント、またはメールアドレスへの直通リンクで1クリックで安全にログインできます。"

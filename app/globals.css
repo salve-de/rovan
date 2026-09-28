@@ -4086,3 +4086,27 @@ svg { width: 1.1em; height: 1.1em; }
   .home-easy-steps strong { font-size: 17px; }
   .home-final-cta { padding: var(--sp-6) 0; }
 }
+
+/* 診断の流れ（3ステップと現在地） */
+.scan-steps { list-style: none; display: flex; justify-content: center; gap: 8px; margin: 28px auto 8px; padding: 0; flex-wrap: wrap; }
+.scan-steps-item { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: var(--text-subtle); background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 8px 16px 8px 8px; }
+.scan-steps-item span { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--border); color: var(--text-muted); font-size: 13px; }
+.scan-steps-item.is-current { color: var(--navy); border-color: var(--brand); background: var(--brand-soft); }
+.scan-steps-item.is-current span { background: var(--brand); color: var(--bg); }
+.scan-steps-item.is-done span { background: var(--navy); color: var(--bg); }
+.scan-steps-item em { font-style: normal; font-size: 12px; color: var(--brand); }
+@media (max-width: 640px) { .scan-steps-item { font-size: 12px; padding: 6px 12px 6px 6px; } }
+.pg-hero--compact { padding: 32px 0 28px; }
+.pg-hero--compact h1 { font-size: clamp(24px, 3vw, 32px); }
+.pg-hero--compact .pg-hero-inner--art { grid-template-columns: minmax(0, 1fr) 180px; }
+.pg-hero--compact .pg-hero-art { max-width: 180px; }
+@media (max-width: 900px) { .pg-hero--compact .pg-hero-art { display: none; } }
+.no-site-card { border-left-color: var(--brand) !important; }
+.no-site-tag { background: var(--brand) !important; color: var(--bg) !important; }
+.rp-hero-cta { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; background: var(--navy); border-radius: 18px; padding: 20px 24px; }
+.rp-hero-cta p { margin: 0; max-width: 620px; font-size: 15px; line-height: 1.8; color: var(--border-strong); }
+.rp-hero-cta strong { display: block; font-family: var(--font-heading-family); font-size: 20px; color: var(--bg); }
+.rp-hero-cta-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.rp-hero-cta .button-secondary { background: transparent; color: var(--bg); border-color: rgba(255, 255, 255, 0.4); }
+@media (max-width: 640px) { .rp-hero-cta-actions, .rp-hero-cta-actions .button { width: 100%; } }
+.pg-hero--compact + .pg-doc { padding-top: var(--sp-4); }

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { Metadata } from "next";
 import { MarketingShell } from "@/components/marketing-shell";
 import { PageSection } from "@/components/page/page-section";
@@ -26,7 +27,7 @@ export default function MethodologyPage() {
   return (
     <MarketingShell
       layout="sections"
-      eyebrow="調べ方"
+      art={<Image src="/illustrations/forecast-data.svg" alt="" width={300} height={300} priority />} eyebrow="調べ方"
       title={<>同じ質問を、同じ条件で。<br />AIの答えを毎週くらべます。</>}
       lead="Rovanは、お客さんがAIに聞きそうな質問をつくり、答えに御社の名前が出たかを数えます。条件をそろえるので、前と今をそのまま比べられます。"
     >

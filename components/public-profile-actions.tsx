@@ -194,7 +194,7 @@ export function PublicProfileActions({ result, sample = false, selectedStrategyI
               onClick={() => void deployProfile()}
               disabled={busy !== ""}
             >
-              {busy === "deploy" ? "下書きを作成中…" : "AI推薦データの下書きを作成する"} <ArrowIcon />
+              {busy === "deploy" ? "下書きを作成中…" : "この強みでページの下書きをつくる（無料）"} <ArrowIcon />
             </button>
           ) : (
             <div className="saved-success-box">
@@ -208,7 +208,7 @@ export function PublicProfileActions({ result, sample = false, selectedStrategyI
                 {!sample && profileToken ? <ProfileManagementLink capability={{ profileId: profile.id, token: profileToken }} /> : null}
               </div> : null}
               <span className="saved-badge">
-                {sample ? "見本です。実際の公開・契約は行われません。" : isPublished ? "配備完了：AI推薦データを公開しました。" : "AI推薦データの下書きを作成しました。公開前に内容を確認してください。"}
+                {sample ? "見本です。実際の公開・契約は行われません。" : isPublished ? "公開しました：AIが読める御社のページができました。" : "AI推薦データの下書きを作成しました。公開前に内容を確認してください。"}
               </span>
               <div className="saved-links">
                 {isPublished ? (
@@ -219,7 +219,7 @@ export function PublicProfileActions({ result, sample = false, selectedStrategyI
                       target="_blank"
                       rel="noreferrer"
                     >
-                      配備したAI推薦データを確認する <ArrowIcon />
+                      公開したページを見る <ArrowIcon />
                     </Link>
                     <button
                       type="button"

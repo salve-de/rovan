@@ -80,7 +80,7 @@ export function BillingClient() {
       <div className="billing-cancel-note">
         <span>ご解約時に何が起きるか</span>
         <ul>
-          <li><strong>公開ページの自動更新：</strong>解約すると、AI推薦データ（公開ページ）の毎週の自動更新と掲載期限の延長が止まります。すでに設定されている掲載期限までは表示され、期限が来ると自動的に非公開になります。</li>
+          <li><strong>公開ページの自動更新：</strong>解約すると、公開ページの毎週の自動更新と掲載期限の延長が止まります。すでに設定されている掲載期限までは表示され、期限が来ると自動的に非公開になります。</li>
           <li><strong>保存データ：</strong>それまでの測定履歴・設定はRovan上に保存されたままです。削除をご希望の場合は、<Link href="/data-rights">データ管理画面</Link>からいつでも申請できます。</li>
         </ul>
       </div>

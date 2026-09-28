@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { ArrowIcon, LockIcon } from "@/components/icons";
+import { ArrowIcon } from "@/components/icons";
 
 const LOGIN_ERROR_MESSAGES: Record<string, string> = {
   expired: "ログインリンクの有効期限（15分）が切れています。もう一度メールアドレスを入力してください。",
@@ -64,7 +64,6 @@ export function LoginClient({ googleEnabled }: { googleEnabled: boolean }) {
 
   return (
     <div className="billing-panel login-panel">
-      <div className="billing-icon"><LockIcon /></div>
       <p className="login-panel-lead">診断結果・週次見守り・ご契約の管理画面を開きます。</p>
 
       {sent ? (
@@ -130,7 +129,7 @@ export function LoginClient({ googleEnabled }: { googleEnabled: boolean }) {
 
       <div className="login-panel-footer">
         <span>まだ診断がお済みでない方は</span>
-        <Link href="/">無料でAI推薦を診断する <ArrowIcon /></Link>
+        <Link href="/">無料で診断する <ArrowIcon /></Link>
       </div>
     </div>
   );
