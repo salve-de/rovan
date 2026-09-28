@@ -3,7 +3,6 @@ import { Suspense } from "react";
 import { MarketingShell } from "@/components/marketing-shell";
 import { LoginClient } from "@/components/login-client";
 import { env } from "@/lib/env";
-import "../utility.css";
 
 export const metadata: Metadata = {
   title: "ログイン",

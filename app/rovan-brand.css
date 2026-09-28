@@ -1,8 +1,0 @@
-/* Keep the full Rovan wordmark and navigation readable at narrow widths. */
-.site-header .brand { flex-shrink: 0; white-space: nowrap; }
-.mobile-menu { flex-shrink: 0; }
-.mobile-menu summary { white-space: nowrap; }
-@media (max-width: 480px) {
-  .header-inner { gap: 12px; }
-  .header-nav { display: none; }
-}

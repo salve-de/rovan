@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import "../utility.css";
 
 export const metadata: Metadata = { title: "契約管理", robots: { index: false, follow: false, noarchive: true } };
 

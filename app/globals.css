@@ -1,26 +1,47 @@
 :root {
-  --ink: #1e2a33;
-  --ink-soft: #52616b;
-  --muted: #7b8991;
-  --ink-2: #52616b;
-  --ink-3: #7b8991;
-  --paper: #f7f9fa;
-  --white: #ffffff;
-  --line: #dfe6e9;
-  --line-strong: #c7d2d8;
+  /* === デザインシステム基準トークン（docs/DESIGN_SYSTEM.md） === */
+  --text: #0f172a;
+  --text-muted: #475569;
+  --text-subtle: #64748b;
+  --bg: #ffffff;
+  --surface: #f8fafc;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --brand: #147a52;
+  --brand-soft: #e5f5ed;
   --navy: #102b43;
-  --navy-soft: #183b57;
-  --green: #147a52;
-  --green-bright: #37c98a;
-  --green-soft: #e5f5ed;
-  --mint: #37c98a;
-  --mint-soft: #e5f5ed;
-  --blue: #1769d3;
-  --blue-soft: #eaf2fc;
-  --orange: #bd5a2f;
-  --orange-soft: #fff1e9;
-  --danger: #bd5a2f;
+  --warn: #bd5a2f;
+  --warn-soft: #fff1e9;
+  --info: #1769d3;
+  --info-soft: #eaf2fc;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06), 0 2px 8px -2px rgba(15, 23, 42, 0.06);
   --shadow: 0 22px 60px rgba(25, 45, 57, .12);
+
+  /* === 旧トークン（既存表示を壊さないための互換エイリアス） === */
+  --ink: var(--text);
+  --ink-soft: var(--text-muted);
+  --muted: var(--text-subtle);
+  --ink-2: var(--text-muted);
+  --ink-3: var(--text-subtle);
+  --paper: var(--surface);
+  --white: var(--bg);
+  --line: var(--border);
+  --line-strong: var(--border-strong);
+  --navy-soft: #183b57;
+  --green: var(--brand);
+  --green-bright: #37c98a;
+  --green-soft: var(--brand-soft);
+  --mint: #37c98a;
+  --mint-soft: var(--brand-soft);
+  --blue: var(--info);
+  --blue-soft: var(--info-soft);
+  --orange: var(--warn);
+  --orange-soft: var(--warn-soft);
+  --danger: var(--warn);
 
   /* 8pt スペーシングシステム */
   --sp-1: 8px;
@@ -43,24 +64,23 @@
   --lh-snug: 1.45;
   --lh-relaxed: 1.75;
 
-  /* セマンティックカラー（60-30-10則） */
-  --bg-base: #ffffff;
-  --bg-surface: #f8fafc;
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #64748b;
-  --border-subtle: #e2e8f0;
-  
-  --color-brand: #0f172a;
+  /* セマンティックカラー（60-30-10則、旧トークンの互換エイリアス） */
+  --bg-base: var(--bg);
+  --bg-surface: var(--surface);
+  --text-primary: var(--text);
+  --text-secondary: var(--text-muted);
+  --border-subtle: var(--border);
+
+  --color-brand: var(--navy);
   --color-accent-blue: #0284c7;
   --color-danger: #dc2626;
   --color-danger-bg: #fef2f2;
   --color-success: #059669;
   --color-success-bg: #f0fdf4;
 
-  /* 角丸の統一（アフォーダンスの統制） */
-  --radius-card: 8px;
-  --radius-btn: 6px;
+  /* 角丸の統一（アフォーダンスの統制、旧トークンの互換エイリアス） */
+  --radius-card: var(--radius-md);
+  --radius-btn: var(--radius-sm);
   --radius-badge: 4px;
 }
 
@@ -190,7 +210,7 @@ svg { width: 1.1em; height: 1.1em; }
   gap: 10px;
   padding: 0 20px;
   border: 1px solid transparent;
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   font-size: .84rem;
   font-weight: 700;
   transition: transform .15s cubic-bezier(0.16, 1, 0.3, 1), background .15s ease, border-color .15s ease, box-shadow .15s ease;
@@ -198,30 +218,33 @@ svg { width: 1.1em; height: 1.1em; }
 .button:hover { transform: translateY(-1px); }
 .button:active { transform: translateY(0); }
 .button-primary {
-  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-  color: var(--white);
+  background: var(--brand);
+  color: var(--bg);
+  border-radius: var(--radius-md);
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 .button-primary:hover {
-  background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
+  background: #106242;
   box-shadow: 0 4px 12px rgba(15, 23, 42, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 .button-dark {
-  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-  color: var(--white);
+  background: linear-gradient(180deg, #1e293b 0%, var(--navy) 100%);
+  color: var(--bg);
+  border-radius: var(--radius-md);
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 .button-dark:hover {
   background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
 }
 .button-secondary {
-  background: #ffffff;
+  background: var(--bg);
   color: var(--navy);
-  border-color: #cbd5e1;
+  border-color: var(--border-strong);
+  border-radius: var(--radius-md);
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 .button-secondary:hover {
-  background: #f8fafc;
+  background: var(--surface);
   border-color: #94a3b8;
   box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
 }
@@ -6395,3 +6418,49 @@ svg { width: 1.1em; height: 1.1em; }
   text-align: center;
   font-weight: 600;
 }
+
+/* =========================================================
+   統合: rovan-brand.css
+   ========================================================= */
+/* Keep the full Rovan wordmark and navigation readable at narrow widths. */
+.site-header .brand { flex-shrink: 0; white-space: nowrap; }
+.mobile-menu { flex-shrink: 0; }
+.mobile-menu summary { white-space: nowrap; }
+@media (max-width: 480px) {
+  .header-inner { gap: 12px; }
+  .header-nav { display: none; }
+}
+
+/* =========================================================
+   統合: utility.css
+   ========================================================= */
+.billing-panel{max-width:720px;margin:0 auto}.billing-panel>form{padding:32px;border:1px solid var(--line);border-radius:16px;background:var(--white);box-shadow:0 18px 60px rgba(8,18,29,.08)}.billing-icon,.data-rights-icon{width:48px;height:48px;display:grid;place-items:center;border-radius:13px;background:var(--mint-soft);color:#087c5b}.billing-icon svg,.data-rights-icon svg{width:24px;height:24px}.billing-panel h2,.data-rights-grid h2{margin:20px 0 8px;font-size:1.5rem;letter-spacing:-.035em}.billing-panel form>p,.data-rights-grid form>p{color:var(--ink-2)}.billing-panel label,.data-rights-grid label{display:grid;gap:7px;margin:18px 0;color:var(--ink-2);font-size:.72rem;font-weight:800}.billing-panel input,.data-rights-grid input{width:100%;min-height:50px;padding:0 13px;border:1px solid var(--line);border-radius:9px;background:var(--paper);outline:0}.billing-panel input:focus,.data-rights-grid input:focus{border-color:#6b8290;box-shadow:0 0 0 3px rgba(57,230,172,.14)}.billing-watch-summary{margin:18px 0;padding:16px;border-left:4px solid var(--mint);background:#eef8f4}.billing-watch-summary span,.billing-watch-summary strong,.billing-watch-summary small{display:block}.billing-watch-summary span,.billing-watch-summary small{color:var(--ink-3);font-size:.62rem}.billing-watch-summary strong{margin:4px 0}.billing-panel .button{width:100%}.billing-note{margin-top:16px;color:var(--ink-3);font-size:.68rem}.document-link{display:inline-flex;margin-top:12px;padding-bottom:3px;border-bottom:1px solid var(--mint);font-weight:800}.data-rights-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.data-rights-grid>form{padding:28px;border:1px solid var(--line);border-radius:16px;background:var(--white)}.data-rights-icon.warning{background:var(--orange-soft);color:var(--danger)}.data-rights-grid .button{width:100%}.data-rights-message{grid-column:1/-1;margin:0;padding:15px 18px;border-left:4px solid var(--mint);border-radius:0 9px 9px 0;background:var(--white);color:var(--ink-2)}
+@media(max-width:760px){.data-rights-grid{grid-template-columns:1fr}.billing-panel>form,.data-rights-grid>form{padding:22px}}
+.data-rights-grid { align-items: start; }
+.data-rights-grid > p { grid-column: 1 / -1; margin: 0; }
+.data-rights-grid > .document-note { margin-top: 0 !important; }
+.management-entry { max-width: 800px; margin: 0 auto; padding: 24px; border: 1px solid var(--line); border-radius: 12px; background: var(--white); }
+
+/* =========================================================
+   共通UI部品（components/ui/*）— トークンのみ使用
+   ========================================================= */
+.ui-section { padding: var(--sp-8) 0; }
+.ui-section--surface { background: var(--surface); }
+.ui-section__head { max-width: 780px; margin-bottom: var(--sp-3); }
+.ui-section__head h2 { margin: 8px 0 12px; color: var(--navy); font-size: var(--text-h2); line-height: 1.25; letter-spacing: -.025em; font-weight: 700; }
+.ui-section__head p { margin: 0; color: var(--text-muted); font-size: .88rem; line-height: 1.65; }
+
+.ui-card { padding: var(--sp-3); border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg); box-shadow: var(--shadow-sm); }
+
+.ui-notice { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: var(--radius-sm); border-left: 4px solid var(--info); background: var(--info-soft); color: var(--text); font-size: .82rem; line-height: 1.6; }
+.ui-notice--warn { border-left-color: var(--warn); background: var(--warn-soft); }
+.ui-notice--success { border-left-color: var(--brand); background: var(--brand-soft); }
+
+.ui-badge { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: var(--radius-sm); background: var(--info-soft); color: var(--info); font-size: .68rem; font-weight: 700; }
+.ui-badge--warn { background: var(--warn-soft); color: var(--warn); }
+.ui-badge--success { background: var(--brand-soft); color: var(--brand); }
+
+.ui-stat { display: grid; gap: 4px; }
+.ui-stat__label { color: var(--text-subtle); font-size: .62rem; font-weight: 700; }
+.ui-stat__value { color: var(--text); font-size: 1.7rem; line-height: 1; letter-spacing: -.03em; font-weight: 700; }
+.ui-stat__note { color: var(--text-muted); font-size: .68rem; }

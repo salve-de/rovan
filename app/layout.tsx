@@ -3,7 +3,6 @@ import type { Metadata, Viewport } from "next";
 import { StructuredData } from "@/components/structured-data";
 import { siteUrl } from "@/lib/site";
 import "./globals.css";
-import "./rovan-brand.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

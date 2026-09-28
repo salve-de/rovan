@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { MarketingShell } from "@/components/marketing-shell";
 import { ManagementEntry } from "@/components/management-entry";
-import "../utility.css";
 
 export const metadata: Metadata = { title: "管理画面を開く", robots: { index: false, follow: false } };
 export default function ManagePage() {
