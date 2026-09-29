@@ -148,6 +148,7 @@ export function toPublicScanResult(result: ScanResult): PublicScanResult {
     evidenceGaps: result.evidenceGaps,
     actions: result.actions,
     visibilityAudit: result.visibilityAudit,
+    listingCheck: result.listingCheck,
     marketMap: result.marketMap,
     demandProxy: result.demandProxy,
     contentQuality: result.contentQuality,

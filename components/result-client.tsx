@@ -15,7 +15,7 @@ import { isNoSiteTarget } from "@/lib/no-site";
 import { WATCH_MONTHLY_PRICE_LABEL } from "@/lib/pricing";
 import { measurementReadout, readoutIdentity } from "@/lib/measurement-readout";
 import { aiAccessFixText, summarizeAiAccess, type AiAccessSummary } from "@/lib/ai-access";
-import type { LostPrompt, ScanRecord, ScanResult } from "@/lib/types";
+import type { ListingCheck, LostPrompt, ScanRecord, ScanResult } from "@/lib/types";
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("ja-JP", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Tokyo" }).format(new Date(value));
@@ -109,6 +109,7 @@ function ResultView({ sample, scanId, showSellerLinks, demo = false }: { sample:
     {/* ① 結論 → ② 御社は何番目か → ③ どの質問で負けているか（ホームの「無料の診断で分かる3つ」と同じ順） */}
     <ReportHero result={result} sample={sample} host={host} hasMeasurement={hasMeasurement} readout={readout} topCompetitorName={topCompetitor?.name} />
     {aiAccess?.status === "blocked" ? <AiAccessAlert summary={aiAccess} siteUrl={result.targetUrl} /> : null}
+    {result.listingCheck?.status === "mismatch" ? <ListingAlert check={result.listingCheck} /> : null}
     <ReportRanking result={result} />
     <ReportLosses result={result} primaryLoss={primaryLoss} primaryWinner={primaryWinner} />
 
@@ -380,7 +381,13 @@ function ReportDetails({ result, sample, aiAccess }: { result: ScanResult; sampl
               <div><small>質問</small><span>{result.panel.promptCount}問</span></div>
               <div><small>調べた日</small><span>{sample ? "見本" : formatDate(result.measuredAt)}</span></div>
               {aiAccess ? <div><small>AIのロボット</small><span>{aiAccess.status === "blocked" ? "読めない設定があります" : "ホームページを読めます"}</span></div> : null}
+              {result.listingCheck?.status === "match" ? <div><small>住所・電話番号</small><span>ネット上の情報と一致</span></div> : null}
             </div>
+            {result.listingCheck?.status === "notFound" ? (
+              <div className="rp-access-note">
+                <p>AIがネット上で、御社の住所・電話番号を見つけられませんでした。Googleビジネスプロフィール（Googleマップの店舗情報）に登録されているか、確かめてください。GeminiやGoogleのAIは、ここを主な情報源にしています。</p>
+              </div>
+            ) : null}
             {aiAccess?.status === "check" ? (
               <div className="rp-access-note">
                 <p>ホームページは Cloudflare を使っています。Cloudflare の初期設定では、AIのロボットが止められていることがあります。念のため、ホームページを作った会社に確認してください。</p>
@@ -404,6 +411,31 @@ function AiAccessAlert({ summary, siteUrl }: { summary: AiAccessSummary; siteUrl
       <strong>{names ? `${names}が、御社のホームページを読めない設定になっています。` : "トップページが、検索に出ない設定になっています。"}</strong>
       <p>このままでは、AIに名前が出にくくなります。ホームページを作った会社に、次の文面を送ってください。</p>
       <CopyFixText text={aiAccessFixText(summary, siteUrl)} />
+    </section>
+  );
+}
+
+const LISTING_FIELD = { phone: "電話番号", address: "住所" } as const;
+
+/** ネット上の電話番号・住所が、ホームページと違うとき（出典があるものだけ） */
+function ListingAlert({ check }: { check: ListingCheck }) {
+  const fields = check.items.map((item) => LISTING_FIELD[item.field]).join("と");
+  return (
+    <section className="shell rp-access-alert" role="alert">
+      <strong>ネット上の{fields}が、ホームページと違います。</strong>
+      <table className="rp-listing-table">
+        <thead><tr><th scope="col"></th><th scope="col">ホームページ</th><th scope="col">ネット上</th></tr></thead>
+        <tbody>
+          {check.items.map((item) => (
+            <tr key={item.field}>
+              <th scope="row">{LISTING_FIELD[item.field]}</th>
+              <td>{item.site}</td>
+              <td>{item.web}<a href={item.sourceUrl} target="_blank" rel="noreferrer">出典 ↗</a></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p>違っているほうを直してください。Googleマップの情報は、Googleビジネスプロフィールから直せます。情報が食い違うと、AIもお客さんも迷います。</p>
     </section>
   );
 }

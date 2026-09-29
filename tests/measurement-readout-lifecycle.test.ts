@@ -66,6 +66,7 @@ function harness(kind: "result" | "watch") {
     return loaded.exports;
   }
   mocks["@/lib/measurement-readout"] = load("lib/measurement-readout.ts");
+  mocks["@/lib/ai-access"] = load("lib/ai-access.ts");
   const component = load(`components/${kind}-client.tsx`)[kind === "watch" ? "WatchClient" : "ResultClient"];
   function render(nextQuery = query) {
     query = nextQuery;

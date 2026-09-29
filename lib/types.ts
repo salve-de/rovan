@@ -63,6 +63,13 @@ export type AiVisibilityCheck = {
   action: string;
 };
 
+/** ホームページの電話番号・住所と、ネット上（Googleマップ・ポータルなど）の情報の突き合わせ */
+export type ListingCheck = {
+  /** mismatch: 出典つきで食い違いあり / match: 一致 / notFound: ネット上で見つからない / unknown: 比べられなかった */
+  status: "match" | "mismatch" | "notFound" | "unknown";
+  items: Array<{ field: "phone" | "address"; site: string; web: string; sourceUrl: string }>;
+};
+
 export type AiVisibilityAudit = {
   generatedAt: string;
   readiness: "ready" | "needs-review" | "blocked";
@@ -343,6 +350,8 @@ export type ScanResult = {
   evidenceGaps: EvidenceGap[];
   actions: ActionCard[];
   visibilityAudit?: AiVisibilityAudit;
+  /** 電話番号・住所の食い違いの点検。古い記録や点検しなかった診断には無い */
+  listingCheck?: ListingCheck;
   positioning?: PositioningAdvice;
   /** Optional, pure summaries derived from the same public scan inputs. */
   marketMap?: MarketMap;

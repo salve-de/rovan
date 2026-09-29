@@ -355,6 +355,8 @@ function buildScanResultInternal(brandName: string, scanId: string, measuredAt: 
     evidenceGaps: fullGaps,
     actions: fullActions,
     visibilityAudit: fixtureVisibilityAudit(domain, measuredAt),
+    // 見本：ネット上の電話番号が、ホームページと違う例（番号・出典はどちらも架空）
+    listingCheck: { status: "mismatch", items: [{ field: "phone", site: "022-000-0000", web: "022-000-0001", sourceUrl: `https://maps.example/${domain.split(".")[0]}` }] },
     totalCostUsd: 0,
     warnings: [FIXTURE_WARNING, "12問×3種類のAI＝36回答の表示例です。数値はこのサンプル回答ログから集計しており、50問パネルの実測値ではありません。"],
   };

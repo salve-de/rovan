@@ -11,6 +11,7 @@ import { toPublicWatch } from "../lib/public-dto";
 import { northStarShare } from "../lib/north-star";
 import { takeBackShare } from "../lib/measurement";
 import * as measurementReadout from "../lib/measurement-readout";
+import * as aiAccess from "../lib/ai-access";
 import type { ScanResult, WatchRecord } from "../lib/types";
 import { ExecutiveDiagnosticSummary } from "../components/executive-diagnostic-summary";
 
@@ -183,6 +184,7 @@ function renderResult(result: ScanResult) {
     "@/lib/sample-data": { sampleResult: result },
     "@/lib/no-site": { isNoSiteTarget: () => false },
     "@/lib/measurement-readout": measurementReadout,
+    "@/lib/ai-access": aiAccess,
     "@/lib/pricing": { WATCH_MONTHLY_PRICE_LABEL: "¥19,800" },
     "@/components/executive-diagnostic-summary": { ExecutiveDiagnosticSummary },
     "@/components/icons": { ArrowIcon: empty, QuoteIcon: empty },

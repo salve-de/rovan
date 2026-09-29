@@ -3,6 +3,7 @@ import { crawlCompanySite, emptyCrawl } from "@/lib/crawler";
 import { demoMode } from "@/lib/demo-mode";
 import { isNoSiteTarget, noSiteInput } from "@/lib/no-site";
 import { discoverCompany, generateBuyerPrompts } from "@/lib/discovery";
+import { checkListing } from "@/lib/listing-check";
 import { runObservationPanel } from "@/lib/providers";
 import { buildScanResult } from "@/lib/scan-result";
 import { normalizePublicUrl } from "@/lib/url-security";
@@ -45,16 +46,21 @@ export async function runScan(input: {
   const prompts = input.prompts || await generateBuyerPrompts(discovery, promptCount, panelKind);
 
   await emit("measuring", 55, "AIに聞いています。", `${prompts.length}問`);
-  const observations = await runObservationPanel({
-    prompts,
-    discovery,
-    repetitions,
-    concurrency: input.observationConcurrency,
-    onProgress: async (completed, total) => emit("measuring", 55 + Math.round((completed / total) * 25), `AIに聞いています（${completed}/${total}）`, `${completed}/${total}`),
-  });
+  // 電話番号・住所の突き合わせは、AIへの質問と並行して1回だけ行う（失敗しても診断は続ける）
+  const [observations, listingCheck] = await Promise.all([
+    runObservationPanel({
+      prompts,
+      discovery,
+      repetitions,
+      concurrency: input.observationConcurrency,
+      onProgress: async (completed, total) => emit("measuring", 55 + Math.round((completed / total) * 25), `AIに聞いています（${completed}/${total}）`, `${completed}/${total}`),
+    }),
+    checkListing(discovery, crawl.pages).catch(() => ({ status: "unknown" as const, items: [] })),
+  ]);
 
   await emit("analyzing", 84, "結果をまとめています。");
   const result = await buildScanResult({ scanId: input.scanId, targetUrl: url, discovery, prompts, repetitions, panelKind, observations, pages: crawl.pages, crawlAudit: crawl.audit });
+  if (listingCheck.status !== "unknown") result.listingCheck = listingCheck;
   await emit("analyzing", 95, "もうすぐ終わります。", discovery.brandName);
   return result;
 }
