@@ -126,7 +126,7 @@ test("privacy query changes reset credentials/confirmation and submit only the n
   const pending = nodes(tree, "form")[1].props.onSubmit(event);
   assert.deepEqual(JSON.parse(String(h.calls[0].init.body)), { token: "B", email: "", confirmation: "DELETE ROVAN DATA" });
   h.calls[0].resolve(Response.json({ deleted: true })); await pending;
-  assert.match(JSON.stringify(h.render()), /測定履歴を削除しました/);
+  assert.match(JSON.stringify(h.render()), /削除しました/);
 });
 
 test("pasting a different privacy target resets email and confirmation", () => {
@@ -146,7 +146,7 @@ test("privacy aborts old exports/deletions and suppresses late downloads/message
     assert.equal(h.calls[0].init.signal?.aborted, true);
     h.calls[0].resolve(Response.json({ deleted: true })); await pending;
     assert.equal(h.downloads, 0); assert.equal(h.staleWrites, 0);
-    assert.doesNotMatch(JSON.stringify(h.render()), /削除しました|書き出しました/);
+    assert.doesNotMatch(JSON.stringify(h.render()), /削除しました|ダウンロードしました/);
     assert.ok(nodes(h.render(), "button").every(node => !node.props.disabled));
   }
 });

@@ -119,7 +119,7 @@ export function demoAnswer(input: { prompt: Pick<BuyerPrompt, "id" | "text">; di
     return {
       name: competitor.name,
       reason: industry.reasons[Math.floor(hash01(`${prompt.id}|${competitor.name}|reason`) * industry.reasons.length)],
-      citation: { title: `${competitor.name}（架空の比較候補）`, url: `https://${domain}/`, domain },
+      citation: { title: `${competitor.name}（架空）`, url: `https://${domain}/`, domain },
     };
   });
   if (ownIncluded) {
@@ -128,8 +128,8 @@ export function demoAnswer(input: { prompt: Pick<BuyerPrompt, "id" | "text">; di
     const ownUrl = citesRovan ? publishedUrl! : discovery.domain ? `https://${discovery.domain}/` : "";
     lines.splice(Math.min(position, lines.length), 0, {
       name: brand,
-      reason: citesRovan ? "Rovanの公開ページで、強みと条件が参照元つきで確認できる" : industry.reasons[Math.floor(hash01(`${key}|own-reason`) * industry.reasons.length)],
-      citation: ownUrl ? { title: citesRovan ? `${brand} 公開情報ページ（Rovan）` : `${brand} 公式サイト`, url: ownUrl, domain: new URL(ownUrl).hostname } : undefined,
+      reason: citesRovan ? "Rovanの公開ページで、強みと条件が出典つきで確認できる" : industry.reasons[Math.floor(hash01(`${key}|own-reason`) * industry.reasons.length)],
+      citation: ownUrl ? { title: citesRovan ? `${brand}（Rovanの公開ページ）` : `${brand} 公式サイト`, url: ownUrl, domain: new URL(ownUrl).hostname } : undefined,
     });
   }
 

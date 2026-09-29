@@ -9,39 +9,39 @@ export const dynamic = "force-dynamic";
 
 // Only our own validation message is safe to show verbatim; storage/provider
 // errors raised deeper in createWatch/updateWatch must not leak to the client.
-const SAFE_WATCH_MESSAGES = ["有効な会社メールを入力してください。"];
+const SAFE_WATCH_MESSAGES = ["メールアドレスを正しく入れてください。"];
 
 function normalizeEmail(value: string) {
   const email = value.trim().toLowerCase().slice(0, 254);
   if (!email) return "";
-  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) throw new Error("有効な会社メールを入力してください。");
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) throw new Error("メールアドレスを正しく入れてください。");
   return email;
 }
 
 export async function POST(request: Request) {
   try {
     const body = await request.json() as { scanId?: string; email?: string };
-    if (!body.scanId) return Response.json({ error: "診断結果が必要です。" }, { status: 400 });
+    if (!body.scanId) return Response.json({ error: "診断結果から始めてください。" }, { status: 400 });
     const email = body.email ? normalizeEmail(body.email) : "";
     const scan = await getScan(body.scanId);
     if (!scan?.result) return Response.json({ error: "診断結果が見つかりません。" }, { status: 404 });
-    if (!scan.result.successfulObservations) return Response.json({ error: "成功したAI観測がないためWatchを開始できません。API設定後に再測定してください。" }, { status: 409 });
+    if (!scan.result.successfulObservations) return Response.json({ error: "AIの答えを1つも取得できなかったため、見守りを始められません。もう一度診断してください。" }, { status: 409 });
     const watch = await createWatch(scan, email);
     const delivery = email ? await sendWatchStarted(watch) : { sent: false };
     return Response.json({ token: watch.token, watchUrl: `/watch?token=${encodeURIComponent(watch.token)}`, emailSent: delivery.sent }, { headers: { "cache-control": "no-store", "referrer-policy": "no-referrer" } });
   } catch (error) {
     console.error("Watch creation failed:", error);
-    return Response.json({ error: safeErrorMessage(error, "Watchを開始できませんでした。", SAFE_WATCH_MESSAGES) }, { status: 400 });
+    return Response.json({ error: safeErrorMessage(error, "見守りを始められませんでした。もう一度お試しください。", SAFE_WATCH_MESSAGES) }, { status: 400 });
   }
 }
 
 export async function PATCH(request: Request) {
   try {
     const body = await request.json() as { token?: string; email?: string };
-    if (!body.token) return Response.json({ error: "Watch tokenが必要です。" }, { status: 400 });
+    if (!body.token) return Response.json({ error: "管理用リンクから開いてください。" }, { status: 400 });
     const email = normalizeEmail(body.email || "");
     const updated = await updateWatch(body.token, { email });
-    if (!updated) return Response.json({ error: "Watchが見つかりません。" }, { status: 404 });
+    if (!updated) return Response.json({ error: "見守りが見つかりません。" }, { status: 404 });
     return Response.json({ ok: true, email: updated.email }, { headers: { "cache-control": "no-store" } });
   } catch (error) {
     console.error("Watch email update failed:", error);
@@ -51,9 +51,9 @@ export async function PATCH(request: Request) {
 
 export async function GET(request: Request) {
   const token = new URL(request.url).searchParams.get("token") || "";
-  if (!token) return Response.json({ error: "Watch tokenが必要です。" }, { status: 400 });
+  if (!token) return Response.json({ error: "管理用リンクから開いてください。" }, { status: 400 });
   const watch = await getWatch(token);
-  if (!watch) return Response.json({ error: "Watchが見つかりません。" }, { status: 404 });
+  if (!watch) return Response.json({ error: "見守りが見つかりません。" }, { status: 404 });
   const [run, profile] = await Promise.all([getActiveWatchRun(watch.id), getPublishedProfileForScan(watch.scanId)]);
   const publicWatch = toPublicWatch(watch);
   return Response.json({

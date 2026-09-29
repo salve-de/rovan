@@ -37,25 +37,25 @@ try {
   await go(`/scan?kind=product&input=${encodeURIComponent(`動作確認用架空サービス-${Date.now()}`)}`);
   await wait("先にAIが読めるページの下書きをつくる →");
   await click("button.scan-resolve-start");
-  await wait("内容を確認して公開する");
+  await wait("この内容で公開する");
   management = await js("return document.querySelector('a[href^=\"/profile/manage?profileId=\"]').getAttribute('href')");
   await shot("direct-draft");
   await click("button.scan-resolve-start");
-  await wait("状態：公開中");
+  await wait("公開中");
   assert.equal(await js("return location.pathname"), "/profile/manage");
   const publicPath = await js("return document.querySelector('a[href^=\"/ai/company/\"]').getAttribute('href')");
   const diagnostic = await js("return document.querySelector('a[href^=\"/scan?url=\"]').getAttribute('href')");
   assert.equal(new URL(new URL(diagnostic, base).searchParams.get("url")).origin, base, "Diagnostic must not point to a different local app");
   await shot("direct-owner");
   await go(publicPath);
-  await wait("参照元未確認");
+  await wait("から提供された情報です");
   await shot("direct-public");
   // A new actual Safari tab has no opener/sessionStorage; the saved capability must suffice.
   const originalWindow = await cmd("/window");
   const next = await cmd("/window/new", "POST", { type: "tab" });
   await cmd("/window", "POST", { handle: next.handle });
   await go("/manage");
-  await wait("保存した管理用リンク");
+  await wait("管理用リンク");
   const managementText = new URL(management, base).href;
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
@@ -70,12 +70,12 @@ try {
   }
   assert.equal(await js("return document.querySelector('#management-url').value.length > 0"), true, "Safari must finish entering the saved URL before submission");
   await click("form.management-entry button[type=submit]");
-  await wait("状態：公開中");
+  await wait("公開中");
   assert.equal(await js("return sessionStorage.length"), 0);
   await shot("direct-owner-new-tab");
   await js("[...document.querySelectorAll('button')].find(e=>e.textContent==='公開を停止する').scrollIntoView({block:'center'}); return true;");
   await js("const e=[...document.querySelectorAll('button')].find(e=>e.textContent==='公開を停止する'); if(!e || e.disabled) throw new Error('Revoke control unavailable'); e.click(); return true;");
-  await wait("状態：非公開");
+  await wait("公開停止中");
   await shot("direct-owner-revoked");
   await go(publicPath);
   await wait("ページが見つかりません");

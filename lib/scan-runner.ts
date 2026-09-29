@@ -31,30 +31,30 @@ export async function runScan(input: {
     return input.onProgress?.({ stage, progress, message, detail });
   };
 
-  await emit("validating", 5, noSite ? "ホームページがないため、お店の名前で調べます。" : "サイトにつながるか確認しています。", noSite ? noSiteInput(url) : new URL(url).hostname);
-  await emit("crawling", 12, noSite ? "お店の名前と地域から、比べられる相手を整理しています。" : "サービスや導入事例など、会社の公開ページを読んでいます。");
+  await emit("validating", 5, noSite ? "お店の名前で調べます。" : "ホームページを開いています。", noSite ? noSiteInput(url) : new URL(url).hostname);
+  await emit("crawling", 12, noSite ? "名前と地域を確かめています。" : "ホームページを読んでいます。");
   // デモではサイトを読めなくても止めず、名前だけで調べた扱いにする
   const crawl = noSite ? emptyCrawl() : demo
     ? await crawlCompanySite(url, panelKind === "free" ? 12 : 36).catch(() => emptyCrawl())
     : await crawlCompanySite(url, panelKind === "free" ? 12 : 36);
 
-  await emit("discovering", 30, "比較される市場と会社を整理しています。", `公開ページ ${crawl.pages.length}件`);
+  await emit("discovering", 30, "比べる相手を探しています。", noSite ? undefined : `${crawl.pages.length}ページを読みました`);
   const discovery = await discoverCompany(url, crawl.pages);
 
-  await emit("prompting", 45, "買う前に聞かれる質問を作っています。", discovery.market);
+  await emit("prompting", 45, "お客さんが聞きそうな質問をつくっています。", discovery.market);
   const prompts = input.prompts || await generateBuyerPrompts(discovery, promptCount, panelKind);
 
-  await emit("measuring", 55, "AIに質問し、選ばれた会社を確認しています。", `${prompts.length}問を確認`);
+  await emit("measuring", 55, "AIに聞いています。", `${prompts.length}問`);
   const observations = await runObservationPanel({
     prompts,
     discovery,
     repetitions,
     concurrency: input.observationConcurrency,
-    onProgress: async (completed, total) => emit("measuring", 55 + Math.round((completed / total) * 25), `AIの回答を確認しています。${completed}/${total}`, `質問 ${completed}/${total}`),
+    onProgress: async (completed, total) => emit("measuring", 55 + Math.round((completed / total) * 25), `AIに聞いています（${completed}/${total}）`, `${completed}/${total}`),
   });
 
-  await emit("analyzing", 84, "AI回答に先に含まれた候補と参照元を整理しています。");
+  await emit("analyzing", 84, "結果をまとめています。");
   const result = await buildScanResult({ scanId: input.scanId, targetUrl: url, discovery, prompts, repetitions, panelKind, observations, pages: crawl.pages, crawlAudit: crawl.audit });
-  await emit("analyzing", 95, "診断結果を保存しています。", discovery.brandName);
+  await emit("analyzing", 95, "もうすぐ終わります。", discovery.brandName);
   return result;
 }

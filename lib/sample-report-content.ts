@@ -80,7 +80,7 @@ export function enrichSamplePositioning(result: ScanResult) {
       const own = rows.filter(row => row.ownRecommended).length;
       return {
         ...strategy, code: `強み ${String(index + 1).padStart(2, "0")}`, name: angle.name,
-        targetMarket: angle.target, coreThesis: angle.lead,
+        targetMarket: angle.target, coreThesis: angle.lead, focusKeyword: `${angle.name} ${angle.target}`,
         strategicReason: `関連する3問・${rows.length}回答で自社の候補入りは${own}件。この条件を探す人が比較できるよう、受付時間・費用・作業範囲を参照元付きで整理する例です。`,
         passionateReason: "自社サイトの改修は不要。Rovan上の掲載内容を初回に確認し、同じ条件の質問で変化を追跡する想定です。戦略の見本であり、推薦の保証ではありません。",
         deliverables: {

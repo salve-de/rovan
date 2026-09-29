@@ -108,9 +108,9 @@ function fixtureProfile(brandName: string, primary: boolean): FixtureProfile {
       competitors: primaryFixtureCompetitors,
       promptSeed: primaryPromptSeed,
       gaps: [
-        { id: "source", label: "参照元と更新日", whyItMatters: "公開情報の出どころと更新状況を確認するための項目です。", confidence: 0.5, status: "partial" },
+        { id: "source", label: "ページの更新日", whyItMatters: "公開情報の出どころと更新状況を確認するための項目です。", confidence: 0.5, status: "partial" },
         { id: "scope", label: "対応範囲", whyItMatters: "対象・条件・受付方法を事実と参照元に分けて確認するための項目です。", confidence: 0.5, status: "missing" },
-        { id: "process", label: "利用手順", whyItMatters: "利用前に確認できる手順が記載されているかを確認するための項目です。", confidence: 0.5, status: "partial" },
+        { id: "process", label: "相談の流れ", whyItMatters: "利用前に確認できる手順が記載されているかを確認するための項目です。", confidence: 0.5, status: "partial" },
       ],
       actions: [
         { id: "action-source", title: "参照元と更新日をそろえる", rationale: "見本の測定ログに対する整理案です。実際の掲載前に参照元を確認してください。", target: "公開情報の整理", audience: "公開情報を確認したい人", stage: "認知", customerConcern: "情報の出どころが分かるか", placement: "公開プロフィール", cta: "参照元を確認する", successMetric: "同じ質問パネルで参照元の変化を確認できるか" },
@@ -128,9 +128,9 @@ function fixtureProfile(brandName: string, primary: boolean): FixtureProfile {
     competitors: genericFixtureCompetitors,
     promptSeed: genericPromptSeed,
     gaps: [
-      { id: "source", label: "参照元と更新日", whyItMatters: "公開情報の出どころと更新状況を確認するための項目です。", confidence: 0.5, status: "partial" },
+      { id: "source", label: "ページの更新日", whyItMatters: "公開情報の出どころと更新状況を確認するための項目です。", confidence: 0.5, status: "partial" },
       { id: "scope", label: "対象と条件", whyItMatters: "対象・条件・受付方法を事実と参照元に分けて確認するための項目です。", confidence: 0.5, status: "missing" },
-      { id: "process", label: "利用手順", whyItMatters: "利用前に確認できる手順が記載されているかを確認するための項目です。", confidence: 0.5, status: "partial" },
+      { id: "process", label: "相談の流れ", whyItMatters: "利用前に確認できる手順が記載されているかを確認するための項目です。", confidence: 0.5, status: "partial" },
     ],
     actions: [
       { id: "action-source", title: "参照元と更新日を確認する", rationale: "見本の測定ログに対する整理案です。実際の掲載前に参照元を確認してください。", target: "公開情報の整理", audience: "公開情報を確認したい人", stage: "認知", customerConcern: "情報の出どころが分かるか", placement: "公開プロフィール", cta: "参照元を確認する", successMetric: "同じ質問パネルで参照元の変化を確認できるか" },
@@ -152,7 +152,7 @@ function percent(numerator: number, denominator: number) {
 function fixtureCitation(name: string, index: number): Citation {
   const candidateSlug = `candidate-${String(index + 1).padStart(2, "0")}`;
   return {
-    title: `${name}（見本の比較候補）`,
+    title: `${name}（見本）`,
     url: `https://${candidateSlug}.example/`,
     domain: `${candidateSlug}.example`,
   };
@@ -255,8 +255,8 @@ function buildScanResultInternal(brandName: string, scanId: string, measuredAt: 
         "【AI回答の見本】",
         `「${prompt.text}」という条件なら、${recommendedEntities.join("、")}が比較候補です。`,
         ownRecommended && primary ? `${displayName}は初回60分無料、相続登記の基本料金88,000円（税込）から。平日20時までのオンライン相談と土曜予約に対応しています。` : "依頼前に、対応範囲・基本料金に含まれる作業・追加費用を各事務所の案内で比較してください。",
-        ownRecommended ? "受付方法と必要書類を確認してから、初回相談を予約すると進めやすくなります。" : `この回答では${displayName}は推薦候補に含まれていません。`,
-      ].join(" ");
+        ownRecommended ? "受付方法と必要書類を確認してから、初回相談を予約すると進めやすくなります。" : "",
+      ].filter(Boolean).join(" ");
 
       return {
         id: `obs_${index + 1}`,

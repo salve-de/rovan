@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { ScanProgress } from "@/components/scan-progress";
 
-export const metadata: Metadata = { title: "診断先を確認", robots: { index: false, follow: false, noarchive: true } };
+export const metadata: Metadata = { title: "診断", robots: { index: false, follow: false, noarchive: true } };
 
 export default async function ScanPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const params = await searchParams;

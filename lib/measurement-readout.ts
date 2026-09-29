@@ -17,7 +17,8 @@ export function measurementReadout(result: Input) {
   const missing = Math.max(0, result.panel.promptCount - successful);
   const complete = result.measurementCompleteness === 100 && result.scheduledObservations > 0 && rows.length === result.scheduledObservations && successful === result.panel.promptCount;
   return { rows, votes, included, excluded: successful - included, successful, missing, complete,
-    label: successful ? `${included} / ${successful}問（予定${result.panel.promptCount}問・未取得${missing}問${complete ? "" : "・部分観測"}）` : `未測定（予定${result.panel.promptCount}問）` };
+    // 取得できなかった質問があるときだけ、その数と「一部だけの結果」であることを添える
+    label: successful ? `${included} / ${successful}問${missing || !complete ? `（${missing}問は答えを取得できず・一部だけの結果）` : ""}` : `まだ測れていません（${result.panel.promptCount}問）` };
 }
 
 function condition(row: ReadoutObservation) {
@@ -54,10 +55,10 @@ export function compareMeasurementReadouts(baseline: Input, latest: Input, autho
   return { before, after, comparable, wins, losses, competitorMovements, answerChanged, addedCitations, removedCitations,
     baselineCitationCount: oldUrls.size, latestCitationCount: newUrls.size,
     meaningful: answerChanged || addedCitations > 0 || removedCitations > 0 || observationChanged,
-    note: comparable ? `初回（基準）と今回の同条件${after.successful}問を比較しています。`
-      : baseline.panel.country !== latest.panel.country || baseline.panel.locale !== latest.panel.locale ? "地域・言語の条件が一致しないため、比較できませんでした。"
-        : !before.complete || !after.complete ? "AI回答の取得不足のため、比較できませんでした。"
-          : "質問・AI・モデル・パネル・反復条件が一致しないため、比較できませんでした。" };
+    note: comparable ? `初回と今回の同じ${after.successful}問をくらべています。`
+      : baseline.panel.country !== latest.panel.country || baseline.panel.locale !== latest.panel.locale ? "地域・言語がちがうため、くらべられません。"
+        : !before.complete || !after.complete ? "AIの答えを取得できなかった質問があるため、くらべられません。"
+          : "質問やAIの条件がちがうため、くらべられません。" };
 }
 
 export function readoutIdentity(sample: boolean, id: string | null) {

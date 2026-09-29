@@ -11,8 +11,9 @@ test("approved marketing language is restored without replacing the product obje
     "components/zero-effort-promise-section.tsx": ["社長は、本業（接客・施工・製造・経営）に100%専念してください。", "既存の自社サイトは1文字も触る必要がありません。"],
     "components/product-visuals.tsx": ["手に入るもの 01", "手に入るもの 02", "自社専用 AI診断レポート", "AI推薦データを配備", "毎週のAI回答を自動見守り", "社長の作業", "裏側の自動処理"],
     "app/pricing/page.tsx": ["営業マンを雇う前に。", "AI推薦・自動見守りプラン"],
-    "components/result-client.tsx": ["自社専用 AI診断レポート", "今すぐできる解決アクション", "14日間無料で試してみる（メール登録不要）"],
-    "components/site-header.tsx": ["② AI推薦データ", "診断結果の見本"],
+    // 結果画面・ヘッダーは、内部向けの言い回しを外した平易な文言（オーナー指示 2026-09-29「内部の説明は全部駆逐」）
+    "components/result-client.tsx": ["自社専用 AI診断レポート", "何をすれば、名前が出る？", "14日間無料で始める"],
+    "components/site-header.tsx": ["② 公開ページ", "診断結果の見本"],
     "components/site-footer.tsx": ["AIに御社をすすめてもらうためのサービス", "毎週AIの答えを確かめます"],
     "components/scan-form.tsx": ["AI推薦の現状を無料診断"],
     // トップページ（オーナー確定デザイン 2026-09-29、docs/design/top-page/README.md）の承認済み文言
@@ -33,7 +34,7 @@ test("public marketing surfaces do not restore unverified official status or tim
   for (const file of ["app/page.tsx", "app/pricing/page.tsx", "app/layout.tsx", "components/product-visuals.tsx", "components/public-profile-actions.tsx", "components/zero-effort-promise-section.tsx", "components/home/HomeHero.tsx", "components/home/HomeWhyNow.tsx", "components/home/HomeChange.tsx", "components/home/HomeEasy.tsx", "components/home/HomeFinalCta.tsx", "components/home/HomeFaq.tsx", "components/home/HomeDiagnosis.tsx"]) {
     assert.doesNotMatch(read(file), /AI公式推薦|主要5大AI|10秒で即時発行|主要AIが常時自動参照|常時優先巡回/, file);
   }
-  assert.match(read("components/public-profile-actions.tsx"), /内容を確認して公開する/);
+  assert.match(read("components/public-profile-actions.tsx"), /この内容で公開する/);
   assert.match(read("components/public-profile-actions.tsx"), /公開を停止する/);
   assert.match(read("components/zero-effort-promise-section.tsx"), /30日間/);
 });

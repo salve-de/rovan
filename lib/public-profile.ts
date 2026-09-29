@@ -390,28 +390,30 @@ export function buildDirectPublicProfileDraft(input: DirectProfileInput, generat
   const targetUrl = `${siteUrl}/ai/company/${encodeURIComponent(slug)}`;
   const title = `${brandName} | Rovan公開情報参照ページ`;
   const market = publicText(input.market || "", MAX_LIST_ITEM_LENGTH);
-  const summary = `入力情報（参照元未確認）：${publicText(input.summary || `「${brandName}」について入力された情報を、公開前に確認できる形で整理した参照ページです。`, MAX_SUMMARY_LENGTH - 20)}`;
+  const location = publicText(input.location || "", MAX_LIST_ITEM_LENGTH);
+  // 紹介文が空なら、入力された分野・地域だけで1文にする（入力のない内容は足さない）
+  const summary = publicText(input.summary || (market ? `${brandName}は、${location ? `${location}の` : ""}${market}です。` : ""), MAX_SUMMARY_LENGTH);
   const targetCustomers = uniquePublicList(input.targetCustomers?.length ? input.targetCustomers : []);
   const useCases = uniquePublicList(input.useCases?.length ? input.useCases : []);
 
   const facts: PublicProfileDraft["facts"] = [
-    { label: "入力された名称", value: brandName, sourceUrl: targetUrl },
+    { label: "名称", value: brandName, sourceUrl: targetUrl },
   ];
-  if (market) facts.push({ label: "入力された分野", value: market, sourceUrl: targetUrl });
+  if (market) facts.push({ label: "分野", value: market, sourceUrl: targetUrl });
   const referenceUrl = publicUrl(input.referenceUrl);
-  if (referenceUrl) facts.push({ label: "入力された参照先（未確認）", value: referenceUrl, sourceUrl: targetUrl });
+  if (referenceUrl) facts.push({ label: "ホームページ", value: referenceUrl, sourceUrl: targetUrl });
 
-  if (input.location?.trim()) {
-    facts.push({ label: "所在地・対応エリア", value: publicText(input.location, MAX_LIST_ITEM_LENGTH), sourceUrl: targetUrl });
+  if (location) {
+    facts.push({ label: "所在地・対応エリア", value: location, sourceUrl: targetUrl });
   }
   if (input.phone?.trim()) {
-    facts.push({ label: "電話番号・窓口", value: publicText(input.phone, MAX_LIST_ITEM_LENGTH), sourceUrl: targetUrl });
+    facts.push({ label: "電話番号", value: publicText(input.phone, MAX_LIST_ITEM_LENGTH), sourceUrl: targetUrl });
   }
   if (input.hours?.trim()) {
-    facts.push({ label: "営業時間・受付体制", value: publicText(input.hours, MAX_LIST_ITEM_LENGTH), sourceUrl: targetUrl });
+    facts.push({ label: "営業時間", value: publicText(input.hours, MAX_LIST_ITEM_LENGTH), sourceUrl: targetUrl });
   }
   if (input.pricingInfo?.trim()) {
-    facts.push({ label: "料金規約・費用目安", value: publicText(input.pricingInfo, MAX_LIST_ITEM_LENGTH), sourceUrl: targetUrl });
+    facts.push({ label: "料金の目安", value: publicText(input.pricingInfo, MAX_LIST_ITEM_LENGTH), sourceUrl: targetUrl });
   }
 
   facts.forEach((fact) => { fact.provenance = "company_asserted"; });
@@ -424,7 +426,7 @@ export function buildDirectPublicProfileDraft(input: DirectProfileInput, generat
     "@type": "Organization",
     name: brandName,
     url: targetUrl,
-    description: summary,
+    ...(summary ? { description: summary } : {}),
     ...(market ? { knowsAbout: [market] } : {}),
     ...(useCases.length ? { keywords: useCases } : {}),
     inLanguage: "ja-JP",
@@ -462,3 +464,4 @@ export function buildDirectPublicProfileDraft(input: DirectProfileInput, generat
     json: `${json}\n`,
   };
 }
+

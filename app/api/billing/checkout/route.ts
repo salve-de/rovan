@@ -8,15 +8,15 @@ export const runtime = "nodejs";
 export async function POST(request: Request) {
   try {
     const body = await request.json().catch(() => null);
-    if (!validToken(body?.token)) return Response.json({ error: "Watch tokenが必要です。" }, { status: 400 });
+    if (!validToken(body?.token)) return Response.json({ error: "管理用リンクから開いてください。" }, { status: 400 });
     const watch = await getWatch(body.token);
-    if (!watch) return Response.json({ error: "Watchが見つかりません。" }, { status: 404 });
-    if (watch.paid) return Response.json({ error: "このWatchはすでに契約中です。" }, { status: 409 });
-    if (!sellerReady()) return Response.json({ error: "販売者情報の設定が完了していないため、現在は有料契約を開始できません。" }, { status: 503 });
-    if (!env.stripeSecretKey || !env.stripePriceId) return Response.json({ error: "Stripeの本番設定が完了していません。" }, { status: 503 });
+    if (!watch) return Response.json({ error: "見守りが見つかりません。" }, { status: 404 });
+    if (watch.paid) return Response.json({ error: "すでに契約中です。" }, { status: 409 });
+    if (!sellerReady()) return Response.json({ error: "いまは有料の申し込みを受け付けていません。" }, { status: 503 });
+    if (!env.stripeSecretKey || !env.stripePriceId) return Response.json({ error: "いまは有料の申し込みを受け付けていません。" }, { status: 503 });
     if (watch.stripeSubscriptionId) {
       const subscription = await stripe(`/subscriptions/${encodeURIComponent(watch.stripeSubscriptionId)}`);
-      if (!terminalSubscription(subscription.status)) return Response.json({ error: "既存の契約があります。契約管理からお支払い状況を確認してください。" }, { status: 409 });
+      if (!terminalSubscription(subscription.status)) return Response.json({ error: "すでに契約があります。「ご契約・お支払い」から確認してください。" }, { status: 409 });
     }
 
     const form = new URLSearchParams();
@@ -37,6 +37,6 @@ export async function POST(request: Request) {
     if (!data.url) throw new Error("Checkout unavailable");
     return Response.json({ url: data.url }, { headers: { "cache-control": "no-store", "referrer-policy": "no-referrer" } });
   } catch {
-    return Response.json({ error: "Checkoutを開始できませんでした。時間をおいて再度お試しください。" }, { status: 502 });
+    return Response.json({ error: "お支払いの画面を開けませんでした。時間をおいてお試しください。" }, { status: 502 });
   }
 }

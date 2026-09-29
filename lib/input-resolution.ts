@@ -174,12 +174,12 @@ function candidatesFromResult(result: ProviderResult) {
 
 export async function resolvePublicInput(value: string): Promise<InputResolution> {
   const input = cleanInput(value);
-  if (!input) throw new Error("会社名・店舗名・活動名・URLを入力してください。");
+  if (!input) throw new Error("社名・店名・URLのどれかを入れてください。");
   if (isUrlInput(input)) {
     const url = normalizePublicUrl(input);
     return { input, kind: "url", candidates: [{ url, title: "入力された公開サイト", reason: "入力されたURLをそのまま診断します。" }] };
   }
-  if (input.length < 2) throw new Error("会社名・店舗名・活動名を2文字以上で入力してください。");
+  if (input.length < 2) throw new Error("社名・店名は2文字以上で入れてください。");
 
   const attempts: Array<{ provider: NonNullable<InputResolution["provider"]>; enabled: boolean; run: () => Promise<ProviderResult> }> = [
     { provider: "openai", enabled: Boolean(env.openAiKey), run: () => searchWithOpenAi(input) },

@@ -97,7 +97,7 @@ const SAMPLE_PROFILES: Record<string, PublicProfile> = {
     brandName: "あおば相続法務事務所",
     targetUrl: "https://aoba-souzoku.example/",
     market: "相続・遺産分割・事業承継の法務相談",
-    summary: "仙台市・名取市の家族向けに、相続登記の相談と遺産分割書類の整理を扱う法務事務所の見本です。遠方の家族もオンラインで同席でき、必要資料と費用を初回に確認する設定です。料金・対応条件はすべて見本です。",
+    summary: "仙台市・名取市で、相続登記と遺産分割の書類整理を扱う事務所です。遠方の家族もオンラインで同席でき、必要な資料と費用は初回の相談で確認します（見本）。",
     targetCustomers: ["相続や遺産分割について相談先を探している方"],
     useCases: ["相続に関する初回相談", "遺産分割に関する相談", "事業承継に関する相談"],
     facts: [
@@ -116,7 +116,7 @@ const SAMPLE_PROFILES: Record<string, PublicProfile> = {
     brandName: "青葉カフェ",
     targetUrl: "https://aoba-cafe.example/",
     market: "自家焙煎・スペシャリティ珈琲・スイーツ",
-    summary: "仙台市青葉区を想定した自家焙煎珈琲店の見本です。読書や少人数の作業、豆の持ち帰りに対応し、浅煎り・中深煎りを選べる設定です。料金・設備・営業時間はすべて見本です。",
+    summary: "仙台市青葉区の自家焙煎珈琲店です。読書や少人数の作業に使え、豆の持ち帰りもできます。浅煎りと中深煎りを選べます（見本）。",
     targetCustomers: ["作業や読書ができるカフェを探している方", "自家焙煎珈琲を楽しみたい方"],
     useCases: ["店内での作業・読書", "テイクアウト", "コーヒー豆の購入"],
     facts: [
@@ -135,7 +135,7 @@ const SAMPLE_PROFILES: Record<string, PublicProfile> = {
     targetUrl: "https://instagram.example/aoba_bakery",
     sourceTitle: "Instagram @aoba_bakery（見本）",
     market: "天然酵母のパン・早朝営業のベーカリー",
-    summary: "群馬県高崎市を想定した、ホームページを持たずInstagramだけで発信しているパン屋の見本です。Instagramの公開投稿から確認できた内容だけを整理しています。料金・営業時間はすべて見本です。",
+    summary: "群馬県高崎市のパン屋です。ホームページはなく、Instagramで発信しています。自家製の天然酵母で焼く食パンとカンパーニュが中心です（見本）。",
     targetCustomers: ["出勤前に焼きたてのパンを買いたい方", "天然酵母のパンを探している方"],
     useCases: ["朝の通勤前の買い物", "予約での取り置き", "手土産用の焼き菓子"],
     facts: [
@@ -152,7 +152,7 @@ const SAMPLE_PROFILES: Record<string, PublicProfile> = {
     brandName: "山田板金製作所",
     targetUrl: "https://yamada-bankin.example/",
     market: "試作板金・精密金属加工",
-    summary: "長野県松本市を想定した板金製作所の見本です。装置カバーや取付ブラケットの試作を、図面確認から切断・曲げまで小ロットで受ける設定です。料金・加工能力・納期はすべて見本です。",
+    summary: "長野県松本市の板金製作所です。装置カバーや取付ブラケットの試作を、図面の確認から切断・曲げまで小ロットで受けています（見本）。",
     targetCustomers: ["小ロットの試作先を探している設計・開発担当者"],
     useCases: ["単品・小ロット試作", "3D CADデータを使った加工相談"],
     facts: [
@@ -170,7 +170,7 @@ const SAMPLE_PROFILES: Record<string, PublicProfile> = {
     brandName: "安曇野サンシャイン果樹園",
     targetUrl: "https://azumino-sunshine.example/",
     market: "果樹栽培・産直ギフト",
-    summary: "長野県安曇野市を想定したりんご果樹園の見本です。秋の収穫期に家庭用と贈答用の箱を用意し、食べ比べや季節の贈り物として産地から届ける設定です。価格・収穫期・出荷量はすべて見本です。",
+    summary: "長野県安曇野市のりんご果樹園です。秋の収穫期に、家庭用と贈答用の箱を産地から届けます（見本）。",
     targetCustomers: ["産地からのギフトを探している方"],
     useCases: ["果物の産地直送", "贈答用ギフトの注文"],
     facts: [
@@ -188,7 +188,7 @@ const SAMPLE_PROFILES: Record<string, PublicProfile> = {
     brandName: "Nexora Cloud",
     targetUrl: "https://nexora-cloud.example/",
     market: "法人向けクラウド業務支援",
-    summary: "国内の小規模な受託制作チーム向けに、案件・タスク・納期をまとめるクラウドサービスの見本です。表計算で管理していた案件をCSVで取り込み、担当者ごとに進捗を共有する設定です。料金・容量・サポート条件はすべて見本です。",
+    summary: "小規模な受託制作チーム向けに、案件・タスク・納期をまとめるクラウドサービスです。表計算で管理していた案件をCSVで取り込み、担当者ごとに進捗を共有できます（見本）。",
     targetCustomers: ["業務向けクラウドサービスを比較している法人担当者"],
     useCases: ["業務データの一元管理", "クラウドサービスの導入比較"],
     facts: [

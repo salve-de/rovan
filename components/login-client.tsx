@@ -6,16 +6,16 @@ import { useSearchParams } from "next/navigation";
 import { ArrowIcon } from "@/components/icons";
 
 const LOGIN_ERROR_MESSAGES: Record<string, string> = {
-  expired: "ログインリンクの有効期限（15分）が切れています。もう一度メールアドレスを入力してください。",
-  invalid: "無効なログインリンクです。もう一度メールアドレスを入力してください。",
-  unavailable: "ログイン機能を一時的にご利用いただけません。時間を置いて再度お試しください。",
-  google_not_configured: "Googleログインの設定が未完了です。メールアドレスでのログインをご利用ください。",
-  google_unavailable: "Googleログインは現在ご利用いただけません。メールアドレスでのログインをご利用ください。",
-  google_token_failed: "Googleログインの認証に失敗しました。もう一度お試しください。",
-  email_not_provided: "Googleアカウントからメールアドレスを取得できませんでした。メールアドレスでのログインをご利用ください。",
-  email_not_verified: "確認済みでないGoogleアカウントのため、ログインできませんでした。メールアドレスでのログインをご利用ください。",
-  state_mismatch: "ログイン処理の確認に失敗しました。もう一度Googleログインをお試しください。",
-  oauth_internal_error: "Googleログイン中にエラーが発生しました。もう一度お試しください。",
+  expired: "リンクの期限（15分）が切れました。もう一度メールアドレスを入れてください。",
+  invalid: "このリンクは使えません。もう一度メールアドレスを入れてください。",
+  unavailable: "いまはログインできません。少し時間をおいてお試しください。",
+  google_not_configured: "Googleでのログインは使えません。メールアドレスでログインしてください。",
+  google_unavailable: "Googleでのログインは使えません。メールアドレスでログインしてください。",
+  google_token_failed: "Googleでのログインに失敗しました。もう一度お試しください。",
+  email_not_provided: "Googleからメールアドレスを受け取れませんでした。メールアドレスでログインしてください。",
+  email_not_verified: "このGoogleアカウントではログインできません。メールアドレスでログインしてください。",
+  state_mismatch: "ログインに失敗しました。もう一度お試しください。",
+  oauth_internal_error: "ログインに失敗しました。もう一度お試しください。",
   cancelled: "ログインがキャンセルされました。",
 };
 
@@ -50,7 +50,7 @@ export function LoginClient({ googleEnabled }: { googleEnabled: boolean }) {
       }
       setSent(true);
       setSentEmail(email.trim());
-      setSentNotice(data.message || "登録済みの場合、ログイン用リンクをお送りしました。");
+      setSentNotice(data.message || "登録済みのメールアドレスなら、ログイン用のリンクが届きます。");
       setEmailUnavailable(Boolean(data.emailUnavailable));
       if (data.devLoginUrl) {
         setDevLink(data.devLoginUrl);
@@ -64,15 +64,13 @@ export function LoginClient({ googleEnabled }: { googleEnabled: boolean }) {
 
   return (
     <div className="billing-panel login-panel">
-      <p className="login-panel-lead">診断結果・週次見守り・ご契約の管理画面を開きます。</p>
-
       {sent ? (
         <div className="login-sent-box">
-          <strong>{emailUnavailable ? "現在メールでのログインはご利用いただけません" : "ご案内を送信しました"}</strong>
+          <strong>{emailUnavailable ? "いまはメールでログインできません" : "メールを送りました"}</strong>
           <p>
             {emailUnavailable
               ? sentNotice
-              : <><strong>{sentEmail}</strong> について、{sentNotice}届いたメール内のリンクをクリックすると、パスワード不要で即座にログインできます（有効期限15分）。</>}
+              : <><strong>{sentEmail}</strong> が登録済みなら、ログイン用のリンクが届きます。15分以内に押してください。</>}
           </p>
           {devLink ? (
             <div className="login-dev-link">
@@ -81,7 +79,7 @@ export function LoginClient({ googleEnabled }: { googleEnabled: boolean }) {
             </div>
           ) : null}
           <button type="button" className="login-retry-btn" onClick={() => { setSent(false); setEmail(""); }}>
-            別のメールアドレスでログインし直す
+            別のメールアドレスにする
           </button>
         </div>
       ) : (
@@ -109,7 +107,7 @@ export function LoginClient({ googleEnabled }: { googleEnabled: boolean }) {
 
           <form onSubmit={handleEmailLogin} className="login-email-form">
             <label>
-              ご登録のメールアドレス
+              メールアドレス
               <input
                 type="email"
                 required
@@ -120,7 +118,7 @@ export function LoginClient({ googleEnabled }: { googleEnabled: boolean }) {
               />
             </label>
             <button className="button button-primary login-submit-btn" type="submit" disabled={busy || !email.trim()}>
-              {busy ? "送信中…" : <>ログイン用リンクを送信する <ArrowIcon /></>}
+              {busy ? "送信中…" : <>ログイン用のリンクを受け取る <ArrowIcon /></>}
             </button>
             {message ? <p className="form-error login-form-error" role="status">{message}</p> : null}
           </form>
@@ -128,7 +126,7 @@ export function LoginClient({ googleEnabled }: { googleEnabled: boolean }) {
       )}
 
       <div className="login-panel-footer">
-        <span>まだ診断がお済みでない方は</span>
+        <span>はじめての方は</span>
         <Link href="/">無料で診断する <ArrowIcon /></Link>
       </div>
     </div>

@@ -2,7 +2,7 @@ import { matchingConsultations } from "./prompt-evidence";
 import type { Citation, Observation, ProviderName, PublicProfileRecord, ScanResult, WatchRecord } from './types';
 
 export const proofProviders: ProviderName[] = ['openai', 'gemini', 'perplexity'];
-export const providerLabel = { openai: 'OpenAI 検索API', gemini: 'Gemini 検索API', perplexity: 'Perplexity API' };
+export const providerLabel = { openai: 'ChatGPT', gemini: 'Gemini', perplexity: 'Perplexity' };
 export function evidenceUrl(value: string): string | null {
   try { const u = new URL(value); if (!['https:', 'http:'].includes(u.protocol) || u.username || u.password) return null; u.search = ''; u.hash = ''; return u.href.replace(/\/$/u, ''); } catch { return null; }
 }
@@ -77,8 +77,9 @@ export function buildValueProof(watch: WatchRecord, profile: PublicProfileRecord
 export type ValueProof = ReturnType<typeof buildValueProof>;
 export function proofCsv(proof: ValueProof) {
   const cell = (v: unknown) => `"${String(v ?? '').replace(/^[=+@\-\t\r]/u, "'$&").replaceAll('"','""')}"`;
-  const lines: unknown[][] = [['会社','基準日時','測定日時','AI','相談','基準候補入り','今回候補入り','比較','前の候補','今回の候補','今回の参照元']];
-  for (const r of proof.rows) lines.push([proof.company,proof.baselineAt,proof.measuredAt,providerLabel[r.provider],r.prompt,r.before === null ? '未取得' : r.before ? 'あり':'なし',r.after === null ? '未取得':r.after?'あり':'なし',r.state,r.beforeAnswers.map(a=>a.candidates.join(' / ')).join(' | '),r.afterAnswers.map(a=>a.candidates.join(' / ')).join(' | '),r.afterAnswers.flatMap(a=>a.sources.map(s=>s.url)).join(' | ')]);
+  const states: Record<string,string> = { won:'名前が出るように', lost:'名前が出なくなった', unchanged:'変化なし', unavailable:'比べられない', baseline:'初回' };
+  const lines: unknown[][] = [['会社','初回の日時','今回の日時','AI','質問','初回 名前','今回 名前','変化','初回にすすめられた会社','今回すすめられた会社','今回AIが参考にしたページ']];
+  for (const r of proof.rows) lines.push([proof.company,proof.baselineAt,proof.measuredAt,providerLabel[r.provider],r.prompt,r.before === null ? '取得できず' : r.before ? 'あり':'なし',r.after === null ? '取得できず':r.after?'あり':'なし',states[r.state] || r.state,r.beforeAnswers.map(a=>a.candidates.join(' / ')).join(' | '),r.afterAnswers.map(a=>a.candidates.join(' / ')).join(' | '),r.afterAnswers.flatMap(a=>a.sources.map(s=>s.url)).join(' | ')]);
   return '\uFEFF' + lines.map(row=>row.map(cell).join(',')).join('\r\n');
 }
 

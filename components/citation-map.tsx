@@ -33,23 +33,18 @@ export function CitationMap({ result }: { result: ScanResult }) {
   const rows = buildRows(result);
   if (!rows.length) return null;
 
-  return <section className="citation-map" aria-label="引用ページの対応表">
+  return <section className="citation-map" aria-label="AIが参考にしたページ">
     <div className="citation-map-heading">
-      <div>
-        <p className="overline">引用ページの対応表</p>
-        <h3>どの公開ページが、AIの判断材料になったか。</h3>
-      </div>
-      <span>{rows.length}ページを表示</span>
+      <h3>AIが参考にしたページ</h3>
     </div>
-    <div className="citation-map-table" role="table" aria-label="引用ページと質問の対応">
-      <div className="citation-map-row citation-map-head" role="row"><span role="columnheader">ページ</span><span role="columnheader">区分</span><span role="columnheader">関係する質問</span><span role="columnheader">参照回数</span></div>
+    <div className="citation-map-table" role="table" aria-label="AIが参考にしたページ">
+      <div className="citation-map-row citation-map-head" role="row"><span role="columnheader">ページ</span><span role="columnheader"></span><span role="columnheader">関係する質問</span><span role="columnheader">参考にされた回数</span></div>
       {rows.map((row) => <div className="citation-map-row" role="row" key={row.url}>
         <a href={row.url} target="_blank" rel="noreferrer" role="cell"><strong>{row.title}</strong><small>{row.domain}</small></a>
-        <span role="cell" className={row.owned ? "citation-owned" : "citation-third-party"}>{row.owned ? "対象企業" : "対象外の第三者"}</span>
+        <span role="cell" className={row.owned ? "citation-owned" : "citation-third-party"}>{row.owned ? "御社" : ""}</span>
         <strong role="cell">{row.prompts}問</strong>
         <span role="cell">{row.references}回</span>
       </div>)}
     </div>
-    <p className="citation-map-note">今回取得できたAI回答の引用だけを集計しています。引用された回数は、推薦順位や売上を保証する指標ではありません。</p>
   </section>;
 }

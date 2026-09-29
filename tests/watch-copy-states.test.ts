@@ -56,24 +56,24 @@ function renderWatch(watch: WatchRecord) {
 
 test("Watch renders newly included recommendations, not real customer gains", () => {
   const html = renderWatch(sampleWatch());
-  assert.match(html, /2問で、自社が新しく推薦候補に入りました。/);
+  assert.match(html, /2問で、新しく名前が出ました。/);
   assert.doesNotMatch(html, /顧客を[0-9]+人獲得|ライバル排除/);
 });
 
 test("Watch does not show success when unchanged, declined or incomparable", () => {
   const unchanged = sampleWatch();
   unchanged.latest = structuredClone(unchanged.baseline);
-  assert.match(renderWatch(unchanged), /今回の測定では、推薦候補入りの変化はありませんでした。/);
+  assert.match(renderWatch(unchanged), /今週は、名前が出た数に変化はありませんでした。/);
   const declined = sampleWatch();
   [declined.baseline, declined.latest] = [declined.latest, declined.baseline];
   const down = renderWatch(declined);
-  assert.match(down, /2問で、自社が推薦候補から外れました。/);
-  assert.doesNotMatch(down, /問で、自社が新しく推薦候補に入りました。/);
+  assert.match(down, /2問で、名前が出なくなりました。/);
+  assert.doesNotMatch(down, /問で、新しく名前が出ました。/);
   const incomparable = sampleWatch();
   incomparable.latest.panel.version += 1;
   const unpaired = renderWatch(incomparable);
-  assert.match(unpaired, /比較できませんでした。/);
-  assert.doesNotMatch(unpaired, /問で、自社が新しく推薦候補に入りました。/);
+  assert.match(unpaired, /初回とくらべられませんでした。/);
+  assert.doesNotMatch(unpaired, /問で、新しく名前が出ました。/);
 });
 
 test("incomplete Watch results do not turn missing answers into recommendation wins", () => {
@@ -82,11 +82,11 @@ test("incomplete Watch results do not turn missing answers into recommendation w
   watch.latest.observations = [];
   watch.latest.lostPrompts = [];
   const html = renderWatch(watch);
-  assert.match(html, /比較できませんでした。/);
-  assert.doesNotMatch(html, /問で、自社が新しく推薦候補に入りました。/);
-  // 補助の数字（名前が出た質問・出なかった質問・参照元・回復率）の欄
+  assert.match(html, /初回とくらべられませんでした。/);
+  assert.doesNotMatch(html, /問で、新しく名前が出ました。/);
+  // 補助の数字（名前が出た質問・出なかった質問・参照元）の欄
   const summary = html.match(/<div class="wt-stats">([\s\S]*?)<p class="wt-note">/)?.[1] || "";
-  assert.match(summary, /未取得|未確定|比較不可/);
+  assert.match(summary, /未測定|取得できず|まだ測れていません/);
 });
 
 test("stopped Watch does not promise an upcoming weekly run", () => {
@@ -129,9 +129,9 @@ test("Watch mail preserves no-change silence and distinguishes trial ending", as
   assert.equal(h.sent.length, 0);
   await h.module.sendWatchUpdate(watch, watch.baseline, { trialEnded: true });
   assert.equal(h.sent.length, 1);
-  assert.match(h.sent[0].subject, /無料トライアル期間が終了/);
-  assert.match(h.sent[0].html, /自動課金はされません/);
-  assert.doesNotMatch(h.sent[0].html, /のAI推薦状況に変化がありました。/);
+  assert.match(h.sent[0].subject, /無料期間（14日間）が終了/);
+  assert.match(h.sent[0].html, /自動で課金はされません/);
+  assert.doesNotMatch(h.sent[0].html, /新しく名前が出ました。/);
 });
 
 test("Watch mail distinguishes source-only changes from recommendation changes", async () => {
@@ -142,9 +142,9 @@ test("Watch mail distinguishes source-only changes from recommendation changes",
   watch.latest.observations[0].citations.push({ url: "https://source.example/new", domain: "source.example", title: "Fixture source" });
   await h.module.sendWatchUpdate(watch, watch.baseline);
   assert.equal(h.sent.length, 1);
-  assert.match(h.sent[0].subject, /取得状況・参照元/);
-  assert.match(h.sent[0].text, /取得状況・参照元/);
-  assert.doesNotMatch(h.sent[0].text, /新しく候補に含まれた質問: [1-9]/);
+  assert.match(h.sent[0].subject, /参考にしたページが変わりました/);
+  assert.match(h.sent[0].text, /参考にしたページ/);
+  assert.doesNotMatch(h.sent[0].text, /新しく名前が出た質問：[1-9]/);
 });
 
 test("failed AI responses produce an incomplete-comparison notice, not recommendation loss", async () => {
@@ -157,9 +157,9 @@ test("failed AI responses produce an incomplete-comparison notice, not recommend
   watch.latest.lostPrompts = [];
   await h.module.sendWatchUpdate(watch, watch.baseline);
   assert.equal(h.sent.length, 1);
-  assert.match(h.sent[0].text, /比較できません|比較不可/);
-  assert.doesNotMatch(h.sent[0].text, /新しく候補外になった質問:/);
-  assert.doesNotMatch(h.sent[0].subject, /AI推薦状況に変化/);
+  assert.match(h.sent[0].text, /くらべられません/);
+  assert.doesNotMatch(h.sent[0].text, /名前が出なくなった質問：/);
+  assert.doesNotMatch(h.sent[0].subject, /新しく名前が出ました|名前が出なくなりました/);
 });
 
 test("Watch mail explains a changed region instead of giving the normal recovery definition", async () => {
@@ -170,8 +170,8 @@ test("Watch mail explains a changed region instead of giving the normal recovery
   Object.assign(watch.latest.panel, { country: "US" });
   await h.module.sendWatchUpdate(watch, watch.baseline);
   assert.equal(h.sent.length, 1);
-  assert.match(h.sent[0].text, /地域・言語の条件が一致しない/);
-  assert.doesNotMatch(h.sent[0].subject, /AI推薦状況に変化/);
+  assert.match(h.sent[0].text, /地域・言語がちがうため/);
+  assert.doesNotMatch(h.sent[0].subject, /新しく名前が出ました|名前が出なくなりました/);
 });
 
 function renderResult(result: ScanResult) {
@@ -212,13 +212,13 @@ test("competitor-only newcomer alerts in Watch and mail, including candidates be
   watch.latest = structuredClone(watch.baseline);
   watch.latest.observations[0].recommendedEntities.push("新しい専門業者");
   const html = renderWatch(watch);
-  assert.match(html, /測定結果に変化/);
+  assert.match(html, /変化あり/);
   assert.match(html, /新しい専門業者/);
-  assert.match(html, /新規候補/);
+  assert.match(html, /今回はじめて/);
   const h = emailHarness();
   await h.module.sendWatchUpdate({ ...watch, email: "fixture@example.com" }, watch.baseline);
   assert.equal(h.sent.length, 1);
-  assert.match(h.sent[0].text, /新しい専門業者: 新規候補/);
+  assert.match(h.sent[0].text, /新しい専門業者: 今回はじめて/);
 });
 
 test("opposite-provider swaps alert even when overall count and competitor coverage are unchanged", async () => {
@@ -231,7 +231,7 @@ test("opposite-provider swaps alert even when overall count and competitor cover
   const comparison = measurementReadout.compareMeasurementReadouts(watch.baseline, watch.latest);
   assert.equal(comparison.before.included, comparison.after.included);
   assert.equal(comparison.answerChanged, true);
-  assert.match(renderWatch(watch), /AI別の候補入り・比較候補の回答に変化/);
+  assert.match(renderWatch(watch), /AIがすすめる会社が変わりました/);
   const h = emailHarness();
   await h.module.sendWatchUpdate({ ...watch, email: "fixture@example.com" }, watch.baseline);
   assert.equal(h.sent.length, 1);
@@ -245,23 +245,23 @@ test("three-week Watch labels its baseline as initial while email identifies its
   watch.latest.measuredAt = "2026-09-15T09:00:00.000Z";
   watch.history = [watch.baseline, previous, watch.latest];
   const html = renderWatch(watch);
-  assert.match(html, /初回（基準）/);
+  assert.match(html, /初回/);
   assert.doesNotMatch(html, /前回/);
   const h = emailHarness();
   await h.module.sendWatchUpdate({ ...watch, email: "fixture@example.com" }, previous);
-  assert.match(h.sent[0].text, /前回（2026-09-08/);
+  assert.match(h.sent[0].text, /前回（2026\/09\/08/);
 });
 
 test("empty ChangePack and incomplete or old stored data have explicit non-zero-assumption states", () => {
   const watch = sampleWatch();
   if (watch.changePack) watch.changePack.items = [];
-  assert.match(renderWatch(watch), /未作成：公開前の変更案/);
+  assert.match(renderWatch(watch), /まだ案はありません/);
   watch.latest.observations = watch.latest.observations.filter((row) => row.promptId !== watch.latest.prompts![0].id);
   watch.latest.measurementCompleteness = 90;
   const readout = measurementReadout.measurementReadout(watch.latest);
   assert.equal(readout.missing, 1);
-  assert.match(renderWatch(watch), /未取得1問・部分観測/);
-  assert.match(renderResult(watch.latest), /未取得1問/);
+  assert.match(renderWatch(watch), /1問は答えを取得できず/);
+  assert.match(renderResult(watch.latest), /1問は答えを取得できず/);
   const comparison = measurementReadout.compareMeasurementReadouts(watch.baseline, watch.latest);
   assert.equal(comparison.comparable, false);
   assert.ok(comparison.competitorMovements.every((row) => row.diff === null));

@@ -5,32 +5,26 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { ArrowIcon, QuoteIcon } from "@/components/icons";
+import { ArrowIcon } from "@/components/icons";
 import { CitationMap } from "@/components/citation-map";
 import { QuestionList } from "@/components/question-list";
 import { ReportActions } from "@/components/report-actions";
-import { PositioningPanel } from "@/components/positioning-panel";
 import { PublicProfileActions } from "@/components/public-profile-actions";
 import { sampleResult } from "@/lib/sample-data";
 import { isNoSiteTarget } from "@/lib/no-site";
 import { WATCH_MONTHLY_PRICE_LABEL } from "@/lib/pricing";
 import { measurementReadout, readoutIdentity } from "@/lib/measurement-readout";
-import type { EvidenceGap, LostPrompt, Observation, ProviderName, ScanRecord, ScanResult } from "@/lib/types";
-
-function providerLabel(provider: ProviderName) {
-  return provider === "openai" ? "OpenAI" : provider === "gemini" ? "Gemini" : "Perplexity";
-}
+import type { LostPrompt, ScanRecord, ScanResult } from "@/lib/types";
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("ja-JP", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Tokyo" }).format(new Date(value));
 }
 
+/** 内部の注意書きのうち、結果の読み方が変わるものだけをふつうの言葉で出す（取得できなかった問数は結論の欄に出ている） */
 function userFacingWarning(value: string) {
-  if (value.includes("市場認識") || value.includes("市場の信頼")) return "会社や市場の情報が少ないため、競合との比較は参考値です。";
-  if (value.includes("Recommendation") || value.includes("観測が失敗") || value.includes("観測が未設定")) return "一部のAI回答を取得できなかったため、取得できた回答だけで結果を表示しています。";
-  if (value.includes("AI Provider") || value.includes("有効な回答がありません")) return "AIの回答を取得できなかったため、今回の比較結果は表示できません。時間を置いてもう一度お試しください。";
-  if (value.includes("競合候補")) return "比較できる会社を十分に見つけられませんでした。市場を確認してからもう一度お試しください。";
-  return value;
+  if (value.includes("市場認識") || value.includes("市場の信頼")) return "比べる相手の会社が少なかったため、順位は目安です。";
+  if (value.includes("競合候補")) return "比べる相手の会社を見つけられませんでした。";
+  return "";
 }
 
 export function ResultClient({ showSellerLinks = false }: { showSellerLinks?: boolean } = {}) {
@@ -58,7 +52,7 @@ function ResultView({ sample, scanId, showSellerLinks, demo = false }: { sample:
     const controller = new AbortController();
     lifecycle.current = controller;
     if (sample) return () => controller.abort();
-    if (!scanId) { setError("開いたリンクに診断結果の情報が含まれていません。"); setLoading(false); return () => controller.abort(); }
+    if (!scanId) { setError("このリンクでは診断結果を開けません。"); setLoading(false); return () => controller.abort(); }
     fetch(`/api/scans/${encodeURIComponent(scanId)}`, { cache: "no-store", signal: controller.signal })
       .then(async (response) => {
         const data = await response.json() as ScanRecord & { error?: string };
@@ -80,9 +74,9 @@ function ResultView({ sample, scanId, showSellerLinks, demo = false }: { sample:
     try {
       const response = await fetch("/api/watch", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ scanId, email }), signal });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "改善後の確認を開始できませんでした。");
+      if (!response.ok) throw new Error(data.error || "見守りを始められませんでした。もう一度お試しください。");
       if (!signal.aborted) router.push(`/watch?token=${encodeURIComponent(data.token)}`);
-    } catch (caught) { if (!signal.aborted) setError(caught instanceof Error ? caught.message : "改善後の確認を開始できませんでした。"); }
+    } catch (caught) { if (!signal.aborted) setError(caught instanceof Error ? caught.message : "見守りを始められませんでした。もう一度お試しください。"); }
     finally { if (!signal.aborted) setWatchBusy(false); }
   }
 
@@ -91,13 +85,11 @@ function ResultView({ sample, scanId, showSellerLinks, demo = false }: { sample:
 
   const topCompetitor = result.competitors[0];
   const primaryLoss = result.lostPrompts[0];
-  const primaryGap = result.evidenceGaps[0];
   const readout = measurementReadout(result);
   const hasMeasurement = readout.successful > 0;
   const primaryWinner = primaryLoss?.winner || topCompetitor?.name || null;
-  const citationCount = new Set(result.observations.filter((item) => item.status === "success").flatMap((item) => item.citations.map((citation) => citation.url))).size;
   const host = isNoSiteTarget(result.targetUrl) ? "ホームページなし（お店の名前で調査）" : (() => { try { return new URL(result.targetUrl).hostname.replace(/^www\./, ""); } catch { return result.targetUrl; } })();
-  const displayWarnings = [...new Set(result.warnings.map(userFacingWarning))];
+  const displayWarnings = [...new Set(result.warnings.map(userFacingWarning))].filter(Boolean);
 
   return <main className="report-page">
     <SiteHeader compact context={headerContext} />
@@ -117,42 +109,37 @@ function ResultView({ sample, scanId, showSellerLinks, demo = false }: { sample:
     <ReportRanking result={result} />
     <ReportLosses result={result} primaryLoss={primaryLoss} primaryWinner={primaryWinner} />
 
-    {/* ③ 次にやること：AI推薦データの完成文案 */}
+    {/* ③ 次にやること：強みを選んで、公開ページをつくる */}
     <div id="step-2" className="report-publish-section rp-section rp-section--white">
       <div className="shell">
         <div className="rp-head">
-          <span className="rp-eyebrow">3. 何をすれば、名前が出る？ ─ 今すぐできる解決アクション</span>
+          <span className="rp-eyebrow">3. 何をすれば、名前が出る？</span>
           <h2>御社の強みを、AIが読めるページにします。</h2>
-          <p>大手が言っていない御社の強みを、出典つきでまとめました。御社のサイトは書きかえません。内容を確認してから公開できます。</p>
+          <p>公開の前に内容を確認できます。御社のサイトは書きかえません。</p>
         </div>
         <div className="report-publish-actions">
           <PublicProfileActions result={result} sample={sample} />
         </div>
-        <details className="positioning-more">
-          <summary>ホームページやチラシにも使える、紹介文の下書きを見る（コピーできます）</summary>
-          <PositioningPanel positioning={result.positioning} />
-        </details>
       </div>
     </div>
 
-    {/* ④ 週次見守り（14日間無料） */}
+    {/* ④ 毎週の見守り（14日間無料） */}
     <div id="step-3">
       <section className="report-watch" id="watch-plan">
         <div className="shell report-watch-inner">
           <div>
             <span className="rp-eyebrow">4. このあとは、毎週おまかせ</span>
             <h2>同じ質問で、毎週AIに聞き直します。</h2>
-            <p>名前が出た質問の数がどう変わったかを、毎週お知らせします。ページも自動で最新に保ちます。</p>
+            <p>変化を毎週お知らせし、ページも最新に保ちます。</p>
             <ul>
-              <li>{WATCH_MONTHLY_PRICE_LABEL} / 週次の回答測定と差分確認</li>
-              <li>月単位で利用でき、管理画面から解約手続きが可能</li>
-              <li>最初の14日間は無料確認（開始時に有料化しません）</li>
+              <li>{WATCH_MONTHLY_PRICE_LABEL}</li>
+              <li>いつでも解約できます</li>
             </ul>
           </div>
           <form onSubmit={startWatch}>
-            <span className="rp-watch-flag">週次自動見守りプラン（14日間無料トライアル）</span>
+            <span className="rp-watch-flag">最初の14日間は無料</span>
             <label htmlFor="watch-email">
-              結果を受け取るメールアドレス <span className="watch-email-optional">（空欄でも始められます）</span>
+              通知を受け取るメール <span className="watch-email-optional">（任意）</span>
             </label>
             <input
               id="watch-email"
@@ -160,19 +147,19 @@ function ResultView({ sample, scanId, showSellerLinks, demo = false }: { sample:
               type="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              placeholder="通知を受け取る場合のみ入力（空欄でもOK）"
+              placeholder="メールアドレス"
             />
             <button className="button button-primary" disabled={watchBusy}>
-              {watchBusy ? "準備しています…" : "14日間無料で試してみる（メール登録不要）"}
+              {watchBusy ? "準備しています…" : "14日間無料で始める"}
               <ArrowIcon />
             </button>
-            <small>14日間は無料。終わっても自動で課金されません。</small>
+            <small>14日間が終わっても、自動で課金されません。</small>
           </form>
         </div>
       </section>
     </div>
 
-    <ReportDetails result={result} sample={sample} primaryLoss={primaryLoss} primaryGap={primaryGap} citationCount={citationCount} />
+    <ReportDetails result={result} sample={sample} />
 
     {/* 注意書きはページ下部に1回だけ */}
     {!sample && displayWarnings.length ? (
@@ -200,7 +187,7 @@ function ReportSubbar({ brandName, sample, router }: { brandName: string; sample
         <div className="report-subbar-breadcrumb">
           <Link href="/">ホーム</Link>
           <span>/</span>
-          <span className="report-subbar-current">AI診断レポート</span>
+          <span className="report-subbar-current">診断結果</span>
           <span className="report-subbar-brand">{brandName}</span>
           {sample ? <span className="report-subbar-sample">見本</span> : null}
         </div>
@@ -227,13 +214,13 @@ function ReportSubbar({ brandName, sample, router }: { brandName: string; sample
               <input
                 type="text"
                 name="correctionQuery"
-                aria-label="診断対象の会社名・地域またはURL"
-                placeholder="例: 青葉ベーカリー 高崎、URL"
+                aria-label="社名・店名、Instagram、ホームページのどれか"
+                placeholder="例: 青葉ベーカリー 高崎"
                 value={correctionQuery}
                 onChange={(event) => setCorrectionQuery(event.target.value)}
                 autoFocus
               />
-              <button type="submit">再診断</button>
+              <button type="submit">診断する</button>
               <button type="button" onClick={() => setShowCorrectionForm(false)} aria-label="閉じる">✕</button>
             </form>
           )}
@@ -270,7 +257,7 @@ function ReportHero({
           <p className="rp-hero-meta">
             <span>{host}</span>
             <span>{result.discovery.market}</span>
-            <span>{sample ? "診断レポートの見本" : result.demo ? `模擬データ（${formatDate(result.measuredAt)}）` : `実測日: ${formatDate(result.measuredAt)}`}</span>
+            <span>{sample ? "診断レポートの見本" : result.demo ? `模擬データ（${formatDate(result.measuredAt)}）` : `調べた日：${formatDate(result.measuredAt)}`}</span>
           </p>
         </div>
 
@@ -279,12 +266,12 @@ function ReportHero({
             <div className="rp-verdict-card rp-verdict-card--warn">
               <span>名前が出なかった質問</span>
               <strong>{readout.excluded}<small>問</small></strong>
-              <em>回答を取得した{readout.successful}問のうち</em>
+              <em>{readout.successful}問のうち</em>
             </div>
             <div className="rp-verdict-card">
               <span>名前が出た質問</span>
               <strong>{readout.included}<small>問</small></strong>
-              <em>{readout.label}・AIの答えの過半数で判定</em>
+              <em>{readout.label}</em>
             </div>
             <div className="rp-verdict-card">
               <span>いちばん多くすすめられた会社</span>
@@ -293,12 +280,12 @@ function ReportHero({
             </div>
           </div>
         ) : (
-          <p className="rp-verdict-empty">公開ページの情報は確認しました。AIの答えの測定はまだ終わっていないため、名前が出たかどうかは未判定です。</p>
+          <p className="rp-verdict-empty">AIの答えを取得できませんでした。少し時間をおいて、もう一度診断してください。</p>
         )}
 
         {hasMeasurement && readout.excluded > 0 ? (
           <div className="rp-hero-cta">
-            <p><strong>大手と戦わなくても、御社の強みで取り返せます。</strong>名前が出なかった質問に向けて、AIが読めるページを無料でつくれます。</p>
+            <p><strong>大手と同じ土俵で戦わず、御社の強みで取り返しにいきましょう。</strong>名前が出なかった質問に向けて、AIが読めるページを無料でつくれます。</p>
             <div className="rp-hero-cta-actions">
               <a className="button button-primary" href="#step-2">取り返す準備を始める（無料） <ArrowIcon /></a>
               <a className="button button-secondary" href="#step-1-details">先にくわしく見る</a>
@@ -306,7 +293,6 @@ function ReportHero({
           </div>
         ) : null}
 
-        <ReportActions result={result} sample={sample} />
       </div>
     </section>
   );
@@ -344,7 +330,7 @@ function ReportRanking({ result }: { result: ScanResult }) {
           <div className="rp-rank-badge">
             <span>今回の答えでは</span>
             <strong>{total}社中{rank}番目</strong>
-            <em>取得できた{result.successfulObservations}件の回答で数えた回数です。お客さんの数や市場シェアではありません。</em>
+            <em>AIの答え{result.successfulObservations}件で数えました</em>
           </div>
         </div>
       </div>
@@ -378,85 +364,21 @@ function ReportLosses({ result, primaryLoss, primaryWinner }: { result: ScanResu
   );
 }
 
-/** くわしいデータ：測定条件・参照元・AIの回答履歴は最後にまとめて折りたたむ */
-function ReportDetails({
-  result,
-  sample,
-  primaryLoss,
-  primaryGap,
-  citationCount,
-}: {
-  result: ScanResult;
-  sample: boolean;
-  primaryLoss?: LostPrompt;
-  primaryGap?: EvidenceGap;
-  citationCount: number;
-}) {
-  const [openObservation, setOpenObservation] = useState("");
+/** くわしいデータ：調べた条件・AIが参考にしたページ・保存は最後にまとめて折りたたむ */
+function ReportDetails({ result, sample }: { result: ScanResult; sample: boolean }) {
   return (
     <section className="rp-section rp-section--tint rp-details">
       <div className="shell">
         <details>
-          <summary>くわしいデータを見る（測定条件・AIが参考にしたページ・回答の記録）</summary>
+          <summary>くわしいデータを見る</summary>
           <div className="rp-details-body">
             <div className="report-measurement-grid">
-              <div><small>調べたAI</small><span>ChatGPT / Perplexity / Google Gemini</span></div>
-              <div><small>質問と回答</small><span>質問{result.panel.promptCount}問 × AIの回答（成功{result.successfulObservations}件）</span></div>
-              <div><small>調べ方</small><span>{sample ? "見本のデータを使った表示例" : "各AIに同じ条件で質問し、取得できた回答を記録"}</span></div>
-              <div><small>参考にされたページ</small><span>{citationCount}件</span></div>
-            </div>
-            <p className="report-measurement-caveat">
-              測定日時: {formatDate(result.measuredAt)} JST。候補名はAIの回答に含まれた文字列をそのまま記録したものです。他社の品質・市場全体の順位・お客さんの流出を評価するものではありません。公開情報ページには測定ログや他社名を載せません。
-            </p>
-
-            <div className="evidence-layout">
-              <div className="evidence-main">
-                <h3>{primaryGap?.label || "選ぶ前に確認したい情報"}</h3>
-                <p>{primaryGap?.whyItMatters || "この情報が参照元に記載されているか、未確認かを分けて表示します。"}</p>
-                {primaryGap?.competitorEvidence ? <p className="evidence-competitor">回答に含まれた参照情報: {primaryGap.competitorEvidence}</p> : null}
-              </div>
-              <div className="citation-box">
-                <h3>AIが参考にしたページ</h3>
-                {primaryLoss?.citations.length ? (
-                  <ul>
-                    {primaryLoss.citations.slice(0, 5).map((citation) => (
-                      <li key={citation.url}>
-                        <a href={citation.url} target="_blank" rel="noreferrer"><QuoteIcon />{citation.title || citation.domain}<span>↗</span></a>
-                      </li>
-                    ))}
-                  </ul>
-                ) : <p>引用元ページはありません。</p>}
-              </div>
+              <div><small>調べたAI</small><span>ChatGPT・Gemini・Perplexity</span></div>
+              <div><small>質問</small><span>{result.panel.promptCount}問</span></div>
+              <div><small>調べた日</small><span>{sample ? "見本" : formatDate(result.measuredAt)}</span></div>
             </div>
             <CitationMap result={result} />
-
-            {primaryLoss ? (
-              <div className="observation-list">
-                <h3>AIの回答の記録</h3>
-                {primaryLoss.observations.map((observation: Observation) => (
-                  <article key={observation.id}>
-                    <button type="button" onClick={() => setOpenObservation(openObservation === observation.id ? "" : observation.id)} aria-expanded={openObservation === observation.id}>
-                      <span>{providerLabel(observation.provider)}</span>
-                      <strong>{observation.ownPosition ? `自社 ${observation.ownPosition}番目` : "自社は候補外"}</strong>
-                      <em>回答 {observation.repetition}</em>
-                      <ArrowIcon />
-                    </button>
-                    {openObservation === observation.id ? (
-                      <div className="observation-body">
-                        {observation.rawText ? <p>{observation.rawText}</p> : <p className="observation-safe-note">引用元情報のみ表示しています。</p>}
-                        {observation.citations.length ? (
-                          <ul>
-                            {observation.citations.map((citation) => (
-                              <li key={citation.url}><a href={citation.url} target="_blank" rel="noreferrer">{citation.title || citation.domain}</a></li>
-                            ))}
-                          </ul>
-                        ) : null}
-                      </div>
-                    ) : null}
-                  </article>
-                ))}
-              </div>
-            ) : null}
+            <ReportActions result={result} sample={sample} />
           </div>
         </details>
       </div>

@@ -1822,46 +1822,6 @@ svg { width: 1.1em; height: 1.1em; }
 }
 
 /* 戦略コンサルティング分析所見ボックス */
-.rovan-hot-advice-card {
-  background: #ffffff;
-  border: 1.5px solid var(--border-strong);
-  border-left: 4px solid var(--text);
-  border-radius: 8px;
-  padding: 20px 24px;
-  margin-bottom: 24px;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
-}
-
-.hot-advice-header {
-  margin-bottom: 8px;
-}
-
-.hot-advice-tag {
-  display: inline-block;
-  background: var(--text);
-  color: #ffffff;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 3px;
-  margin-bottom: 6px;
-}
-
-.hot-advice-header h3 {
-  margin: 4px 0 0;
-  font-size: 1.05rem;
-  color: var(--text);
-  font-weight: 700;
-  line-height: 1.4;
-}
-
-.hot-advice-body {
-  margin: 0;
-  font-size: 0.88rem;
-  color: var(--text-muted);
-  line-height: 1.65;
-  font-weight: 500;
-}
 
 .weapon-card:hover {
   border-color: var(--text-subtle);
@@ -1874,42 +1834,8 @@ svg { width: 1.1em; height: 1.1em; }
   box-shadow: 0 0 0 1px var(--info);
 }
 
-.weapon-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.weapon-radio {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #1e40af;
-}
-
-.weapon-tag {
-  font-size: 12px;
-  font-weight: 700;
-  background: var(--border-strong);
-  color: var(--text);
-  padding: 2px 6px;
-  border-radius: 3px;
-}
-
-.weapon-card.selected .weapon-tag {
-  background: var(--info);
-  color: #ffffff;
-}
-
-.weapon-card h3 {
-  margin: 0 0 6px;
-  font-size: 1rem;
-  color: var(--text);
-  font-weight: 700;
-}
-
 .weapon-desc {
-  margin: 0 0 10px;
+  margin: 0;
   font-size: 0.82rem;
   color: var(--text-muted);
   line-height: 1.45;
@@ -1936,33 +1862,6 @@ svg { width: 1.1em; height: 1.1em; }
   margin-bottom: 28px;
 }
 
-.weapon-action-status p {
-  margin: 0 0 4px;
-  font-size: 0.95rem;
-  color: var(--text);
-}
-
-.weapon-action-status small {
-  color: var(--text-subtle);
-  font-size: 0.78rem;
-}
-
-.saved-success-box {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: flex-end;
-}
-
-.saved-badge {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--brand);
-  background: var(--brand-soft);
-  padding: 3px 10px;
-  border-radius: 4px;
-}
-
 .saved-links {
   display: flex;
   align-items: center;
@@ -1977,9 +1876,6 @@ svg { width: 1.1em; height: 1.1em; }
   }
   .weapon-action-box {
     flex-direction: column;
-    align-items: stretch;
-  }
-  .saved-success-box {
     align-items: stretch;
   }
   .saved-links {
@@ -2518,18 +2414,15 @@ svg { width: 1.1em; height: 1.1em; }
 .won-prompt-item {
   padding: 18px 0;
   border-bottom: 1px solid var(--surface);
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
 }
 
 .won-prompt-item:last-child {
   border-bottom: none;
 }
 
-.won-item-head {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-}
 
 .won-item-num {
   font-size: 12px;
@@ -2540,14 +2433,6 @@ svg { width: 1.1em; height: 1.1em; }
   border-radius: 4px;
 }
 
-.won-tag-status {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--info);
-  background: var(--info-soft);
-  padding: 2px 8px;
-  border-radius: 4px;
-}
 
 .won-prompt-text {
   font-size: 0.95rem;
@@ -3277,9 +3162,6 @@ svg { width: 1.1em; height: 1.1em; }
 .question-list-show-more-btn.is-open { background: var(--surface); color: var(--navy); }
 
 /* ③次にやること：公開情報の作成・公開カード（public-profile-actions.tsx） */
-.profile-draft-guide { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
-.profile-draft-guide-label { font-size: .78rem; font-weight: 700; color: var(--text); display: inline-flex; align-items: center; gap: 6px; }
-.profile-draft-guide-note { font-size: 12px; color: var(--text-muted); }
 
 /* page: scan */
 .no-site-tag-row { margin-bottom: 14px; }
@@ -3317,27 +3199,8 @@ svg { width: 1.1em; height: 1.1em; }
 .watch-bookmark { margin-top: var(--sp-3); padding-top: var(--sp-3); border-top: 1px solid var(--border); }
 .watch-bookmark .button { margin-top: 8px; }
 
-.watch-log { margin-top: var(--sp-2); padding: var(--sp-3); border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg); box-shadow: var(--shadow-sm); }
-.watch-log + .watch-log { margin-top: var(--sp-2); }
-.watch-log summary { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; cursor: pointer; list-style: none; }
-.watch-log summary::-webkit-details-marker { display: none; }
-.watch-log-tag { display: inline-block; padding: 3px 8px; border-radius: var(--radius-sm); background: var(--navy); color: var(--bg); font-size: 12px; font-weight: 700; }
-.watch-log-title { margin: 8px 0 0; color: var(--navy); font-size: 1.05rem; font-weight: 700; }
-.watch-log-lead { margin: 12px 0 0; }
-.watch-log-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); }
-.watch-log-item { background: var(--surface); box-shadow: none; }
-.watch-log-item-label { display: block; color: var(--text-subtle); font-size: 12px; font-weight: 700; }
-.watch-log-item--info .watch-log-item-label { color: var(--info); }
-.watch-log-item--success .watch-log-item-label { color: var(--brand); }
-.watch-log-item-title { display: block; margin: 6px 0 4px; color: var(--navy); font-size: .9rem; font-weight: 700; }
-.watch-log-item-desc { margin: 0; color: var(--text-muted); font-size: .76rem; line-height: 1.55; }
 .watch-log-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); }
 .watch-log-stat { padding: 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); text-align: center; }
-.watch-log-notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-top: 16px; }
-.watch-log-note { background: var(--surface); box-shadow: none; }
-.watch-log-note span { display: block; color: var(--text); font-size: 12px; font-weight: 700; }
-.watch-log-note p, .watch-log-note ul { margin: 6px 0 0; color: var(--text-muted); font-size: .8rem; line-height: 1.6; }
-.watch-log-note ul { padding-left: 18px; }
 .watch-gap-pending { background: var(--surface); border-style: dashed; box-shadow: none; }
 .watch-gap-pending-row { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
 .watch-gap-pending p { margin: 0; color: var(--text-muted); font-size: .76rem; line-height: 1.5; }
@@ -3682,7 +3545,6 @@ svg { width: 1.1em; height: 1.1em; }
 .pp-main { display: flex; flex-direction: column; gap: 36px; min-width: 0; }
 .pp-heading { font-size: clamp(22px, 2.6vw, 28px); line-height: 1.4; }
 .pp-subheading { font-size: 17px; line-height: 1.5; }
-.pp-lead { margin: 8px 0 18px; font-size: 15px; line-height: 1.8; color: var(--text-muted); }
 .pp-facts { margin: 0; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; background: var(--bg); }
 .pp-fact { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 16px; padding: 16px 20px; }
 .pp-fact + .pp-fact { border-top: 1px solid var(--border); }
@@ -3697,13 +3559,12 @@ svg { width: 1.1em; height: 1.1em; }
 .pp-source-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
 .pp-source-list a { font-size: 15px; font-weight: 700; color: var(--info); text-decoration: none; }
 .pp-source-list small { display: block; margin-top: 4px; font-size: 13px; line-height: 1.6; color: var(--text-subtle); }
-.pp-note { font-size: 14px; line-height: 1.7; color: var(--text-muted); margin: 0; }
-.pp-about-list { margin: 0; padding-left: 1.2em; font-size: 14px; line-height: 1.8; color: var(--text-muted); }
 .pp-about-link { font-size: 14px; font-weight: 700; color: var(--info); text-decoration: none; }
-.pp-data-links { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 0; padding: 0 4px; font-size: 13px; color: var(--text-subtle); }
-.pp-data-links a { color: var(--text-subtle); text-decoration: underline; }
 .pp-footer { border-top: 1px solid var(--border); background: var(--surface); padding: 20px 0; }
 .pp-footer p { margin: 0; font-size: 13px; color: var(--text-subtle); }
+.pp-footer-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 16px; }
+/* 情報のもと（右の列）がないページは1列で読む幅にする */
+.pp-body:not(:has(.pp-aside)) { grid-template-columns: minmax(0, 760px); }
 
 @media (max-width: 900px) {
   .pp-body { grid-template-columns: 1fr; gap: 32px; }
@@ -3935,7 +3796,6 @@ svg { width: 1.1em; height: 1.1em; }
 .wt-bars-axis span { width: 84px; }
 .wt-bars { gap: 48px; }
 .wt-bars-axis { gap: 28px; }
-.wt-auto-note { font-size: 13px !important; color: var(--text-subtle) !important; }
 .wt-rival-more { margin-top: 12px; text-align: left; }
 .button-danger { background: var(--warn); color: var(--bg); }
 .button-danger:hover { background: #8a3d1b; }
@@ -4130,11 +3990,6 @@ svg { width: 1.1em; height: 1.1em; }
 .weapon-card { border-radius: 16px !important; }
 .weapon-card.selected { border-color: var(--brand) !important; background: var(--mint-panel) !important; box-shadow: 0 0 0 1px var(--brand) inset !important; }
 .card-top-recommend-badge { background: var(--brand) !important; color: var(--bg) !important; font-weight: 700; border-radius: 8px !important; }
-.weapon-radio { color: var(--text-subtle) !important; }
-.weapon-radio.is-selected { color: var(--brand) !important; font-weight: 700; }
-.weapon-card .weapon-tag { background: var(--border) !important; color: var(--text-muted) !important; }
-.weapon-card.selected .weapon-tag { background: var(--brand) !important; color: var(--bg) !important; }
-.weapon-card h3 { word-break: auto-phrase; text-wrap: balance; }
 
 /* =========================================================
    操作しやすさ（docs/UX_REQUIREMENTS.md の基準）
@@ -4153,7 +4008,7 @@ html { scroll-padding-top: 72px; }
   .mobile-menu summary { min-height: 44px; padding: 0 12px; font-size: 14px; }
   .mobile-menu nav { top: 52px; min-width: 200px; }
   .mobile-menu nav a { display: flex; align-items: center; min-height: 44px; padding: 0 12px; font-size: 15px; }
-  .pp-header-link, .pp-hero-source, .pp-fact-source, .pp-about-link, .pp-source-list a, .pp-data-links a { display: inline-flex; align-items: center; min-height: 44px; }
+  .pp-header-link, .pp-hero-source, .pp-fact-source, .pp-about-link, .pp-source-list a { display: inline-flex; align-items: center; min-height: 44px; }
   /* iOSは16px未満の入力欄に触れると画面を拡大してしまうため、スマホでは16pxにそろえる */
   .text-button, .saved-redo, .button-copy, .report-actions button, .question-list-toolbar select, .question-list-filter select, .question-list-toggle-all, .question-card-expand-btn, .watch-notify-toggle, .watch-notify-save, .report-subbar-correction-btn { min-height: 44px; }
   .document-link, .report-subbar-breadcrumb a, .watch-comp-own-link { display: inline-flex; align-items: center; min-height: 44px; }
@@ -4203,3 +4058,56 @@ small { font-size: max(12px, 0.833em); }
 .rp-demo-banner-action { min-height: 44px; padding: 0 18px; border: 0; border-radius: 10px; background: var(--bg); color: var(--warn); font-size: 15px; font-weight: 700; cursor: pointer; }
 .rp-demo-banner-action:hover { background: var(--warn-soft); }
 .rp-demo-banner-action:disabled { opacity: .7; cursor: progress; }
+/* 読み上げだけに使うラベル（画面には出さない） */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.legal-table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 15px; }
+.legal-table th, .legal-table td { padding: 10px 12px; border: 1px solid var(--border); text-align: left; vertical-align: top; }
+.legal-table th { background: var(--surface); font-weight: 700; }
+@media (max-width: 640px) { .legal-table { font-size: 14px; } .legal-table th, .legal-table td { padding: 8px; } }
+.support-contact { margin: 8px 0 12px; }
+
+/* 強みの選択（ラジオ）と、下書きの中身 */
+.strength-picker { border: 0; margin: 0 0 20px; padding: 0; min-width: 0; }
+.strength-picker-legend { padding: 0; margin-bottom: 12px; font-size: 17px; font-weight: 700; color: var(--text); }
+.weapon-card { position: relative; gap: 6px; padding-left: 52px !important; }
+.weapon-card:has(:focus-visible) { outline: 3px solid var(--brand); outline-offset: 2px; }
+/* ラジオはカード全体に重ねて押せる範囲を広くし、見た目の丸はカードの ::before で描く */
+.weapon-radio-input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.weapon-card::before { content: ""; position: absolute; left: 18px; top: 20px; width: 22px; height: 22px; box-sizing: border-box; border: 2px solid var(--border-strong); border-radius: 50%; background: var(--bg); pointer-events: none; }
+.weapon-card:has(.weapon-radio-input:checked)::before { border-color: var(--brand); background: radial-gradient(circle, var(--brand) 0 45%, var(--bg) 50%); }
+.weapon-card .card-top-recommend-badge { align-self: flex-start; margin-bottom: 2px; }
+.weapon-card-title { font-size: 16px; line-height: 1.5; color: var(--text); word-break: auto-phrase; text-wrap: balance; }
+.weapon-desc { font-size: 14px; line-height: 1.7; }
+.weapon-action-box { justify-content: flex-start; }
+.profile-draft-result { display: flex; flex-direction: column; gap: 14px; }
+.profile-preview { border: 1px solid var(--border-strong); border-radius: 14px; padding: 18px 20px; background: var(--bg); display: flex; flex-direction: column; gap: 10px; }
+.profile-preview p { margin: 0; font-size: 15px; line-height: 1.7; color: var(--text); }
+.profile-preview-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.profile-preview-head strong { font-size: 18px; color: var(--text); }
+.profile-status { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 13px; font-weight: 700; background: var(--border); color: var(--text-muted); }
+.profile-status--published { background: var(--brand-soft); color: var(--brand); }
+.profile-status--draft { background: var(--info-soft); color: var(--text); }
+.profile-preview-facts { margin: 0; display: grid; gap: 6px; }
+.profile-preview-facts > div { display: grid; grid-template-columns: 10em minmax(0, 1fr); gap: 12px; font-size: 14px; line-height: 1.6; }
+.profile-preview-facts dt { color: var(--text-muted); }
+.profile-preview-facts dd { margin: 0; color: var(--text); overflow-wrap: anywhere; }
+.profile-preview .profile-preview-sources { font-size: 13px; color: var(--text-muted); }
+.profile-sample-note { margin: 0; font-size: 14px; color: var(--text-muted); }
+.manage-link-box { border-top: 1px dashed var(--border-strong); padding-top: 14px; display: flex; flex-direction: column; gap: 6px; }
+.manage-link-box p { margin: 0; font-size: 14px; line-height: 1.7; color: var(--text-muted); }
+.manage-link-box .manage-link-title { font-weight: 700; color: var(--text); }
+.manage-link-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+@media (max-width: 640px) { .profile-preview-facts > div { grid-template-columns: 1fr; gap: 0; } }
+
+/* 見守り：今月のまとめ・見つからなかった情報・管理用リンク */
+.watch-gap-title { margin: var(--sp-4) 0 8px; font-size: 17px; }
+.watch-gap-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.watch-gap-list li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); }
+.watch-gap-list small { color: var(--text-subtle); font-size: 13px; }
+.watch-gap-list span { flex-basis: 100%; font-size: 14px; color: var(--text-muted); }
+.watch-bookmark .manage-link-title { margin: 0; font-weight: 700; color: var(--text); }
+.change-pack-document footer { font-size: 13px; color: var(--text-subtle); }
+@media (max-width: 640px) {
+  .public-profile-interactive-card { padding: 16px; margin: 24px 0; }
+  .profile-preview { padding: 14px 16px; }
+}

@@ -8,14 +8,14 @@ export const runtime = "nodejs";
 export async function DELETE(request: Request) {
   try {
     const body = await request.json().catch(() => null);
-    if (!validToken(body?.token) || typeof body?.email !== "string" || !isDataDeletionConfirmation(body?.confirmation)) return Response.json({ error: "管理用リンク、メールを登録した場合はそのアドレス、確認文字列 DELETE ROVAN DATA が必要です。" }, { status: 400 });
+    if (!validToken(body?.token) || typeof body?.email !== "string" || !isDataDeletionConfirmation(body?.confirmation)) return Response.json({ error: "管理用リンクと、確認のための「DELETE ROVAN DATA」を入れてください（メールを登録した方はメールアドレスも）。" }, { status: 400 });
     const watch = await getWatch(body.token);
     if (!watch) {
       const receipt = await deleteWatchData(body.token, body.email);
       return Response.json(receipt, { headers: { "cache-control": "no-store", "referrer-policy": "no-referrer" } });
     }
-    if (!watch || watch.email !== body.email.trim().toLowerCase()) return Response.json({ error: "Watch tokenと登録メールが一致しません。" }, { status: 403 });
-    if (watch.paid && !watch.stripeSubscriptionId) return Response.json({ error: "契約の停止を確認できないため削除を中断しました。サポートへお問い合わせください。" }, { status: 409 });
+    if (!watch || watch.email !== body.email.trim().toLowerCase()) return Response.json({ error: "管理用リンクと登録したメールアドレスが一致しません。" }, { status: 403 });
+    if (watch.paid && !watch.stripeSubscriptionId) return Response.json({ error: "契約中のため削除できませんでした。先に解約するか、お問い合わせください。" }, { status: 409 });
     // The privacy service cancels paid subscriptions. Also stop recoverable
     // unpaid/paused/incomplete subscriptions before discarding their identifiers.
     let stopped = false;
@@ -33,6 +33,6 @@ export async function DELETE(request: Request) {
     const result = await deleteWatchData(body.token, body.email);
     return Response.json({ ...result, subscriptionCancelled: stopped || result.subscriptionCancelled }, { headers: { "cache-control": "no-store", "referrer-policy": "no-referrer" } });
   } catch {
-    return Response.json({ error: "削除処理を完了できませんでした。契約停止や一部の削除が済んでいる可能性があります。再試行しても失敗する場合はサポートへお問い合わせください。" }, { status: 503 });
+    return Response.json({ error: "削除を完了できませんでした。時間をおいてもう一度お試しください。直らない場合はお問い合わせください。" }, { status: 503 });
   }
 }

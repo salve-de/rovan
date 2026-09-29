@@ -7,13 +7,13 @@ test("adds https to a bare domain", () => {
 });
 
 test("rejects credentials and non-http schemes", () => {
-  assert.throws(() => normalizePublicUrl("https://user:pass@example.com"), /認証情報/);
+  assert.throws(() => normalizePublicUrl("https://user:pass@example.com"), /ID・パスワード/);
   assert.throws(() => normalizePublicUrl("file:///etc/passwd"), /http/);
 });
 
 test("rejects non-standard ports and localhost", () => {
   assert.throws(() => normalizePublicUrl("https://example.com:8443"), /標準ポート/);
-  assert.throws(() => normalizePublicUrl("http://localhost"), /公開ドメイン/);
+  assert.throws(() => normalizePublicUrl("http://localhost"), /公開されているURL/);
 });
 
 test("rejects private literal IPs", () => {

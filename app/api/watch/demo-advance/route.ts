@@ -16,7 +16,7 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => ({})) as { token?: string };
   const token = typeof body.token === "string" ? body.token : "";
   const watch = token ? await getWatch(token) : null;
-  if (!watch) return Response.json({ error: "週次見守りが見つかりません。" }, { status: 404 });
+  if (!watch) return Response.json({ error: "見守りが見つかりません。" }, { status: 404 });
 
   advanceDemoRound(watch.latest.discovery.brandName);
   // 質問はまとめて数回に分けて測る設計なので、終わるまで続ける

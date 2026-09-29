@@ -10,12 +10,13 @@ test("buildDirectPublicProfileDraft omits unprovided facts and contains no inven
 
   assert.equal(draft.brandName, "田中精密加工所");
   assert.equal(draft.facts.length, 1);
-  assert.equal(draft.facts[0].label, "入力された名称");
+  assert.equal(draft.facts[0].label, "名称");
+  assert.equal(draft.summary, "", "入力のない紹介文を決まり文句で埋めない");
 
   // 架空デフォルト値が生成されていないことを検証
   const labels = draft.facts.map((f) => f.label);
   assert.ok(!labels.includes("所在地・対応エリア"));
-  assert.ok(!labels.includes("営業時間・受付体制"));
+  assert.ok(!labels.includes("営業時間"));
   assert.ok(!labels.includes("明瞭料金規約"));
 
   // 誇大表現・捏造表現が含まれていないことを検証
@@ -34,8 +35,8 @@ test("buildDirectPublicProfileDraft includes provided fields with proper provena
   assert.equal(draft.facts.length, 4);
   const factMap = Object.fromEntries(draft.facts.map((f) => [f.label, f.value]));
   assert.equal(factMap["所在地・対応エリア"], "長野県安曇野市");
-  assert.equal(factMap["営業時間・受付体制"], "8:00〜17:00");
-  assert.equal(factMap["料金規約・費用目安"], "直売所価格・全国クール便対応");
+  assert.equal(factMap["営業時間"], "8:00〜17:00");
+  assert.equal(factMap["料金の目安"], "直売所価格・全国クール便対応");
 });
 
 test("保存済みプロフィールは公開用の許可項目から再生成し内部データを漏らさない", () => {

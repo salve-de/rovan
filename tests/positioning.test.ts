@@ -29,9 +29,9 @@ test("derivePositioningAdvice: 観測候補と確認可能な整理案を導出�
 
   assert.equal(positioning.strategies?.length, 3, "戦略が3件生成されること");
   const strategy1 = positioning.strategies![0];
-  assert.equal(strategy1.code, "仮説 01");
+  assert.equal(strategy1.code, "強み 01");
   assert.ok(strategy1.name.length > 0);
-  assert.ok(strategy1.coreThesis.length > 0);
+  assert.equal(strategy1.coreThesis, "", "決まり文句の説明文を作らない");
   assert.ok(strategy1.deliverables.profile.text.includes(sampleResult.discovery.brandName));
   assert.equal(strategy1.competitorAnalysis.length, 0, "顧客層仮説に無関係な競合ログを付けない");
 });
@@ -42,9 +42,10 @@ test("顧客層・用途・候補外の質問それぞれをニッチ仮説に�
   result.discovery.useCases = ["海外拠点を含む契約の見直し"];
   const advice = derivePositioningAdvice(result);
   const strategies = advice.strategies!;
-  assert.match(strategies[0].coreThesis, /夜間に相談したい個人事業主/);
-  assert.match(strategies[1].coreThesis, /海外拠点を含む契約の見直し/);
-  assert.ok(strategies[2].coreThesis.includes(result.lostPrompts[0].prompt));
+  assert.match(strategies[0].name, /夜間に相談したい個人事業主/);
+  assert.match(strategies[1].name, /海外拠点を含む契約の見直し/);
+  assert.ok(strategies[2].name.includes(result.lostPrompts[0].prompt));
+  assert.equal(strategies[2].focusKeyword, result.lostPrompts[0].prompt);
   assert.match(strategies[0].strategicReason, /仮説.*未確認/);
   assert.match(strategies[1].strategicReason, /仮説.*参照元/);
   for (const strategy of strategies) {

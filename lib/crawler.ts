@@ -246,7 +246,7 @@ export async function crawlCompanySite(input: string, maxPages = 24): Promise<{ 
       });
     } catch { /* partial crawl is valid */ }
   }
-  if (!pages.length) throw new Error("公開ページを取得できませんでした。robots.txt、URL、サイト構成を確認してください。");
+  if (!pages.length) throw new Error("ホームページを読み込めませんでした。URLが正しいか確かめてください。");
   const crawlerAccess = Object.fromEntries(AI_CRAWLERS.map((agent) => [agent, pages.every((page) => {
     try { return isAllowedByRobots(startRobots, new URL(page.url).pathname, agent); } catch { return false; }
   })])) as Partial<Record<AiCrawlerName, boolean>>;

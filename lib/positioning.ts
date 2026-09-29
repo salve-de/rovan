@@ -24,10 +24,14 @@ function deriveStrategies(result: ScanResult): StrategyOption[] {
   const losses = observedLosses(result);
   const audience = result.discovery.targetCustomers.filter((value) => value.trim());
   const useCases = result.discovery.useCases.filter((value) => value.trim());
+  // label は画面（強みのカード）にそのまま出す言葉。keyword は公開ページに載せる情報を選ぶ手がかり。focus・basis は内部の記録用
   const seeds = [
-    ...audience.slice(0, 1).map((value) => ({ id: "audience", focus: `「${value}」という顧客層`, basis: "会社解析で得た対象顧客の仮説です。実際に対応しているかは未確認です。", rows: [] as Observation[] })),
-    ...useCases.slice(0, 1).map((value) => ({ id: "use-case", focus: `「${value}」という利用場面`, basis: "会社解析で得た用途の仮説です。提供可否や実績は参照元での確認が必要です。", rows: [] as Observation[] })),
-    ...losses.map((loss) => ({ id: `prompt-${loss.promptId}`, focus: `「${loss.prompt}」という相談`, basis: `測定質問 ${loss.promptId} の取得成功 ${loss.observations.length}件中、自社が候補外の回答がありました。需要量や失注を示すものではありません。`, rows: loss.observations })),
+    ...audience.slice(0, 1).map((value) => ({ id: "audience", focus: `「${value}」という顧客層`, basis: "会社解析で得た対象顧客の仮説です。実際に対応しているかは未確認です。", rows: [] as Observation[],
+      label: `${value}に選ばれる`, keyword: value })),
+    ...useCases.slice(0, 1).map((value) => ({ id: "use-case", focus: `「${value}」という利用場面`, basis: "会社解析で得た用途の仮説です。提供可否や実績は参照元での確認が必要です。", rows: [] as Observation[],
+      label: `「${value}」に強い`, keyword: value })),
+    ...losses.map((loss) => ({ id: `prompt-${loss.promptId}`, focus: `「${loss.prompt}」という相談`, basis: `測定質問 ${loss.promptId} の取得成功 ${loss.observations.length}件中、自社が候補外の回答がありました。需要量や失注を示すものではありません。`, rows: loss.observations,
+      label: `「${loss.prompt}」に答える`, keyword: loss.prompt })),
   ];
 
   return seeds.slice(0, 3).map((seed, index) => {
@@ -36,10 +40,12 @@ function deriveStrategies(result: ScanResult): StrategyOption[] {
     const draft = `${brand}の推薦獲得に向けた検証用下書き（公開前に事実確認）\n対象仮説：${seed.focus}\n${check}\n対応できるという断定は、参照元で確認できるまで掲載しない。`;
     return {
       id: seed.id,
-      code: `仮説 ${String(index + 1).padStart(2, "0")}`,
-      name: `${seed.focus}に絞る`,
-      targetMarket: `対象仮説：${seed.focus}`,
-      coreThesis: `${seed.focus}で「この条件なら御社」と推薦される専門性を探す`,
+      code: `強み ${String(index + 1).padStart(2, "0")}`,
+      name: seed.label,
+      targetMarket: "",
+      // 決まり文句の説明文は出さない（カードは強みの名前だけで選べる）
+      coreThesis: "",
+      focusKeyword: seed.keyword,
       strategicReason: `${seed.basis} 大手との知名度の差だけで競わず、この対象に応えられる事実を探して推薦獲得を目指します。${check}`,
       competitorAnalysis: candidateRows(seed.rows, seed.focus),
       passionateReason: "ニッチを絞る戦略仮説です。会社の対応事実や競合の弱点を断定せず、参照元確認と公開前の承認が必要です。推薦・顧客獲得・売上は保証しません。",
@@ -79,7 +85,7 @@ export function derivePositioningAdvice(result: ScanResult): PositioningAdvice {
   const primary = strategies.find((strategy) => strategy.id.startsWith("prompt-")) || strategies[0];
   const rows = observedLosses(result).flatMap((loss) => loss.observations);
   return {
-    winningAngle: primary?.coreThesis || "推薦獲得の戦略を絞るための情報が不足しています",
+    winningAngle: primary?.name || "推薦獲得の戦略を絞るための情報が不足しています",
     summary: primary?.strategicReason || "対象顧客・用途の仮説や取得成功の回答ログを確認できません。会社の強みや競合の弱点を推測した戦略は生成していません。",
     competitorWeaknesses: candidateRows(rows, "候補外だった相談").map((item) => ({ competitor: item.name, weakness: item.gap, rationale: item.differentiation })),
     actionableMessages: primary ? [

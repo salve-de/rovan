@@ -11,5 +11,5 @@ export const metadata: Metadata = {
 
 export default function ProfileManagementPage() {
   // Credentials are read only by the private client, never serialized into public pages.
-  return <Suspense fallback={<p>管理画面を読み込んでいます。</p>}><ProfileManagementClient /></Suspense>;
+  return <Suspense fallback={<p>読み込んでいます。</p>}><ProfileManagementClient /></Suspense>;
 }

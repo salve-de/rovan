@@ -39,7 +39,7 @@ export function SiteHeader({ compact = false, context }: { compact?: boolean; co
   }
 
   const links = [
-    [context.resultHref, "① 診断レポート"], [context.profileHref, "② AI推薦データ"], [context.watchHref, "③ 週次見守り"],
+    [context.resultHref, "① 診断結果"], [context.profileHref, "② 公開ページ"], [context.watchHref, "③ 毎週の見守り"],
   ];
   return (
     <header className={`site-header ${compact ? "site-header-compact" : ""}`}>
@@ -48,14 +48,10 @@ export function SiteHeader({ compact = false, context }: { compact?: boolean; co
         <nav className="header-nav" aria-label="主要ナビゲーション">
           <div className="header-nav-links">
             {links.map(([href, label]) => <Link key={label} href={href} prefetch={false}>{label}</Link>)}
-            <Link href="/pricing" title="料金プラン">
-              料金プラン
-            </Link>
+            <Link href="/pricing">料金</Link>
           </div>
           <div className="header-nav-actions">
-            <Link href="/manage" className="header-manage-link" title="管理画面を開く">
-              管理画面を開く
-            </Link>
+            <Link href="/manage" className="header-manage-link">管理画面を開く</Link>
             <Link href="/login" className="header-login-link">
               ログイン
             </Link>
@@ -67,9 +63,9 @@ export function SiteHeader({ compact = false, context }: { compact?: boolean; co
         <details className="mobile-menu">
           <summary>メニュー</summary>
           <nav aria-label="モバイルナビゲーション">
-            <Link href="/#start">無料診断</Link>
+            <Link href="/#start">無料で診断</Link>
             {links.map(([href, label]) => <Link key={label} href={href} prefetch={false}>{label}</Link>)}
-            <Link href="/pricing">料金プラン</Link>
+            <Link href="/pricing">料金</Link>
             <Link href="/login">ログイン</Link>
             <Link href="/manage">管理画面を開く</Link>
           </nav>

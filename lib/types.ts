@@ -243,6 +243,8 @@ export type StrategyOption = {
   name: string;
   targetMarket: string;
   coreThesis: string;
+  /** 公開ページに載せる情報を選ぶときの手がかり（画面には出さない）。古い保存データには無い */
+  focusKeyword?: string;
   strategicReason: string;
   competitorAnalysis: StrategyCompetitorAnalysis[];
   isRecommended?: boolean;

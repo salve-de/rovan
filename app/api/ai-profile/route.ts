@@ -49,24 +49,25 @@ function demoDirectDraft(result: ScanResult, strategyId: string) {
   const { industry, region } = demoContext(discovery);
   const strategies = result.positioning?.strategies || [];
   const strategy = strategies.find((item) => item.id === strategyId) || strategies[0];
-  // 強みの候補名「「雨漏りの修理」という利用場面に絞る」から、かぎかっこの中だけを紹介文に使う
-  const focus = strategy?.name.match(/「([^」]+)」/u)?.[1] || "";
+  // 選んだ強みが「お客さんの層」か「頼みたいこと」なら、紹介文にひとこと足す（質問から作った強みは足さない）
+  const extra = strategy?.id === "audience" && discovery.targetCustomers[0] ? `${discovery.targetCustomers[0]}からのご相談にも対応しています。`
+    : strategy?.id === "use-case" && discovery.useCases[0] ? `${discovery.useCases[0]}のご相談にも対応しています。` : "";
   const intro = `${discovery.brandName}は、${region ? `${region}の` : ""}${industry.noun}です。`;
   return buildDirectPublicProfileDraft({
     brandName: discovery.brandName,
     market: industry.noun,
     location: region,
-    summary: focus ? `${intro}とくに「${focus}」に合う相談先として、情報を整理しています。` : intro,
+    summary: `${intro}${extra}`,
     targetCustomers: discovery.targetCustomers,
     useCases: discovery.useCases,
   });
 }
 
 function safeError(error: unknown) {
-  if (!(error instanceof Error)) return "公開ページを作成できませんでした。";
-  if (error.message === "診断結果が完成していません。" || error.message === "公開用のURLを確認できませんでした。") return error.message;
+  if (!(error instanceof Error)) return "公開ページをつくれませんでした。もう一度お試しください。";
+  if (error.message === "診断がまだ終わっていません。" || error.message === "公開用のURLを確認できませんでした。") return error.message;
   if (error.message.startsWith("公開ページの期限は")) return error.message;
-  return "公開ページを作成できませんでした。";
+  return "公開ページをつくれませんでした。もう一度お試しください。";
 }
 
 export async function POST(request: Request) {
@@ -74,25 +75,25 @@ export async function POST(request: Request) {
   try {
     body = objectBody(await request.json());
   } catch {
-    return json({ error: "リクエストの形式が不正です。" }, 400);
+    return json({ error: "うまく受け取れませんでした。ページを再読み込みしてください。" }, 400);
   }
-  if (!body) return json({ error: "リクエストの形式が不正です。" }, 400);
+  if (!body) return json({ error: "うまく受け取れませんでした。ページを再読み込みしてください。" }, 400);
 
   const action = stringField(body, "action");
   try {
     if (["preview", "deploy", "create_direct"].includes(action)) {
       const limit = await consumeProfileCreation(request);
-      if (!limit.allowed) return Response.json({ error: "作成回数の上限に達しました。時間を置いて再度お試しください。" }, { status: 429, headers: { ...responseHeaders, "retry-after": String(limit.retryAfter) } });
+      if (!limit.allowed) return Response.json({ error: "つくれる回数の上限に達しました。時間をおいてお試しください。" }, { status: 429, headers: { ...responseHeaders, "retry-after": String(limit.retryAfter) } });
     }
     if (action === "preview" || action === "deploy") {
       const scanId = stringField(body, "scanId");
-      if (!scanId) return json({ error: "scanIdが必要です。" }, 400);
+      if (!scanId) return json({ error: "診断結果から開いてください。" }, 400);
       const scan = await getScan(scanId);
       if (!scan) return json({ error: "診断結果が見つかりません。" }, 404);
-      if (!scan.result) return json({ error: "診断結果が完成していません。" }, 409);
+      if (!scan.result) return json({ error: "診断がまだ終わっていません。" }, 409);
 
       const expiresInDays = body.expiresInDays;
-      if (expiresInDays !== undefined && typeof expiresInDays !== "number") return json({ error: "期限の指定が不正です。" }, 400);
+      if (expiresInDays !== undefined && typeof expiresInDays !== "number") return json({ error: "うまく受け取れませんでした。ページを再読み込みしてください。" }, 400);
       const strategyId = stringField(body, "strategyId");
       const noSite = isNoSiteTarget(scan.targetUrl);
       const demo = demoMode();
@@ -106,7 +107,7 @@ export async function POST(request: Request) {
       const selected = buildSelectedPublicProfileDraft(scan.result, crawl.pages, strategyId, { sourceProfile: sourceRecord ? toPublicProfile(sourceRecord) : undefined });
       // デモでホームページがない・読めない場合は、Rovan上のページを参照先にした下書きにする
       const directDraft = selected.selection.status === "empty" && (noSite || demo);
-      if (selected.selection.status === "empty" && !directDraft) return json({ error: "公開できる参照元の記載を確認できませんでした。候補または参照元を見直してください。", selection: selected.selection }, 409);
+      if (selected.selection.status === "empty" && !directDraft) return json({ error: "この強みに合う情報が、ホームページで見つかりませんでした。別の強みを選んでください。", selection: selected.selection }, 409);
       const record = await createPublicProfilePreview(directDraft ? demoDirectDraft(scan.result, strategyId) : selected.draft, {
         sourceScanId: scan.id,
         // Public callers cannot extend the free lifetime.
@@ -127,8 +128,8 @@ export async function POST(request: Request) {
 
     if (action === "create_direct") {
       const brandName = stringField(body, "brandName");
-      if (!brandName) return json({ error: "会社名または屋号を入力してください。" }, 400);
-      if (brandName.length > 200 || ["market", "summary", "location", "hours", "pricingInfo"].some((key) => stringField(body, key).length > 3000)) return json({ error: "入力内容が長すぎます。名称は200文字、その他の項目は3000文字以内で入力してください。" }, 400);
+      if (!brandName) return json({ error: "社名・店名を入れてください。" }, 400);
+      if (brandName.length > 200 || ["market", "summary", "location", "hours", "pricingInfo"].some((key) => stringField(body, key).length > 3000)) return json({ error: "長すぎます。名前は200文字、そのほかは3000文字までにしてください。" }, 400);
 
       const market = stringField(body, "market");
       const summary = stringField(body, "summary");
@@ -165,7 +166,7 @@ export async function POST(request: Request) {
 
     if (action === "manage") {
       const records = await getManagedPublicProfiles({ profileId: stringField(body, "profileId"), token: stringField(body, "token"), watchToken: stringField(body, "watchToken") });
-      if (!records.length) return json({ error: "管理リンクが無効か、このWatchに紐付けられた公開ページがありません。公開ページの管理リンクから紐付けてください。" }, 404);
+      if (!records.length) return json({ error: "管理用リンクが正しくないか、この見守りにつながった公開ページがありません。" }, 404);
       return json({ profiles: records.map((record) => {
         const scanId = record.automation?.measurementScanId || (record.sourceScanId === "direct-creation" ? "" : record.sourceScanId);
         return { profile: toPublicProfile(record), automation: automationView(record), direct: record.sourceScanId === "direct-creation", resultUrl: scanId ? `/result?id=${encodeURIComponent(scanId)}` : null };
@@ -174,7 +175,7 @@ export async function POST(request: Request) {
 
     if (action === "bind_watch") {
       const record = await bindPublicProfileWatch(stringField(body, "profileId"), stringField(body, "token"), stringField(body, "watchToken"));
-      if (!record) return json({ error: "両方の管理権限と対象企業の一致を確認できませんでした。" }, 403);
+      if (!record) return json({ error: "管理用リンクを確認できませんでした。" }, 403);
       return json({ profile: toPublicProfile(record), automation: automationView(record) });
     }
 
@@ -182,11 +183,11 @@ export async function POST(request: Request) {
       const profileId = stringField(body, "profileId");
       const owned = (await getManagedPublicProfiles({ profileId, token: stringField(body, "token"), watchToken: stringField(body, "watchToken") }))[0];
       const token = owned?.token || "";
-      if (!profileId || !token) return json({ error: "profileIdとtokenが必要です。" }, 400);
+      if (!profileId || !token) return json({ error: "管理用リンクから開いてください。" }, 400);
       const record = action === "publish"
         ? await publishPublicProfile(profileId, token)
         : await revokePublicProfile(profileId, token);
-      if (!record) return json({ error: "公開ページが見つからないか、操作できない状態です。" }, 404);
+      if (!record) return json({ error: "公開ページが見つからないか、いまは操作できません。" }, 404);
       return json({ profile: toPublicProfile(record) });
     }
 
@@ -194,14 +195,14 @@ export async function POST(request: Request) {
       const profileId = stringField(body, "profileId");
       const owned = (await getManagedPublicProfiles({ profileId, token: stringField(body, "token"), watchToken: stringField(body, "watchToken") }))[0];
       const token = owned?.token || "";
-      if (!profileId || !token) return json({ error: "管理情報が必要です。" }, 400);
+      if (!profileId || !token) return json({ error: "管理用リンクから開いてください。" }, 400);
       const operation = action === "maintenance_enable" ? "maintain" : action === "maintenance_disable" ? "stop_maintenance" : action === "automation_enable" ? "enable" : action === "automation_disable" ? "disable" : "rollback";
       const record = await manageProfileAutomation(profileId, token, operation, stringField(body, "watchToken"));
-      if (!record) return json({ error: "操作できません。公開ページと有効な有料Watchの管理権限を確認してください。状態が変わった場合は再読み込みしてください。" }, 409);
+      if (!record) return json({ error: "いまは操作できません。ページを再読み込みしてください。" }, 409);
       return json({ profile: toPublicProfile(record), automation: automationView(record) });
     }
 
-    return json({ error: "actionはpreview、deploy、create_direct、publish、revokeのいずれかです。" }, 400);
+    return json({ error: "うまく受け取れませんでした。ページを再読み込みしてください。" }, 400);
   } catch (error) {
     console.error("AI PROFILE operation failed");
     return json({ error: safeError(error) }, 400);
@@ -230,7 +231,7 @@ export async function GET(request: Request) {
   const profileId = params.get("profileId")?.trim() || "";
   const token = params.get("token")?.trim() || "";
   if (profileId) {
-    if (!token) return json({ error: "profileIdとtokenが必要です。" }, 401);
+    if (!token) return json({ error: "管理用リンクから開いてください。" }, 401);
     const record = await getPublicProfile(profileId);
     if (!record || record.token !== token) return json({ error: "公開ページが見つかりません。" }, 404);
     return json({ profile: toPublicProfile(record), automation: automationView(record) });
@@ -244,5 +245,5 @@ export async function GET(request: Request) {
   }
 
   if (params.get("active") === "1") return json({ profiles: (await listActivePublicProfiles()).map(toPublicProfile) });
-  return json({ error: "profileId、slug、またはactive=1を指定してください。" }, 400);
+  return json({ error: "公開ページを指定してください。" }, 400);
 }

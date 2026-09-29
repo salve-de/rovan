@@ -117,20 +117,20 @@ test("Watch unsubscribe invokes PATCH with empty email, updates UI, and exposes 
   h.render("token=private-token");
   h.requests[0].resolve(Response.json({ ...toPublicWatch(sampleWatch()), emailConfigured: true, maskedEmail: "a***@example.com", resultUrl: "https://evil.test/result?id=stolen" }));
   await flush();
-  assert.match(h.render(), /ブックマーク/);
+  assert.match(h.render(), /管理用リンク/);
   const header = h.nodes().find((node) => node.props?.context);
   assert.equal(header.props.context.profileHref, "/profile/manage?watchToken=private-token");
   assert.doesNotMatch(header.props.context.resultHref, /evil/);
   assert.equal(h.nodes().find((node) => node.props?.watchToken)?.props.watchToken, "private-token");
   await h.nodes().find((node) => node.type === "button" && node.props.children === "管理用リンクをコピー").props.onClick();
   assert.equal(h.copied[0], "https://rovan.test/watch?token=private-token");
-  h.nodes().find((node) => node.type === "button" && node.props.children === "メール通知を解除する").props.onClick();
+  h.nodes().find((node) => node.type === "button" && node.props.children === "通知を止める").props.onClick();
   assert.deepEqual(JSON.parse(String(h.requests[1].init.body)), { token: "private-token", email: "" });
   h.requests[1].resolve(Response.json({ email: null }));
   await flush();
-  assert.match(h.render(), /メール通知を解除しました/);
+  assert.match(h.render(), /通知を止めました/);
   assert.doesNotMatch(h.render(), /a\*\*\*@example.com/);
-  h.nodes().find((node) => node.type === "button" && String(node.props.children).includes("速報通知メール")).props.onClick();
+  h.nodes().find((node) => node.type === "button" && String(node.props.children).includes("メールアドレスを登録する")).props.onClick();
   h.render();
   const input = h.nodes().find((node) => node.type === "input" && node.props.type === "email");
   assert.equal(input.props.value, "");
@@ -185,13 +185,13 @@ test("a poll started before unsubscribe cannot restore the old email setting", a
   h.requests[0].resolve(Response.json(old));
   await flush(); h.render();
   const pending = h.poll();
-  h.nodes().find((node) => node.type === "button" && node.props.children === "メール通知を解除する").props.onClick();
+  h.nodes().find((node) => node.type === "button" && node.props.children === "通知を止める").props.onClick();
   h.requests[2].resolve(Response.json({ email: null }));
   await flush();
   h.requests[1].resolve(Response.json(old));
   await pending;
   assert.doesNotMatch(h.render(), /a\*\*\*@example.com/);
-  assert.match(h.render(), /メール通知を解除しました/);
+  assert.match(h.render(), /通知を止めました/);
   h.dispose();
 });
 
@@ -200,7 +200,7 @@ test("email save completion is ignored after switching to another Watch", async 
   h.render("token=first");
   h.requests[0].resolve(Response.json({ ...toPublicWatch(sampleWatch()), emailConfigured: true, maskedEmail: "a***@example.com" }));
   await flush(); h.render();
-  h.nodes().find((node) => node.type === "button" && node.props.children === "メール通知を解除する").props.onClick();
+  h.nodes().find((node) => node.type === "button" && node.props.children === "通知を止める").props.onClick();
   h.render("token=second");
   assert.equal(h.requests[1].init.signal?.aborted, true);
   h.requests[1].resolve(Response.json({ email: null }));
@@ -208,6 +208,6 @@ test("email save completion is ignored after switching to another Watch", async 
   h.requests[2].resolve(Response.json({ ...toPublicWatch(sampleWatch()), emailConfigured: true, maskedEmail: "b***@example.com" }));
   await flush();
   assert.match(h.render(), /b\*\*\*@example.com/);
-  assert.doesNotMatch(h.render(), /メール通知を解除しました/);
+  assert.doesNotMatch(h.render(), /通知を止めました/);
   h.dispose();
 });

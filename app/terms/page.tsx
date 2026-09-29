@@ -1,20 +1,51 @@
 import Image from "next/image";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { MarketingShell } from "@/components/marketing-shell";
 import { seller, sellerReady } from "@/lib/legal";
+import { WATCH_MONTHLY_PRICE_LABEL } from "@/lib/pricing";
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "利用規約", description: "Rovanの利用条件、測定上の制約、公開情報の下書きに関する条件。" };
+export const metadata: Metadata = { title: "利用規約", description: "Rovanの利用規約。" };
 
 export default function TermsPage() {
-  return <MarketingShell art={<Image src="/illustrations/signing-contract.svg" alt="" width={300} height={300} priority />} eyebrow="利用規約" title="観測値と変更案を、保証と混同しないための条件。" lead="RovanはAI回答を観測し、改善候補と変更案を作成するサービスです。外部AIの順位・推薦・引用・問い合わせ・売上を支配または保証するものではありません。">
-    <h2>サービス内容</h2><p>Rovanは、会社名・商品名・サービス名または公開URLを起点に診断対象の公開サイトを確認し、対象分野・比較候補・購入前の質問を整理します。各AIサービスの回答、回答に含まれた候補、参照元URL、確認できた事実との差、次に確認する項目を表示・保存します。名前から始めた場合は、公開検索で見つけた候補をユーザーが確認してからサイトを診断します。有料Watchでは、公開情報およびユーザーが入力した確認済み事実をもとに、見出し・本文・FAQ等の変更案を生成する場合があります。</p>
-    <h2>測定上の制約</h2><p>AI回答はモデル、日時、場所、検索結果、質問表現、会話文脈、非決定性等により変動します。Rovanの数値は明示された観測パネルの結果であり、全利用者に共通する絶対順位ではありません。購入前の質問で候補外となった件数は、顧客数・問い合わせ数・失注件数を意味しません。</p>
-    <h2>変更案の制約</h2><p>変更案は公開前の編集ドラフトです。Rovanは、入力・取得した事実の正確性、第三者権利、表示規制、業界規制、顧客許諾等を最終保証しません。ユーザーは公開前に事実、権利、法令、社内承認を確認します。Rovanは明示承認なしに顧客サイトへ変更案を公開しません。</p>
-    <h2>保証しない事項</h2><ul><li>特定順位または推薦</li><li>特定の参照元URLや引用</li><li>購入前の質問で候補に入る割合の増加</li><li>検索流入、問い合わせ、契約または売上</li><li>施策と数値変化の因果関係</li><li>第三者サイト・AIサービスの継続提供</li></ul>
-    <h2>ユーザーの責任</h2><p>ユーザーは、入力する会社情報、実績、顧客数、料金、認証、投資対効果等について入力・外部処理・公開に必要な権限を持ち、正確であることを確認します。Rovanが生成した文案は公開前にユーザーが確認します。</p>
-    <h2>禁止事項</h2><ul><li>他社を装った確認情報の入力</li><li>虚偽の実績、レビュー、認証、No.1表示</li><li>送信権限のない秘密情報・個人情報・第三者情報の入力</li><li>不正アクセス、過剰な診断、制限回避</li><li>医療・金融・法務等の高リスク用途での無審査利用</li><li>第三者の権利を侵害する情報の入力</li></ul>
-    {sellerReady() ? <><h2>有料Watch</h2><p>週次見守りは最初の14日間を無料で確認でき、この間は自動課金されません。有料化する場合は契約開始前に決済画面で価格、税、更新条件を確認できます。有料化後は月ごとの自動更新です。支払時期、解約、返金については「特定商取引法に基づく表記」をご確認ください。</p><p><a className="document-link" href="/commerce">特定商取引法に基づく表記</a></p></> : null}
-    <p><a className="document-link" href="/privacy">データの取り扱い</a>{seller.email ? <> · <a className="document-link" href="/support">お問い合わせ</a></> : null}</p>
+  return <MarketingShell art={<Image src="/illustrations/signing-contract.svg" alt="" width={300} height={300} priority />} title="利用規約">
+    <h2>Rovanがすること</h2>
+    <ul>
+      <li>社名やURLから、お客さんがAIに聞きそうな質問をつくり、ChatGPT・Gemini・Perplexityの答えに名前が出るかを調べます。</li>
+      <li>御社の情報をまとめたページ（公開ページ）を、Rovanの中につくります。公開するのは、内容を確認して「公開」を押したときだけです。</li>
+      <li>有料の見守り（AI推薦・自動見守りプラン）では、同じ質問で毎週測って結果をお知らせし、公開ページの情報も最新に保ちます。</li>
+      <li>御社のホームページやSNSを書きかえることはありません。</li>
+    </ul>
+    <h2>約束できないこと</h2>
+    <p>AIの答えは、日時や聞き方、AIの更新によって変わります。そのため、次のことは約束できません。</p>
+    <ul>
+      <li>AIの答えに名前が出ること、順番が上がること</li>
+      <li>問い合わせ・契約・売上が増えること</li>
+      <li>数字の変化が、Rovanの取り組みによるものかどうか</li>
+    </ul>
+    <p>画面の数字は、決まった質問へのAIの答えを数えたものです。お客さんの数や市場シェアではありません。</p>
+    <h2>お願いすること</h2>
+    <ul>
+      <li>入力する情報は、正しく、公開してよいものにしてください。</li>
+      <li>公開ページは、公開する前に内容を確認してください。</li>
+    </ul>
+    <h2>してはいけないこと</h2>
+    <ul>
+      <li>他の会社になりすますこと</li>
+      <li>うその実績・口コミ・資格・「No.1」などを載せること</li>
+      <li>他人の個人情報や、外に出せない秘密の情報を入力すること</li>
+      <li>不正なアクセスや、診断を大量にくり返すこと</li>
+      <li>他人の権利を侵害する情報を入力すること</li>
+    </ul>
+    {sellerReady() ? <>
+      <h2>料金と解約</h2>
+      <ul>
+        <li>見守りは{WATCH_MONTHLY_PRICE_LABEL}です。最初の14日間は無料で、自動で有料になることはありません。</li>
+        <li>有料で始める前に、決済の画面で金額と更新の条件を確認できます。有料の契約は毎月自動で更新されます。</li>
+        <li>解約は、いつでも管理画面からできます。支払いの時期や返金は<Link href="/commerce">特定商取引法に基づく表記</Link>をご覧ください。</li>
+      </ul>
+    </> : null}
+    <p><Link className="document-link" href="/privacy">プライバシーポリシー</Link>{seller.email ? <> · <Link className="document-link" href="/support">お問い合わせ</Link></> : null}</p>
   </MarketingShell>;
 }

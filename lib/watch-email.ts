@@ -81,37 +81,51 @@ async function sendEmail(input: { to: string; subject: string; text: string; htm
   }
 }
 
+function jstDate(value: string) {
+  try {
+    return new Intl.DateTimeFormat("ja-JP", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Tokyo" }).format(new Date(value));
+  } catch { return value; }
+}
+
+function providerName(provider: string) {
+  return provider === "openai" ? "ChatGPT" : provider === "gemini" ? "Gemini" : provider === "perplexity" ? "Perplexity" : provider;
+}
+
+function emailHtml(heading: string, body: string, url: string, footer = "") {
+  return `<div style="font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#111827;line-height:1.65;max-width:620px"><p style="font-size:12px;letter-spacing:.08em;color:#64748b">Rovan</p><h1 style="font-size:22px;margin:8px 0 20px">${escapeHtml(heading)}</h1>${body}<p><a href="${escapeHtml(url)}" style="display:inline-block;background:#0b1b2a;color:#fff;text-decoration:none;padding:12px 18px;border-radius:8px;font-weight:700">結果を見る</a></p>${footer ? `<p style="font-size:12px;color:#64748b;margin-top:24px">${escapeHtml(footer)}</p>` : ""}</div>`;
+}
+
 export async function sendWatchStarted(watch: WatchRecord) {
   const result = watch.latest;
   const brand = result.discovery.brandName;
   const url = watchUrl(watch);
   const readout = measurementReadout(result);
-  const observations = answerObservationCount(result);
-  const subject = `[Rovan] ${brand}のAI推薦状況の追跡を開始しました`;
-  const text = `${brand}のAI推薦状況の追跡を開始しました。\n\n予定質問パネル: ${result.panel.promptCount}問（v${result.panel.version}）\n自社が候補に含まれた質問: ${readout.label}\n候補外として記録された質問: ${readout.successful ? readout.excluded + " / " + readout.successful : "未測定"}\nAI回答観測: ${observations.successful} / ${observations.scheduled}件\n参照元URL: ${citationUrls(result).size}件\n\nこの通知は指定した質問・AI・日時の観測結果です。事業成果は測定していません。\n\n結果を見る: ${url}\n\n無料期間は14日で終了し、自動課金されません。`;
+  const citations = citationUrls(result).size;
+  const lost = readout.successful ? `${readout.excluded} / ${readout.successful}問` : "未測定";
+  const heading = `${brand}の見守りを始めました。`;
+  const lead = `毎週、同じ${result.panel.promptCount}問をAIに聞いて、御社の名前が出るかを確かめます。`;
+  const footer = "最初の14日間は無料です。自動で課金はされません。";
+  const subject = `[Rovan] ${heading}`;
+  const text = `${heading}\n${lead}\n\n名前が出た質問：${readout.label}\n名前が出なかった質問：${lost}\nAIが参考にしたページ：${citations}件\n\n結果を見る：${url}\n\n${footer}`;
   const rows = [
-    tableRow("予定質問パネル", `${result.panel.promptCount}問（v${result.panel.version}）`),
-    tableRow("自社が候補に含まれた質問", `${readout.label}`),
-    tableRow("候補外として記録された質問", `${readout.successful ? readout.excluded + " / " + readout.successful : "未測定"}`),
-    tableRow("AI回答観測", `${observations.successful} / ${observations.scheduled}件`),
-    tableRow("参照元URL", `${citationUrls(result).size}件`),
+    tableRow("名前が出た質問", readout.label),
+    tableRow("名前が出なかった質問", lost),
+    tableRow("AIが参考にしたページ", `${citations}件`),
   ].join("");
-  const html = `<div style="font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#111827;line-height:1.65;max-width:620px"><p style="font-size:12px;letter-spacing:.08em;color:#64748b">Rovan</p><h1 style="font-size:24px;margin:8px 0 20px">${escapeHtml(brand)}のAI推薦状況の追跡を開始しました。</h1><table style="border-collapse:collapse;width:100%;margin:0 0 24px">${rows}</table><p style="font-size:13px;color:#475569">指定した質問・AI・日時の観測結果です。事業成果は測定していません。</p><p><a href="${escapeHtml(url)}" style="display:inline-block;background:#0b1b2a;color:#fff;text-decoration:none;padding:12px 18px;border-radius:8px;font-weight:700">結果を見る</a></p><p style="font-size:12px;color:#64748b;margin-top:24px">無料期間は14日で終了し、自動課金されません。</p></div>`;
+  const html = emailHtml(heading, `<p>${escapeHtml(lead)}</p><table style="border-collapse:collapse;width:100%;margin:0 0 24px">${rows}</table>`, url, footer);
   return sendEmail({ to: watch.email, subject, text, html, idempotencyKey: `watch-start/${watch.id}` });
 }
 
 export async function sendWatchUpdate(watch: WatchRecord, previous: ScanResult, options: { trialEnded?: boolean } = {}) {
   const latest = watch.latest;
   const northStar = northStarShare(latest, watch.baseline);
-  const northStarText = northStar.status === "short-panel"
-    ? "AI顧客奪還シェア：50問パネルの測定開始後に記録します。"
-    : `AI顧客奪還シェア（固定50問・実顧客シェアではありません）\n${northStar.providers.map((row) => `${row.provider}: ${row.value === null ? "未測定" : `${row.value}%`}（候補入り${row.included}/取得成功${row.successful}問、未取得・反復不足${row.missing}問）${row.comparison ? ` 同条件${row.comparison.count}問: ${row.comparison.before}% → ${row.comparison.after}%` : " 比較不可"}`).join("\n")}`;
+  // AI顧客奪還シェアは50問で測っているときだけ載せる（AIごとに分けて書く）
+  const northStarText = northStar.status === "short-panel" ? "" : `AI顧客奪還シェア（50問のうち、名前が出た質問の割合）\n${northStar.providers.map((row) => `${providerName(row.provider)}：${row.value === null ? "未測定" : `${row.value}%`}（${row.included}/${row.successful}問${row.missing ? `・${row.missing}問は取得できず` : ""}）${row.comparison ? `　同じ${row.comparison.count}問で ${row.comparison.before}% → ${row.comparison.after}%` : ""}`).join("\n")}`;
   const brand = latest.discovery.brandName;
   const url = watchUrl(watch);
   const readout = compareMeasurementReadouts(previous, latest);
   const comparable = readout.comparable;
-  const comparisonAvailable = comparable;
-  const comparisonNote = readout.note.replace("初回（基準）", "前回");
+  const comparisonNote = readout.note.replace("初回", "前回");
   const previousIncluded = readout.before.included;
   const latestIncluded = readout.after.included;
   const newIncluded = readout.wins.length;
@@ -132,48 +146,52 @@ export async function sendWatchUpdate(watch: WatchRecord, previous: ScanResult, 
     || removedCitations > 0
     || observationCountChanged;
   if (!meaningfulChange) return { sent: false as const, reason: "no_meaningful_change" as const };
-  const notificationHeading = options.trialEnded
-    ? `${brand}のAI推薦・自動見守りの無料トライアル期間が終了しました。`
-    : !comparisonAvailable
-      ? `${brand}のAI推薦状況を比較できませんでした。${comparisonNote}`
-      : readout.answerChanged || newIncluded > 0 || newlyExcludedCount > 0
-        ? `${brand}のAI推薦状況に変化がありました。`
-        : `${brand}のAI回答の取得状況・参照元URLに変化がありました。`;
-  const competitorText = readout.answerChanged ? `AI別の候補入り・比較候補の回答に変化があります。\n${readout.competitorMovements.filter((row) => row.name !== brand && (row.newcomer || row.departed || row.diff)).map((row) => `${row.name}: ${row.newcomer ? "新規候補" : row.departed ? "今回の回答では未出現" : `${row.baselineCoverage}% → ${row.latestCoverage}%`}`).join("\n")}\n詳細は測定ログを確認してください。` : "";
-  const subject = `[Rovan] ${notificationHeading}`;
-  const endNote = options.trialEnded ? "\n\n今回で14日間の無料トライアルが終了しました。自動課金はされません。" : "";
+  const heading = options.trialEnded
+    ? `${brand}の無料期間（14日間）が終了しました。`
+    : !comparable
+      ? `${brand}：今週は前回とくらべられませんでした。`
+      : newIncluded > 0
+        ? `${brand}：${newIncluded}問で、新しく名前が出ました。`
+        : newlyExcludedCount > 0
+          ? `${brand}：${newlyExcludedCount}問で、名前が出なくなりました。`
+          : readout.answerChanged
+            ? `${brand}：AIがすすめる会社が変わりました。`
+            : `${brand}：AIが参考にしたページが変わりました。`;
+  const rivals = readout.competitorMovements.filter((row) => row.name !== brand && (row.newcomer || row.departed || row.diff));
+  const competitorText = readout.answerChanged && rivals.length ? `AIがすすめた会社の変化\n${rivals.map((row) => `${row.name}: ${row.newcomer ? "今回はじめて" : row.departed ? "今回は出ず" : `${row.baselineCoverage}% → ${row.latestCoverage}%`}`).join("\n")}` : "";
+  const subject = `[Rovan] ${heading}`;
+  const footer = options.trialEnded ? "今回で14日間の無料期間が終わりました。自動で課金はされません。" : "";
   const latestAction = watch.autoActions?.find((action) => (action.status === "planned" || action.status === "applied") && action.factValue && action.sourceUrl);
-  const actionHeading = latestAction?.status === "applied" ? "Rovanの自動対処・完了報告" : "更新案を作成しました。まだ公開には反映していません。";
-  const actionStatus = latestAction?.status === "applied" ? "AI推薦データを自動更新しました。許可された範囲で公開ページに反映済み。AI回答への影響は再測定で確認します。" : "公開前の確認待ち（未反映）";
-  const actionTimestamp = latestAction?.status === "applied"
-    ? `実行日時: ${latestAction.executedAt || "記録なし"}`
-    : `案の作成日時: ${latestAction?.plannedAt || "記録なし"}`;
+  const actionHeading = latestAction?.status === "applied" ? "公開ページを更新しました" : "公開ページの更新案をつくりました（まだ公開していません）";
+  const actionTime = latestAction ? jstDate((latestAction.status === "applied" ? latestAction.executedAt : latestAction.plannedAt) || "") : "";
   const latestImpact = watch.autoActionImpacts?.[0];
+  const actionText = latestAction ? `\n\n${actionHeading}${actionTime ? `（${actionTime}）` : ""}\n${latestAction.factLabel}：${latestAction.factValue}\n出典：${latestAction.sourceUrl}` : "";
+  const impactText = comparable && latestImpact ? `\n更新した情報に関係する${latestImpact.affectedPromptCount}問で、名前が出た答え：${signed(latestImpact.observedUplift)}件` : "";
 
-  const autonomousText = latestAction
-    ? `\n\n【${actionHeading}】\n保存済みの対処記録（過去の更新・案を含みます）\n・${actionTimestamp}\n・${latestAction.factLabel}: ${latestAction.factValue}\n・出典URL: ${latestAction.sourceUrl}\n・状態: ${actionStatus}\n`
-    : "\n\n競合サイトの変更は、クロール前後差分が保存されていないため判定していません。\n";
+  const lines = comparable
+    ? [
+        `名前が出た質問：${previousIncluded} → ${latestIncluded}（${latest.panel.promptCount}問中）`,
+        `名前が出なかった質問：${readout.before.excluded} → ${readout.after.excluded}`,
+        ...(newIncluded ? [`新しく名前が出た質問：${newIncluded}問`] : []),
+        ...(newlyExcludedCount ? [`名前が出なくなった質問：${newlyExcludedCount}問`] : []),
+      ]
+    : [comparisonNote];
+  if (addedCitations || removedCitations) lines.push(`AIが参考にしたページ：${addedCitations}件ふえて、${removedCitations}件へりました`);
+  if (observationCountChanged) lines.push(`AIの答えを取得できた数：前回 ${previousObservations.successful}/${previousObservations.scheduled}件 → 今回 ${latestObservations.successful}/${latestObservations.scheduled}件`);
+  const readoutText = `前回（${jstDate(previous.measuredAt)}）：${readout.before.label}\n今回（${jstDate(latest.measuredAt)}）：${readout.after.label}`;
+  const blocks = [heading, lines.join("\n"), readoutText, competitorText, northStarText].filter(Boolean);
+  const text = `${blocks.join("\n\n")}${impactText}${actionText}\n\n結果を見る：${url}\n通知を止める・通知先を変える：${url}${footer ? `\n\n${footer}` : ""}`;
 
-  const impactText = comparisonAvailable && latestImpact
-    ? `\n・再測定: 対象${latestImpact.affectedPromptCount}問${latestImpact.comparedAnswerGroups ? `・AI別${latestImpact.comparedAnswerGroups}件` : ""}の候補入り件数差分 ${signed(latestImpact.observedUplift)}件（因果効果は未検証）\n`
-    : "";
-
-  const autonomousHtml = latestAction
-    ? `<div style="background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;padding:14px 18px;margin:20px 0;text-align:left"><strong style="color:#0f172a;font-size:14px">${actionHeading}</strong><p style="font-size:12px;color:#64748b">保存済みの対処記録（過去の更新・案を含みます）<br />${escapeHtml(actionTimestamp)}</p><p style="margin:8px 0 4px;font-size:13px;color:#334155"><strong>${escapeHtml(latestAction.factLabel)}:</strong> ${escapeHtml(latestAction.factValue)}</p><p style="margin:4px 0;font-size:13px;color:#334155"><strong>出典URL:</strong> ${escapeHtml(latestAction.sourceUrl)}</p><p style="margin:4px 0 0;font-size:12px;color:#64748b">状態: ${actionStatus}</p></div>`
-    : `<p style="font-size:12px;color:#64748b;margin:20px 0">競合サイトの変更は、クロール前後差分が保存されていないため判定していません。</p>`;
-
-  const text = `${notificationHeading}\n\n${comparisonAvailable ? `比較可能な質問パネル: ${latest.panel.promptCount}問（v${latest.panel.version}）\n自社が候補に含まれた質問: ${previousIncluded} → ${latestIncluded} / ${latest.panel.promptCount}\n候補外として記録された質問: ${readout.before.excluded} → ${readout.after.excluded} / ${latest.panel.promptCount}\n${newIncluded ? `新しく候補に含まれた質問: ${newIncluded}問\n` : ""}${newlyExcludedCount ? `新しく候補外になった質問: ${newlyExcludedCount}問\n` : ""}` : `比較不可: ${comparisonNote}\n自社の候補入り・候補外の変化: 未確定\n`}AI回答観測: ${latestObservations.successful} / ${latestObservations.scheduled}件\n${observationCountChanged ? `前回のAI回答観測: ${previousObservations.successful} / ${previousObservations.scheduled}件\n` : ""}${addedCitations || removedCitations ? `参照元URLの変化: 追加${addedCitations}件 / 削除${removedCitations}件\n` : ""}${impactText}${autonomousText}\nこの通知は指定した質問・AI・日時の観測結果です。事業成果は測定していません。\n結果を見る: ${url}${endNote}`;
-  const rows = [
-    tableRow("比較可能な質問パネル", comparisonAvailable ? `${latest.panel.promptCount}問（v${latest.panel.version}）` : `比較不可：${comparisonNote}`),
-    tableRow("自社が候補に含まれた質問", comparisonAvailable ? `${previousIncluded} → ${latestIncluded} / ${latest.panel.promptCount}` : "未確定"),
-    tableRow("候補外として記録された質問", comparisonAvailable ? `${readout.before.excluded} → ${readout.after.excluded} / ${latest.panel.promptCount}` : "未確定"),
-    tableRow("AI回答観測", `${latestObservations.successful} / ${latestObservations.scheduled}件`),
-    ...(addedCitations || removedCitations ? [tableRow("参照元URLの変化", `追加${addedCitations}件 / 削除${removedCitations}件`)] : []),
-  ].join("");
-  const impactHtml = comparisonAvailable && latestImpact
-    ? `<p style="margin:4px 0;font-size:13px;color:#334155"><strong>再測定:</strong> 対象${latestImpact.affectedPromptCount}問${latestImpact.comparedAnswerGroups ? `・AI別${latestImpact.comparedAnswerGroups}件` : ""}の候補入り件数差分 ${signed(latestImpact.observedUplift)}件（因果効果は未検証）</p>`
-    : "";
-  const html = `<div style="font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#111827;line-height:1.65;max-width:620px"><p style="font-size:12px;letter-spacing:.08em;color:#64748b">Rovan</p><h1 style="font-size:24px;margin:8px 0 20px">${escapeHtml(notificationHeading)}</h1><table style="border-collapse:collapse;width:100%;margin:0 0 24px">${rows}</table>${impactHtml}${autonomousHtml}<p style="font-size:13px;color:#475569">指定した質問・AI・日時の観測結果です。事業成果は測定していません。</p><p><a href="${escapeHtml(url)}" style="display:inline-block;background:#0b1b2a;color:#fff;text-decoration:none;padding:12px 18px;border-radius:8px;font-weight:700">結果を見る</a></p>${options.trialEnded ? '<p style="font-size:12px;color:#64748b;margin-top:24px">今回で14日間の無料トライアルが終了しました。自動課金はされません。</p>' : ""}</div>`;
-  const readoutText = `前回（${previous.measuredAt}）: ${readout.before.label}\n今回（${latest.measuredAt}）: ${readout.after.label}\n${competitorText}\n通知解除・通知先変更: ${url}`;
-  return sendEmail({ to: watch.email, subject, text: `${northStarText}\n\n${readoutText}\n\n${text}`, html: `<p style="white-space:pre-line">${escapeHtml(northStarText)}<br />${escapeHtml(readoutText)}</p><p><a href="${escapeHtml(url)}">通知解除・通知先変更</a></p>${html}`, idempotencyKey: `watch-update/${watch.id}/${shortHash(latest.measuredAt)}` });
+  const rows = comparable
+    ? [
+        tableRow("名前が出た質問", `${previousIncluded} → ${latestIncluded}（${latest.panel.promptCount}問中）`),
+        tableRow("名前が出なかった質問", `${readout.before.excluded} → ${readout.after.excluded}`),
+        ...(addedCitations || removedCitations ? [tableRow("AIが参考にしたページ", `+${addedCitations}件 / -${removedCitations}件`)] : []),
+      ].join("")
+    : tableRow("前回との比較", comparisonNote);
+  const extra = [readoutText, competitorText, northStarText].filter(Boolean).map((block) => `<p style="white-space:pre-line;font-size:14px;color:#334155">${escapeHtml(block)}</p>`).join("");
+  const actionHtml = latestAction ? `<div style="background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;padding:14px 18px;margin:20px 0"><strong style="font-size:14px">${escapeHtml(actionHeading)}</strong>${actionTime ? `<p style="font-size:12px;color:#64748b;margin:4px 0">${escapeHtml(actionTime)}</p>` : ""}<p style="margin:8px 0 4px;font-size:13px"><strong>${escapeHtml(latestAction.factLabel)}：</strong>${escapeHtml(latestAction.factValue)}</p><p style="margin:4px 0;font-size:13px">出典：${escapeHtml(latestAction.sourceUrl)}</p></div>` : "";
+  const impactHtml = impactText ? `<p style="font-size:13px;color:#334155">${escapeHtml(impactText.trim())}</p>` : "";
+  const html = emailHtml(heading, `<table style="border-collapse:collapse;width:100%;margin:0 0 16px">${rows}</table>${extra}${impactHtml}${actionHtml}<p style="font-size:12px"><a href="${escapeHtml(url)}">通知を止める・通知先を変える</a></p>`, url, footer);
+  return sendEmail({ to: watch.email, subject, text, html, idempotencyKey: `watch-update/${watch.id}/${shortHash(latest.measuredAt)}` });
 }

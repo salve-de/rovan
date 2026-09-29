@@ -12,12 +12,12 @@ import { profileManagementHref } from "@/lib/profile-management-link";
 import { ProfileManagementLink } from "./profile-management-link";
 
 const steps: Array<{ stage: ScanStage; label: string }> = [
-  { stage: "validating", label: "診断先を確認" },
-  { stage: "crawling", label: "公開ページを読む" },
-  { stage: "discovering", label: "市場と競合を整理" },
-  { stage: "prompting", label: "購入前の質問を作る" },
-  { stage: "measuring", label: "AI回答を確認" },
-  { stage: "analyzing", label: "結果と優先順位をまとめる" },
+  { stage: "validating", label: "診断先の確認" },
+  { stage: "crawling", label: "ホームページを読む" },
+  { stage: "discovering", label: "比べる相手を探す" },
+  { stage: "prompting", label: "質問をつくる" },
+  { stage: "measuring", label: "AIに聞く" },
+  { stage: "analyzing", label: "結果をまとめる" },
 ];
 
 type ResolutionPayload = {
@@ -39,11 +39,9 @@ function displayInput(value: string) {
   return value.length > 72 ? `${value.slice(0, 72)}…` : value;
 }
 
-// The scan and resolve APIs return operator-facing messages (e.g. "AI接続を準備中です")
-// when a required credential or connection isn't ready yet. Users should see a plain
-// "please try again later" message instead of that internal wording.
+// サーバー側が「いまは診断できない」状態（AIや保存先の準備ができていない）を返したとき
 function isServiceUnavailableError(message: string) {
-  return /準備中/.test(message);
+  return /準備中|いまは診断できません|設定が必要/.test(message);
 }
 
 export function ScanProgress() {
@@ -78,13 +76,8 @@ export function ScanProgress() {
     setError("");
     try {
       const finalBrand = (directBrandName || rawInput).trim();
-      const summaryParts = [
-        `${finalBrand}の公開情報参照ページの下書きです。`,
-        extraSocial || socialInfo.isSocial ? "入力されたSNS参照先は、内容を未確認の情報として記録します。" : "",
-        extraProduct ? `入力された商品・サービス名: ${extraProduct}。` : "",
-        extraUrl ? "入力された参照元URLは未確認です。" : "参照元URLは未指定です。",
-        "公開前に内容を確認し、必要な情報だけを掲載してください。"
-      ].filter(Boolean).join(" ");
+      // 公開ページの説明文になるので、お店の情報以外は入れない
+      const summaryParts = extraProduct ? `${finalBrand}の${extraProduct}。` : "";
 
       const response = await fetch("/api/ai-profile", {
         method: "POST",
@@ -97,15 +90,15 @@ export function ScanProgress() {
         }),
       });
       const data = await response.json();
-      if (!response.ok || !data.slug || !data.profile?.id || !data.token) throw new Error(data.error || "公開ページの下書きを作成できませんでした。");
+      if (!response.ok || !data.slug || !data.profile?.id || !data.token) throw new Error(data.error || "下書きをつくれませんでした。もう一度お試しください。");
       setDirectDraft({ profileId: data.profile.id, token: data.token, slug: data.slug });
       setPhase("direct_preview");
       setDirectCreating(false);
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : "公開ページの下書きを作成できませんでした。");
+      setError(caught instanceof Error ? caught.message : "下書きをつくれませんでした。もう一度お試しください。");
       setDirectCreating(false);
     }
-  }, [directBrandName, extraProduct, extraSocial, extraUrl, rawInput, socialInfo.originalUrl, socialInfo.isSocial]);
+  }, [directBrandName, extraProduct, extraSocial, extraUrl, rawInput, socialInfo.originalUrl]);
 
   const publishDirectProfile = useCallback(async () => {
     if (!directDraft) return;
@@ -205,14 +198,14 @@ export function ScanProgress() {
     }
     if (socialInfo.isSocial) {
       setPhase("social_site");
-      setMessage("Instagram等のSNS連携フロー");
-      setDetail("SNS入力を含む公開情報ページの下書きを作成します");
+      setMessage("");
+      setDetail("");
       return () => undefined;
     }
     if (inputKind === "product") {
       setPhase("product_site");
-      setMessage("商品・サービスの公開情報ページを準備します");
-      setDetail("入力された名称をもとに下書きを作成します");
+      setMessage("");
+      setDetail("");
       return () => undefined;
     }
     if (directUrl) {
@@ -229,29 +222,29 @@ export function ScanProgress() {
     setCandidates([]);
     setSelectedUrl("");
     setError("");
-    setMessage("公開サイトを探しています。");
-    setDetail("入力名に対応する候補を検索しています");
+    setMessage("ホームページを探しています。");
+    setDetail("");
     async function resolve() {
       try {
         const response = await fetch("/api/resolve", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ input: rawInput }), signal: abort.signal });
         const data = await response.json().catch(() => ({})) as ResolutionPayload;
-        if (!response.ok) throw new Error(data.error || `公開サイトを探せませんでした (${response.status})`);
+        if (!response.ok) throw new Error(data.error || "ホームページを探せませんでした。");
         const nextCandidates = Array.isArray(data.candidates) ? data.candidates.filter((candidate) => candidate?.url) : [];
         if (!nextCandidates.length) {
           setPhase("no_site");
-          setMessage("参照できる公開サイトがない場合の下書き作成");
-          setDetail("入力された名称から公開情報ページの下書きを作成します");
+          setMessage("");
+          setDetail("");
           return;
         }
         setCandidates(nextCandidates);
         setSelectedUrl(nextCandidates[0].url);
         setPhase("choose");
-        setMessage("診断先を確認してください。");
-        setDetail(`${nextCandidates.length}件の公開サイト候補`);
+        setMessage("");
+        setDetail("");
       } catch (caught) {
         if (abort.signal.aborted) return;
         setPhase("failed");
-        setError(caught instanceof Error ? caught.message : "公開サイトを探せませんでした。");
+        setError(caught instanceof Error ? caught.message : "ホームページを探せませんでした。");
       }
     }
     void resolve();
@@ -299,13 +292,6 @@ export function ScanProgress() {
       ? `「${displayInput(directBrandName || rawInput)}」のページを確認してください`
       : `「${displayInput(rawInput)}」の診断を始めます`;
 
-    const descText = isSocial
-      ? "このInstagramのお店の名前で、AIの答えに御社が出ているかを調べます。AIが読めるページは、結果を見たあとにつくれます。"
-      : isProduct
-      ? "この商品・サービスの名前で、AIの答えに出ているかを調べます。AIが読めるページは、結果を見たあとにつくれます。"
-      : isDirectPreview
-      ? "下書きの内容を確かめてから公開できます。公開したあと、このページをもとにAIの答えを診断します。AIの答え・順位・集客は保証しません。"
-      : "ホームページが見つからなくても大丈夫です。この名前で、AIの答えに御社が出ているかを調べます。";
 
     const brandLabel = isSocial
       ? "店舗名・屋号・ブランド名"
@@ -313,13 +299,8 @@ export function ScanProgress() {
       ? "商品名・サービス名（ブランド名）"
       : "会社名・屋号（表示名）";
 
-    const buttonText = isDirectPreview ? "内容を確認して公開する" : "この名前で下書きをつくる（無料）";
+    const buttonText = isDirectPreview ? "この内容で公開する" : "この名前で下書きをつくる（無料）";
 
-    const noteText = isSocial
-      ? "※公開する情報は事実確認後に決めてください。RovanはAIの回答・推薦・順位や成果を保証しません。"
-      : isProduct
-      ? "※価格・仕様・実績などの記載がない事項は補いません。公開後の内容変更は、参照元と確認状況を見直して行います。"
-      : "※これは公開情報を整理するためのページです。公式性・推薦結果・集客効果を保証するものではありません。";
 
     return (
       <main className="scan-page">
@@ -333,7 +314,6 @@ export function ScanProgress() {
               </span>
             </div>
             <h1>{titleText}</h1>
-            <p className="no-site-desc">{descText}</p>
 
             {isDirectPreview ? <div className="no-site-form-grid no-site-form-grid--single">
               <div className="no-site-input-group">
@@ -342,20 +322,20 @@ export function ScanProgress() {
               </div>
               {isDirectPreview ? (
                 <div className="no-site-input-group">
-                  <span>下書きに含める情報</span>
-                  <p className="no-site-input-note">入力された名称{extraSocial || socialInfo.isSocial ? "・SNS参照先" : ""}{extraProduct ? "・商品／サービス名" : ""}{extraUrl ? "・参照元URL" : ""}。未確認の業種・所在地・価格・実績は追加していません。</p>
+                  <span>載せる情報</span>
+                  <p className="no-site-input-note">名前{extraSocial || socialInfo.isSocial ? "・SNS" : ""}{extraProduct ? "・商品／サービス名" : ""}{extraUrl ? "・URL" : ""}</p>
                 </div>
               ) : null}
             </div> : null}
 
             <div className="no-site-action-row">
-              <div className="no-site-target-brand">
+              {!isDirectPreview ? <div className="no-site-target-brand">
                 <span>この名前で調べます</span>
                 <strong>{socialInfo.displayLabel || directBrandName || rawInput}</strong>
-              </div>
+              </div> : null}
               {isDirectPreview ? (
                 <button className="button button-primary scan-resolve-start" type="button" disabled={directCreating} onClick={() => void publishDirectProfile()}>
-                  {directCreating ? "公開処理中…" : buttonText} <ArrowIcon />
+                  {directCreating ? "公開しています…" : buttonText} <ArrowIcon />
                 </button>
               ) : (
                 <button className="button button-primary scan-resolve-start" type="button" disabled={directCreating} onClick={() => void startScan("", directBrandName || rawInput)}>
@@ -365,7 +345,7 @@ export function ScanProgress() {
             </div>
             {!isDirectPreview ? (
               <form className="no-site-url-row" onSubmit={(event) => { event.preventDefault(); if (altUrl.trim()) void startScan(altUrl.trim()); }}>
-                <label htmlFor="no-site-url">ホームページがある場合は、URLを入れるとより正確に調べられます</label>
+                <label htmlFor="no-site-url">ホームページのURL（あれば）</label>
                 <div>
                   <input id="no-site-url" type="url" inputMode="url" placeholder="https://" value={altUrl} onChange={(event) => setAltUrl(event.target.value)} />
                   <button className="button button-secondary" type="submit" disabled={!altUrl.trim()}>このURLで診断</button>
@@ -374,12 +354,11 @@ export function ScanProgress() {
             ) : null}
             {!isDirectPreview ? (
               <button className="text-button no-site-draft-link" type="button" disabled={directCreating} onClick={() => void createDirectProfile()}>
-                {directCreating ? "下書きを作成中…" : "先にAIが読めるページの下書きをつくる →"}
+                {directCreating ? "下書きをつくっています…" : "先にAIが読めるページの下書きをつくる →"}
               </button>
             ) : null}
             {directDraft ? <ProfileManagementLink capability={{ profileId: directDraft.profileId, token: directDraft.token }} /> : null}
             {error ? <p className="form-error no-site-error">{error}</p> : null}
-            <small className="no-site-small-note">{noteText}</small>
           </div>
           <div className="no-site-back-row">
             <button className="button button-secondary" type="button" aria-label={isDirectPreview ? "下書きに戻る" : "入力をやり直す"} onClick={() => {
@@ -404,31 +383,17 @@ export function ScanProgress() {
       <SiteHeader compact />
       <section className="scan-stage shell scan-resolve-stage">
         <div className="scan-stage-main scan-resolve-main">
-          <p className="overline">
-            {phase === "failed" ? "診断を開始できませんでした" : phase === "resolving" ? "診断先を検索中" : "診断先の確認"}
-          </p>
           <h1>
             {phase === "failed"
-              ? (isServiceUnavailableError(error) ? "現在診断を受け付けられません。" : isDirectTarget ? "診断を開始できませんでした。" : "公開サイトを見つけられませんでした。")
+              ? (isServiceUnavailableError(error) ? "いまは診断できません" : isDirectTarget ? "診断を始められませんでした" : "ホームページが見つかりませんでした")
               : phase === "resolving"
-              ? `「${displayInput(rawInput)}」の公開サイトを探しています。`
-              : `「${displayInput(rawInput)}」の公開サイトを確認してください`}
+              ? `「${displayInput(rawInput)}」のホームページを探しています`
+              : `「${displayInput(rawInput)}」のホームページはどれですか？`}
           </h1>
-          {phase !== "failed" ? <p className="scan-message">
-            {phase === "resolving"
-              ? "会社名・商品名から、診断できる公開サイトを調べています。"
-              : "AIが同名の別会社と取り違えないよう、ドメインとページ内容を確認して診断先を確定します。"}
-          </p> : null}
-          {phase === "resolving" ? <div className="scan-resolve-loading" role="status"><span className="scan-resolve-spinner" aria-hidden="true" />公開情報を検索しています…</div> : null}
+          {phase === "resolving" ? <div className="scan-resolve-loading" role="status"><span className="scan-resolve-spinner" aria-hidden="true" />探しています…</div> : null}
           {phase === "choose" ? <>
-            <div className="disambiguation-guide-box">
-              <span className="disambiguation-tag">同名他社・人違い防止確認</span>
-              <p>
-                「{displayInput(rawInput)}」に該当する公開候補が見つかりました。AIが別の会社と誤認しないよう、<strong>ご自身の会社・店舗・サービスのサイト</strong>を選択してください。
-              </p>
-            </div>
             <fieldset className="scan-resolve-options">
-              <legend>診断する公開サイト（目視で確定）</legend>
+              <legend className="sr-only">ホームページの候補</legend>
               {candidates.map((candidate) => {
                 const host = hostOf(candidate.url);
                 return <label className={`scan-resolve-option ${selectedUrl === candidate.url ? "selected" : ""}`} key={candidate.url}>
@@ -438,32 +403,17 @@ export function ScanProgress() {
               })}
             </fieldset>
             <div className="scan-resolve-actions">
-              <button className="button button-primary scan-resolve-start" type="button" disabled={!selectedUrl} onClick={() => void startScan(selectedUrl)}>このサイトを確定して診断する <span aria-hidden="true">→</span></button>
+              <button className="button button-primary scan-resolve-start" type="button" disabled={!selectedUrl} onClick={() => void startScan(selectedUrl)}>このサイトで診断する <span aria-hidden="true">→</span></button>
               <button className="button button-secondary scan-resolve-alt-btn" type="button" onClick={() => setPhase("no_site")}>この中にない・ホームページがない</button>
             </div>
-            <p className="scan-resolve-note">※ドメインとサイト内容を確認してから確定するため、同名他社との取り違えを避けやすくなります。</p>
           </> : null}
           {phase === "failed" ? <div className="scan-error" role="alert">
-            <p>{isServiceUnavailableError(error) ? "時間を置いてもう一度お試しください。" : error}</p>
+            <p>{isServiceUnavailableError(error) ? "少し時間をおいてお試しください。" : error}</p>
             <div className="scan-error-actions">
               <button className="button button-secondary" type="button" onClick={() => router.push("/")}>入力をやり直す</button>
             </div>
           </div> : null}
         </div>
-        {phase === "choose" || phase === "resolving" ? (
-          <aside className="scan-stage-list scan-resolve-aside">
-            <div className="scan-stage-list-head">
-              <strong>入力できるもの</strong>
-              <span>URL / 名前</span>
-            </div>
-            <ul className="scan-input-types">
-              <li><strong>会社名</strong><span>例：株式会社○○</span></li>
-              <li><strong>サービス名・商品名</strong><span>例：Notion、○○クラウド</span></li>
-              <li><strong>公開サイトのURL</strong><span>例：https://yourcompany.jp</span></li>
-            </ul>
-            <p className="scan-stage-note">名前で探した場合も、公開サイトを選んでから診断します。</p>
-          </aside>
-        ) : null}
       </section>
     </main>;
   }
@@ -480,19 +430,19 @@ export function ScanProgress() {
         <div className="scan-progress-summary"><strong>{Math.round(progress)}%</strong><span>{detail}</span></div>
         {!error ? <button className="scan-cancel" type="button" onClick={() => { controller.current?.abort(); router.push("/"); }}>診断をやめる</button> : null}
         {error ? <div className="scan-error" role="alert">
-          <strong>{isServiceUnavailableError(error) ? "現在診断を受け付けられません。" : "診断を完了できませんでした。"}</strong>
-          <p>{isServiceUnavailableError(error) ? "時間を置いてもう一度お試しください。" : error}</p>
+          <strong>{isServiceUnavailableError(error) ? "いまは診断できません" : "診断を終えられませんでした"}</strong>
+          <p>{isServiceUnavailableError(error) ? "少し時間をおいてお試しください。" : error}</p>
           <div className="scan-error-actions">
             <button className="button button-secondary" type="button" onClick={() => window.location.reload()}>もう一度試す</button>
           </div>
         </div> : null}
       </div>
-      <div className="scan-stage-list" aria-label="診断の進み具合"><div className="scan-stage-list-head"><strong>今回確認すること</strong><span>{completedCount} / {steps.length}</span></div><ol>{steps.map((item, index) => {
+      <div className="scan-stage-list" aria-label="診断の進み具合"><div className="scan-stage-list-head"><strong>進み具合</strong><span>{completedCount} / {steps.length}</span></div><ol>{steps.map((item, index) => {
         const state = stage === "failed" ? (index < activeIndex ? "done" : index === activeIndex ? "failed" : "pending") : index < activeIndex || stage === "complete" ? "done" : index === activeIndex ? "active" : "pending";
         // ホームページなし（名前だけ）の診断では、読むページがないので手順名を変える
         const label = !targetHost && item.stage === "crawling" ? "名前と地域を確認" : item.label;
         return <li className={state} key={item.stage}><span>{state === "done" ? "✓" : state === "failed" ? "!" : index + 1}</span><strong>{label}</strong>{state === "active" ? <em>確認中</em> : state === "done" ? <em>完了</em> : null}</li>;
-      })}</ol><p className="scan-stage-note">{targetHost ? "サイトの内容とAIの回答を順番に照合しています。" : "お店の名前がAIの答えに出るかを、質問ごとに確かめています。"}完了すると結果ページへ移動します。</p></div>
+      })}</ol><p className="scan-stage-note">終わると、結果の画面に進みます。</p></div>
     </section>
   </main>;
 }

@@ -3,4 +3,4 @@
 @media print{.exports,.filters,.tabs{display:none}.board{border:0;padding:0!important;width:100%;break-inside:auto}.row,.source,.change{break-inside:avoid}.summary strong{font-size:20px}.comparison{display:grid}.board a{color:var(--text)}.board{box-shadow:none}}
 
 .exports a{text-decoration:none;white-space:nowrap}
-@media(max-width:767px){.board button,.exports a{min-height:44px}}
+@media(max-width:767px){.board button,.exports a{min-height:44px}.answer li a,.change a{display:inline-flex;align-items:center;min-height:44px}}

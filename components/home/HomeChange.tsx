@@ -74,11 +74,11 @@ export function HomeChange() {
             <span>同じ質問で毎週測った結果を、この画面でお知らせします。</span>
           </div>
           <figure className="home-diagnosis-shot">
-            <Image src="/screens/watch-verdict.png" alt="週次見守りの実際の画面：名前が出た質問が2問から4問に増えたことを示す棒グラフ（見本）" width={912} height={348} sizes="(max-width: 1024px) 100vw, 760px" />
+            <Image src="/screens/watch-verdict.png" alt="毎週の見守りの画面：名前が出た質問が2問から4問に増えたことを示す棒グラフ（見本）" width={912} height={348} sizes="(max-width: 1024px) 100vw, 760px" />
           </figure>
         </div>
 
-        <p className="home-change-disclaimer">画面は見本のお店のものです。AIの答えや結果を約束するものではありません。</p>
+        <p className="home-change-disclaimer">画面は見本のお店のものです。</p>
       </div>
     </section>
   );

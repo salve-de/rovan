@@ -25,7 +25,7 @@ export function SiteFooter({ watchToken = "", showSellerLinks = false }: { watch
           <Link href="/login">ログイン</Link>
           <Link href="/manage">管理画面</Link>
           <Link href="/profile/manage">掲載内容の訂正・非公開</Link>
-          <Link prefetch={false} href={watchToken ? `/data-rights?token=${encodeURIComponent(watchToken)}` : "/data-rights"}>データの管理</Link>
+          <Link prefetch={false} href={watchToken ? `/data-rights?token=${encodeURIComponent(watchToken)}` : "/data-rights"}>データ管理</Link>
         </nav>
         <nav className="home-footer-col" aria-label="運営について">
           <strong>運営について</strong>
@@ -36,8 +36,7 @@ export function SiteFooter({ watchToken = "", showSellerLinks = false }: { watch
         </nav>
       </div>
       <div className="shell home-footer-legal">
-        <p>※ AIの推薦・順位・問い合わせ・売上を保証するものではありません。</p>
-        <p>※ ChatGPTはOpenAI OpCo, LLC、GeminiはGoogle LLC、PerplexityはPerplexity AI, Inc.の商標または登録商標です。当サービスは各社との提携、公認、推奨関係を示すものではありません。</p>
+        <p>ChatGPT・Gemini・Perplexityは各社の商標です。Rovanは各社と提携していません。</p>
         <p className="home-footer-copyright">© 2026 Rovan</p>
       </div>
     </footer>

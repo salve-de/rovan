@@ -85,9 +85,8 @@ export default function PricingPage() {
         </div>
       </PageSection>
 
-      <PageSection tone="white" eyebrow="料金のよくある質問" title="お金のこと、先にお答えします。">
+      <PageSection tone="white" title="料金のよくある質問">
         <FaqList items={faqs} />
-        <p className="pr-legal">本サービスは、決まった条件でAIの答えと公開情報を確かめ、整理するものです。AIの推薦・引用・検索順位・問い合わせ・契約・売上は保証しません。御社のサイトを自動で書きかえることもありません。</p>
       </PageSection>
 
       <PageSection tone="tint">

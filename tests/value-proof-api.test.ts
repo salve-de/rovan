@@ -14,7 +14,7 @@ test('owner proof endpoint authenticates, reads saved data without provider call
  const response=await GET(new Request('https://local/api/watch/proof?token='+w.token));assert.equal(response.status,200);assert.match(response.headers.get('cache-control'),/no-store/);
  const proof=await response.json();assert.equal(proof.rows.length,fixture.latest.prompts.length*3);assert.ok(proof.rows.some(r=>r.afterAnswers.some(a=>a.text)));
  const serialized=JSON.stringify(proof);assert.ok(!serialized.includes(w.token));assert.ok(!serialized.includes('stripeCustomerId'));
- const exportResponse=await GET(new Request('https://local/api/watch/proof?token='+w.token+'&format=report'));assert.match(exportResponse.headers.get('content-disposition'),/attachment/);const report=await exportResponse.text();assert.ok(report.includes('成果と根拠'));assert.ok(!report.includes(w.token));
+ const exportResponse=await GET(new Request('https://local/api/watch/proof?token='+w.token+'&format=report'));assert.match(exportResponse.headers.get('content-disposition'),/attachment/);const report=await exportResponse.text();assert.ok(report.includes('AIの答えの報告書'));assert.ok(!report.includes(w.token));
  const demo=await GET(new Request('https://local/api/watch/proof?sample=1&format=csv'));assert.equal(demo.status,200);assert.match(demo.headers.get('content-disposition'),/sample/);
  const wrong=await GET(new Request('https://local/api/watch/proof?sample=1&token=invalid'));assert.equal(wrong.status,404);
  `],{encoding:'utf8',timeout:20000,env:{...process.env,NODE_ENV:'test',SUPABASE_URL:'',SUPABASE_SERVICE_ROLE_KEY:''}});

@@ -34,15 +34,15 @@ function blockedAddress(address: string) {
 
 export function normalizePublicUrl(input: string) {
   const raw = input.trim();
-  if (!raw) throw new Error("会社サイトのURLを入力してください。");
-  if (/^[a-z][a-z\d+.-]*:/i.test(raw) && !/^https?:/i.test(raw)) throw new Error("httpまたはhttpsの公開URLだけ利用できます。");
+  if (!raw) throw new Error("ホームページのURLを入れてください。");
+  if (/^[a-z][a-z\d+.-]*:/i.test(raw) && !/^https?:/i.test(raw)) throw new Error("http:// か https:// で始まるURLを入れてください。");
   const parsed = new URL(/^https?:\/\//i.test(raw) ? raw : `https://${raw}`);
-  if (!["http:", "https:"].includes(parsed.protocol)) throw new Error("httpまたはhttpsの公開URLだけ利用できます。");
-  if (parsed.username || parsed.password) throw new Error("認証情報を含むURLは利用できません。");
-  if (parsed.port && !["80", "443"].includes(parsed.port)) throw new Error("標準ポート以外のURLは利用できません。");
+  if (!["http:", "https:"].includes(parsed.protocol)) throw new Error("http:// か https:// で始まるURLを入れてください。");
+  if (parsed.username || parsed.password) throw new Error("このURLは使えません（ID・パスワード入り）。");
+  if (parsed.port && !["80", "443"].includes(parsed.port)) throw new Error("このURLは使えません（標準ポート以外）。");
   const host = parsed.hostname.toLowerCase().replace(/\.$/, "");
-  if (!host || host === "localhost" || host.endsWith(".localhost") || host.endsWith(".local") || host.endsWith(".internal")) throw new Error("公開ドメインを入力してください。");
-  if (isIP(host) && blockedAddress(host)) throw new Error("内部IPは利用できません。");
+  if (!host || host === "localhost" || host.endsWith(".localhost") || host.endsWith(".local") || host.endsWith(".internal")) throw new Error("インターネットに公開されているURLを入れてください。");
+  if (isIP(host) && blockedAddress(host)) throw new Error("このURLは使えません（内部IP）。");
   parsed.hostname = host;
   parsed.hash = "";
   return parsed.toString();
@@ -50,11 +50,11 @@ export function normalizePublicUrl(input: string) {
 
 async function assertPublicHost(hostname: string) {
   if (isIP(hostname)) {
-    if (blockedAddress(hostname)) throw new Error("安全でない接続先です。");
+    if (blockedAddress(hostname)) throw new Error("このURLには接続できません。");
     return;
   }
   const records = await lookup(hostname, { all: true, verbatim: true });
-  if (!records.length || records.some((record) => blockedAddress(record.address))) throw new Error("安全でない接続先です。");
+  if (!records.length || records.some((record) => blockedAddress(record.address))) throw new Error("このURLには接続できません。");
 }
 
 export function isSameOrigin(input: string, allowedOrigin: string) {

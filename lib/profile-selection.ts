@@ -70,7 +70,8 @@ export function buildSelectedPublicProfileDraft(
       sourcePages = source.sourcePages.filter((page) => !isRovanSource(page.url));
       const confirmed = (value: string) => Boolean(value) && facts.some((fact) => fact.provenance === "source_excerpt" && normalize(fact.value) === normalize(value));
       metadata = {
-        summary: confirmed(source.summary) ? source.summary : assertedMarker.test(source.summary) ? source.summary : "",
+        // 入力から作ったページ（Rovan上のURLが元）の紹介文は、本人の入力としてそのまま引き継ぐ
+        summary: confirmed(source.summary) || assertedMarker.test(source.summary) || isRovanSource(source.targetUrl) ? source.summary : "",
         market: confirmed(source.market) ? source.market : "",
         targetCustomers: source.targetCustomers.filter(confirmed), useCases: source.useCases.filter(confirmed),
       };
@@ -92,7 +93,7 @@ export function buildSelectedPublicProfileDraft(
     });
     const basic = candidates.filter((fact) => field.test(`${fact.label}: ${fact.value}`));
     const segmenter = new Intl.Segmenter("ja", { granularity: "word" });
-    const words = [...segmenter.segment(strategy ? `${strategy.name} ${strategy.targetMarket}` : "")]
+    const words = [...segmenter.segment(strategy ? strategy.focusKeyword || `${strategy.name} ${strategy.targetMarket}` : "")]
       .filter((word) => word.isWordLike && word.segment.length >= 2).map((word) => word.segment.toLowerCase());
     const selected = candidates.map((fact) => ({ fact, score: words.filter((word) => `${fact.label} ${fact.value}`.toLowerCase().includes(word)).length }))
       .filter((item) => !strategy || item.score > 0).sort((a, b) => b.score - a.score).slice(0, 5).map((item) => item.fact);

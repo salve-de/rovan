@@ -9,6 +9,7 @@ import { profileManagementHref } from "@/lib/profile-management-link";
 import type { PublicProfile } from "@/lib/types";
 import type { ProfileManagementCapability } from "@/lib/profile-management-link";
 import { ProfileManagementLink } from "./profile-management-link";
+import { displayFactLabel, displaySummary } from "@/lib/profile-display";
 
 type Managed = { profile: PublicProfile; direct: boolean; resultUrl?: string | null; automation: { enabled: boolean; maintenanceEnabled: boolean; canRollback: boolean } };
 
@@ -24,14 +25,14 @@ function ManagementSession({ query }: { query: string }) {
   });
   const [profiles, setProfiles] = useState<Managed[]>([]);
   const [watchLink, setWatchLink] = useState("");
-  const [message, setMessage] = useState("管理権限を確認しています。");
+  const [message, setMessage] = useState("読み込んでいます。");
   const [busy, setBusy] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
 
   async function request(body: Record<string, unknown>, signal?: AbortSignal) {
     const response = await fetch("/api/ai-profile", { method: "POST", headers: { "content-type": "application/json" }, cache: "no-store", referrerPolicy: "no-referrer", body: JSON.stringify(body), signal });
     const payload = await response.json();
-    if (!response.ok) throw new Error(payload.error || "管理状態を取得できませんでした。");
+    if (!response.ok) throw new Error(payload.error || "読み込めませんでした。");
     return payload;
   }
 
@@ -49,21 +50,21 @@ function ManagementSession({ query }: { query: string }) {
       let watchToken = capability.watchToken || "";
       if (watchLink.trim()) {
         const url = new URL(watchLink.trim(), window.location.origin);
-        if (url.origin !== window.location.origin || !["/watch", "/profile/manage"].includes(url.pathname)) throw new Error("このRovanサイトの週次見守り管理リンクを入力してください。");
+        if (url.origin !== window.location.origin || !["/watch", "/profile/manage"].includes(url.pathname)) throw new Error("見守りの管理用リンクを貼りつけてください。");
         watchToken = url.searchParams.get("watchToken") || (url.pathname === "/watch" ? url.searchParams.get("token") : "") || "";
-        if (!watchToken) throw new Error("Watch管理リンクを確認してください。");
+        if (!watchToken) throw new Error("リンクが正しくありません。見守りの管理用リンクを貼りつけてください。");
       }
       await request({ action, ...capability, profileId: profile.id, watchToken });
       const data = await request({ action: "manage", ...capability });
       setProfiles(data.profiles);
-      setMessage(action === "bind_watch" ? "週次見守りを紐付けました。自動更新は別途許可してください。" : "管理状態を保存しました。");
+      setMessage(action === "bind_watch" ? "見守りとつなげました。" : "保存しました。");
     } catch (error) { setMessage(error instanceof Error ? error.message : "操作できませんでした。"); }
     finally { setBusy(false); }
   }
 
   const watchHref = capability.watchToken ? `/watch?token=${encodeURIComponent(capability.watchToken)}` : "/manage";
   const resultHref = profiles[0]?.resultUrl || "/#scan";
-  const statusLabel = { draft: "下書き（未公開）", published: "公開中", revoked: "非公開", expired: "期限切れ" } as const;
+  const statusLabel = { draft: "下書き・未公開", published: "公開中", revoked: "公開停止中", expired: "期限切れ" } as const;
   const hasCapability = Boolean(capability.token || capability.watchToken);
   return <>
     {hasCapability ? <SiteHeader context={{ resultHref, profileHref: profileManagementHref(capability), watchHref }} /> : <SiteHeader />}
@@ -71,9 +72,7 @@ function ManagementSession({ query }: { query: string }) {
       <section className="rp-hero">
         <div className="shell rp-hero-inner">
           <div className="rp-hero-head">
-            <span className="rp-eyebrow">管理画面</span>
             <h1>公開ページの管理</h1>
-            <p className="rp-hero-meta"><span>公開内容と情報のもとを確認して、公開・停止・自動更新を切りかえられます。</span></p>
           </div>
           {capability.token || capability.watchToken ? <ProfileManagementLink capability={capability} /> : null}
         </div>
@@ -82,7 +81,7 @@ function ManagementSession({ query }: { query: string }) {
       <div className="shell pm-body">
         {message ? <p role="status" className="pm-message">{message}</p> : null}
         {!hasCapability ? <div className="pm-empty">
-          <p>この画面は、公開ページを作ったときに表示された「管理用リンク」から開きます。メールアドレスを登録した方は、Rovanからの通知メールからも開けます。</p>
+          <p>管理用リンクから開いてください。</p>
           <div className="empty-actions">
             <Link className="button button-primary" href="/manage">管理用リンクで開く</Link>
             <Link className="button button-secondary" href="/">まだの方は、無料で診断する</Link>
@@ -92,48 +91,48 @@ function ManagementSession({ query }: { query: string }) {
           <div className="pm-card-head">
             <div>
               <h2>{profile.brandName}</h2>
-              <p className="pm-card-meta">掲載期限：{new Date(profile.expiresAt).toLocaleDateString("ja-JP")}　／　公開先：<a href={`/ai/company/${encodeURIComponent(profile.slug)}`} target="_blank" rel="noreferrer">{`/ai/company/${profile.slug}`} ↗</a></p>
+              <p className="pm-card-meta">公開期限：{new Date(profile.expiresAt).toLocaleDateString("ja-JP")}　<a href={`/ai/company/${encodeURIComponent(profile.slug)}`} target="_blank" rel="noreferrer">ページを見る ↗</a></p>
             </div>
             <span className={`pm-status pm-status--${profile.status}`}>{statusLabel[profile.status]}</span>
           </div>
-          {direct ? <p className="pm-note">入力情報を整理したページであり、参照元で事実確認済みとは扱いません。{resultUrl ? <a href={resultUrl} referrerPolicy="no-referrer">紐付けた診断結果を確認する</a> : "AI回答の測定はまだ紐付いていません。公開後の診断は別の処理として開始できます。"}</p> : null}
-          {profile.summary ? <p className="pm-summary">{profile.summary}</p> : null}
-          <dl className="pm-facts">{profile.facts.map((fact, index) => <div key={index}><dt>{fact.label}</dt><dd>{fact.value}{fact.provenance === "company_asserted" ? <small>（入力情報・参照元未確認）</small> : null}</dd></div>)}</dl>
+          {direct && resultUrl ? <p className="pm-note"><a href={resultUrl} referrerPolicy="no-referrer">診断結果を見る</a></p> : null}
+          {displaySummary(profile.summary) ? <p className="pm-summary">{displaySummary(profile.summary)}</p> : null}
+          <dl className="pm-facts">{profile.facts.map((fact, index) => <div key={index}><dt>{displayFactLabel(fact.label)}</dt><dd>{fact.value}</dd></div>)}</dl>
           {profile.sourcePages.length ? <p className="pm-sources">情報のもと：{profile.sourcePages.map((page) => <a key={page.url} href={page.url} target="_blank" rel="noreferrer">{page.title || page.url} ↗</a>)}</p> : null}
 
           {profile.status === "draft" ? <div className="pm-publish">
-            <label className="pm-check"><input type="checkbox" checked={confirmed} onChange={(event) => setConfirmed(event.target.checked)} />対象企業・掲載内容・公開先を確認し、公開に同意します。</label>
-            <button className="button button-primary" disabled={busy || !confirmed} onClick={() => void operate(profile, "publish")}>内容を確認して公開する</button>
+            <label className="pm-check"><input type="checkbox" checked={confirmed} onChange={(event) => setConfirmed(event.target.checked)} />この内容で公開することに同意します。</label>
+            <button className="button button-primary" disabled={busy || !confirmed} onClick={() => void operate(profile, "publish")}>公開する</button>
           </div> : null}
 
           {profile.status === "published" ? <div className="pm-settings">
             <div className="pm-setting">
-              <div><strong>自動更新</strong><span className={automation.enabled ? "pm-on" : "pm-off"}>{automation.enabled ? "許可済み" : "停止中"}</span><p>有料の週次見守りと紐付けて許可すると、同じ情報のもとの記載と掲載期限を毎週更新します。</p></div>
-              <button className="button button-secondary" disabled={busy || (!automation.enabled && !capability.watchToken && !watchLink.trim())} onClick={() => void operate(profile, automation.enabled ? "automation_disable" : "automation_enable")}>{automation.enabled ? "自動更新を停止する" : "参照元の記載・掲載期限の継続更新を許可する"}</button>
+              <div><strong>自動更新</strong><span className={automation.enabled ? "pm-on" : "pm-off"}>{automation.enabled ? "オン" : "オフ"}</span><p>ホームページの内容が変わったら、毎週このページも直します（有料の見守りが必要です）。</p></div>
+              <button className="button button-secondary" disabled={busy || (!automation.enabled && !capability.watchToken && !watchLink.trim())} onClick={() => void operate(profile, automation.enabled ? "automation_disable" : "automation_enable")}>{automation.enabled ? "自動更新を止める" : "自動更新をオンにする"}</button>
             </div>
             <div className="pm-setting">
-              <div><strong>契約中の掲載維持</strong><span className={automation.maintenanceEnabled ? "pm-on" : "pm-off"}>{automation.maintenanceEnabled ? "許可済み" : "停止中"}</span><p>内容の自動更新とは別に管理できます。停止すると無料の公開期限に戻ります。</p></div>
-              <button className="button button-secondary" disabled={busy || (!automation.maintenanceEnabled && !capability.watchToken && !watchLink.trim())} onClick={() => void operate(profile, automation.maintenanceEnabled ? "maintenance_disable" : "maintenance_enable")}>{automation.maintenanceEnabled ? "掲載維持を停止し無料期限に戻す" : "有料契約中の掲載維持だけを許可する"}</button>
+              <div><strong>公開期限の自動延長</strong><span className={automation.maintenanceEnabled ? "pm-on" : "pm-off"}>{automation.maintenanceEnabled ? "オン" : "オフ"}</span><p>有料の見守り中は、公開期限を自動で延ばします。</p></div>
+              <button className="button button-secondary" disabled={busy || (!automation.maintenanceEnabled && !capability.watchToken && !watchLink.trim())} onClick={() => void operate(profile, automation.maintenanceEnabled ? "maintenance_disable" : "maintenance_enable")}>{automation.maintenanceEnabled ? "自動延長を止める" : "自動延長をオンにする"}</button>
             </div>
             {capability.token ? <div className="pm-setting pm-setting--bind">
-              <label>同じ対象の週次見守りの管理リンク<input type="url" value={watchLink} onChange={(event) => setWatchLink(event.target.value)} autoComplete="off" placeholder="https://…/watch?token=…" /></label>
-              <button className="button button-secondary" disabled={busy || !watchLink.trim()} onClick={() => void operate(profile, "bind_watch")}>この週次見守りに管理権限を紐付ける</button>
+              <label>見守りの管理用リンク<input type="url" value={watchLink} onChange={(event) => setWatchLink(event.target.value)} autoComplete="off" placeholder="https://…/watch?token=…" /></label>
+              <button className="button button-secondary" disabled={busy || !watchLink.trim()} onClick={() => void operate(profile, "bind_watch")}>見守りとつなげる</button>
             </div> : null}
             <div className="pm-actions">
               {direct ? <a className="button button-primary" href={`/scan?url=${encodeURIComponent(profile.targetUrl)}`} referrerPolicy="no-referrer" onClick={() => {
                 if (capability.token) {
                   try { sessionStorage.setItem(`rovan:pending-profile:${profile.targetUrl}`, JSON.stringify({ id: profile.id, token: capability.token })); } catch { /* Saved management link remains usable. */ }
                 }
-              }}>公開ページを対象にAI回答の診断を開始する</a> : null}
-              {automation.canRollback ? <button className="button button-secondary" disabled={busy} onClick={() => void operate(profile, "automation_rollback")}>直前の更新を取り消して停止する</button> : null}
+              }}>AIの答えを調べる（無料診断）</a> : null}
+              {automation.canRollback ? <button className="button button-secondary" disabled={busy} onClick={() => void operate(profile, "automation_rollback")}>最後の更新を取り消して、自動更新を止める</button> : null}
               <button className="button button-danger" disabled={busy} onClick={() => void operate(profile, "revoke")}>公開を停止する</button>
             </div>
           </div> : null}
         </section>)}
-        {hasCapability && !profiles.length && !message ? <p className="pm-message">公開ページを読み込んでいます…</p> : null}
+        {hasCapability && !profiles.length && !message ? <p className="pm-message">読み込んでいます…</p> : null}
         {hasCapability ? <p className="pm-links">
-          <a className="document-link" href="/manage" referrerPolicy="no-referrer">別の管理リンクを使う</a>
-          {capability.watchToken ? <a href={watchHref} referrerPolicy="no-referrer">週次見守りに戻る</a> : profiles[0]?.resultUrl ? <a href={resultHref} referrerPolicy="no-referrer">診断結果に戻る</a> : null}
+          <a className="document-link" href="/manage" referrerPolicy="no-referrer">別の管理用リンクで開く</a>
+          {capability.watchToken ? <a href={watchHref} referrerPolicy="no-referrer">見守りに戻る</a> : profiles[0]?.resultUrl ? <a href={resultHref} referrerPolicy="no-referrer">診断結果に戻る</a> : null}
         </p> : null}
       </div>
     </main>
