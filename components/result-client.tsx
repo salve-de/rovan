@@ -14,6 +14,7 @@ import { sampleResult } from "@/lib/sample-data";
 import { isNoSiteTarget } from "@/lib/no-site";
 import { WATCH_MONTHLY_PRICE_LABEL } from "@/lib/pricing";
 import { measurementReadout, readoutIdentity } from "@/lib/measurement-readout";
+import { aiAccessFixText, summarizeAiAccess, type AiAccessSummary } from "@/lib/ai-access";
 import type { LostPrompt, ScanRecord, ScanResult } from "@/lib/types";
 
 function formatDate(value: string) {
@@ -90,6 +91,7 @@ function ResultView({ sample, scanId, showSellerLinks, demo = false }: { sample:
   const primaryWinner = primaryLoss?.winner || topCompetitor?.name || null;
   const host = isNoSiteTarget(result.targetUrl) ? "ホームページなし（お店の名前で調査）" : (() => { try { return new URL(result.targetUrl).hostname.replace(/^www\./, ""); } catch { return result.targetUrl; } })();
   const displayWarnings = [...new Set(result.warnings.map(userFacingWarning))].filter(Boolean);
+  const aiAccess = summarizeAiAccess(result.visibilityAudit);
 
   return <main className="report-page">
     <SiteHeader compact context={headerContext} />
@@ -106,6 +108,7 @@ function ResultView({ sample, scanId, showSellerLinks, demo = false }: { sample:
 
     {/* ① 結論 → ② 御社は何番目か → ③ どの質問で負けているか（ホームの「無料の診断で分かる3つ」と同じ順） */}
     <ReportHero result={result} sample={sample} host={host} hasMeasurement={hasMeasurement} readout={readout} topCompetitorName={topCompetitor?.name} />
+    {aiAccess?.status === "blocked" ? <AiAccessAlert summary={aiAccess} siteUrl={result.targetUrl} /> : null}
     <ReportRanking result={result} />
     <ReportLosses result={result} primaryLoss={primaryLoss} primaryWinner={primaryWinner} />
 
@@ -159,7 +162,7 @@ function ResultView({ sample, scanId, showSellerLinks, demo = false }: { sample:
       </section>
     </div>
 
-    <ReportDetails result={result} sample={sample} />
+    <ReportDetails result={result} sample={sample} aiAccess={aiAccess} />
 
     {/* 注意書きはページ下部に1回だけ */}
     {!sample && displayWarnings.length ? (
@@ -365,7 +368,7 @@ function ReportLosses({ result, primaryLoss, primaryWinner }: { result: ScanResu
 }
 
 /** くわしいデータ：調べた条件・AIが参考にしたページ・保存は最後にまとめて折りたたむ */
-function ReportDetails({ result, sample }: { result: ScanResult; sample: boolean }) {
+function ReportDetails({ result, sample, aiAccess }: { result: ScanResult; sample: boolean; aiAccess: AiAccessSummary | null }) {
   return (
     <section className="rp-section rp-section--tint rp-details">
       <div className="shell">
@@ -376,12 +379,46 @@ function ReportDetails({ result, sample }: { result: ScanResult; sample: boolean
               <div><small>調べたAI</small><span>ChatGPT・Gemini・Perplexity</span></div>
               <div><small>質問</small><span>{result.panel.promptCount}問</span></div>
               <div><small>調べた日</small><span>{sample ? "見本" : formatDate(result.measuredAt)}</span></div>
+              {aiAccess ? <div><small>AIのロボット</small><span>{aiAccess.status === "blocked" ? "読めない設定があります" : "ホームページを読めます"}</span></div> : null}
             </div>
+            {aiAccess?.status === "check" ? (
+              <div className="rp-access-note">
+                <p>ホームページは Cloudflare を使っています。Cloudflare の初期設定では、AIのロボットが止められていることがあります。念のため、ホームページを作った会社に確認してください。</p>
+                <CopyFixText text={aiAccessFixText(aiAccess, result.targetUrl)} />
+              </div>
+            ) : null}
             <CitationMap result={result} />
             <ReportActions result={result} sample={sample} />
           </div>
         </details>
       </div>
     </section>
+  );
+}
+
+/** AIがホームページを読めない設定を見つけたとき、結論のすぐ下に出す */
+function AiAccessAlert({ summary, siteUrl }: { summary: AiAccessSummary; siteUrl: string }) {
+  const names = summary.blocked.map((item) => item.ai).join("・");
+  return (
+    <section className="shell rp-access-alert" role="alert">
+      <strong>{names ? `${names}が、御社のホームページを読めない設定になっています。` : "トップページが、検索に出ない設定になっています。"}</strong>
+      <p>このままでは、AIに名前が出にくくなります。ホームページを作った会社に、次の文面を送ってください。</p>
+      <CopyFixText text={aiAccessFixText(summary, siteUrl)} />
+    </section>
+  );
+}
+
+function CopyFixText({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <div className="rp-fix-text">
+      <details>
+        <summary>送る文面を見る</summary>
+        <pre>{text}</pre>
+      </details>
+      <button type="button" className="button button-secondary" onClick={async () => {
+        try { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000); } catch { /* コピーできない環境では文面を開いて選んでもらう */ }
+      }}>{copied ? "コピーしました" : "文面をコピー"}</button>
+    </div>
   );
 }

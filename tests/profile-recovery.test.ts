@@ -32,7 +32,7 @@ test("weekly execution renews the entitlement lease before a failing content cra
       if (name === "@/lib/storage") return { renewBoundPublicProfiles: async (token: string) => { calls.push(`renew:${token}`); } };
       if (name === "@/lib/watch-runs") return { getActiveWatchRun: async () => ({ nextPromptIndex: 1, prompts: [{}] }) };
       if (name === "@/lib/crawler") return { crawlCompanySite: async () => { calls.push("crawl"); throw new Error("source unavailable"); } };
-      if (["@/lib/change-pack", "@/lib/discovery", "@/lib/providers", "@/lib/scan-result", "@/lib/watch-email", "@/lib/prompt-panels", "@/lib/autonomous-watch"].includes(name)) return {};
+      if (["@/lib/change-pack", "@/lib/discovery", "@/lib/providers", "@/lib/scan-result", "@/lib/watch-email", "@/lib/prompt-panels", "@/lib/autonomous-watch", "@/lib/indexnow"].includes(name)) return {};
       if (name === "@/lib/prompt-evidence") return { matchingConsultations: () => [] };
       if (name === "@/lib/site") return { siteUrl: "https://rovan.example" };
       throw new Error(`Unexpected import: ${name}`);

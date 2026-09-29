@@ -1,10 +1,28 @@
 import "server-only";
 import { isNoSiteTarget } from "@/lib/no-site";
 import { isAllowedByRobots } from "@/lib/robots";
-import { safeFetchText } from "@/lib/url-security";
+import { safeFetch, safeFetchText } from "@/lib/url-security";
+import { PROBE_AGENTS, isCloudflare, probeBlocked } from "@/lib/ai-access";
 import type { AiCrawlerName, CrawlAudit, CrawledPage } from "@/lib/types";
 
-const AI_CRAWLERS: AiCrawlerName[] = ["OAI-SearchBot", "PerplexityBot", "ClaudeBot", "Claude-User", "Googlebot", "Bingbot", "GPTBot"];
+const AI_CRAWLERS: AiCrawlerName[] = ["OAI-SearchBot", "ChatGPT-User", "PerplexityBot", "Perplexity-User", "ClaudeBot", "Claude-User", "Googlebot", "Google-Extended", "Bingbot", "GPTBot"];
+
+/** AIのロボットの名前でトップページを1回ずつ開き、ファイアウォールで止められていないかを見る（失敗しても診断は続ける） */
+async function probeAiFirewall(home: string, allowedOrigin: string): Promise<NonNullable<CrawlAudit["firewall"]>> {
+  const tested: AiCrawlerName[] = [];
+  const blocked: AiCrawlerName[] = [];
+  let cdn: "cloudflare" | null = null;
+  for (const [crawler, agent] of PROBE_AGENTS) {
+    try {
+      const response = await safeFetch(home, { allowedOrigin, timeoutMs: 8_000, headers: { "user-agent": agent } });
+      await response.body?.cancel().catch(() => undefined);
+      tested.push(crawler);
+      if (isCloudflare(response.headers)) cdn = "cloudflare";
+      if (probeBlocked(response.status, response.headers)) blocked.push(crawler);
+    } catch { /* 開けなかったときは判定しない */ }
+  }
+  return { cdn, tested, blocked };
+}
 
 function decode(value: string) {
   return value
@@ -276,5 +294,6 @@ export async function crawlCompanySite(input: string, maxPages = 24): Promise<{ 
     gptBotAllowed: crawlerAccess.GPTBot !== false,
     crawlerAccess,
   };
+  audit.firewall = await probeAiFirewall(`${start.origin}/`, allowedOrigin);
   return { pages, robots: startRobots, attempted: visited.size, audit };
 }

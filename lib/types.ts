@@ -29,7 +29,7 @@ export type CrawledPage = {
   lang?: string;
 };
 
-export type AiCrawlerName = "OAI-SearchBot" | "PerplexityBot" | "ClaudeBot" | "Claude-User" | "Googlebot" | "Bingbot" | "GPTBot";
+export type AiCrawlerName = "OAI-SearchBot" | "ChatGPT-User" | "PerplexityBot" | "Perplexity-User" | "ClaudeBot" | "Claude-User" | "Googlebot" | "Google-Extended" | "Bingbot" | "GPTBot";
 
 export type CrawlAudit = {
   robotsTxtFound: boolean;
@@ -50,6 +50,8 @@ export type CrawlAudit = {
   gptBotAllowed: boolean;
   /** Per-crawler robots result. Optional so older persisted scans remain readable. */
   crawlerAccess?: Partial<Record<AiCrawlerName, boolean>>;
+  /** AIのロボットの名前で実際にトップページを開いた結果（Cloudflare などでの遮断を見る）。古い記録には無い */
+  firewall?: { cdn: "cloudflare" | null; tested: AiCrawlerName[]; blocked: AiCrawlerName[] };
 };
 
 export type AiVisibilityCheck = {

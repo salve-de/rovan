@@ -4111,3 +4111,13 @@ small { font-size: max(12px, 0.833em); }
   .public-profile-interactive-card { padding: 16px; margin: 24px 0; }
   .profile-preview { padding: 14px 16px; }
 }
+/* AIのロボットがホームページを読めないときの知らせ */
+.rp-access-alert { margin-top: 24px; margin-bottom: 8px; padding: 20px 24px !important; border: 2px solid var(--warn); border-radius: 16px; background: var(--bg); display: flex; flex-direction: column; gap: 8px; }
+.rp-access-alert strong { font-size: 18px; line-height: 1.6; color: var(--text); }
+.rp-access-alert p { margin: 0; font-size: 15px; line-height: 1.8; color: var(--text-muted); }
+.rp-fix-text { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 8px 16px; }
+.rp-fix-text details { flex: 1 1 320px; min-width: 0; }
+.rp-fix-text summary { cursor: pointer; min-height: 44px; display: inline-flex; align-items: center; font-size: 15px; font-weight: 700; color: var(--brand); }
+.rp-fix-text pre { margin: 8px 0 0; padding: 12px 14px; border-radius: 10px; background: var(--surface); font: inherit; font-size: 13px; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere; }
+.rp-access-note { margin: 16px 0; padding: 14px 16px; border-radius: 12px; background: var(--bg); border: 1px solid var(--border); }
+.rp-access-note p { margin: 0 0 8px; font-size: 14px; line-height: 1.8; color: var(--text-muted); }

@@ -20,6 +20,7 @@ import type { BuyerPrompt, WatchMeasurementRun, WatchRecord } from "@/lib/types"
 
 import { matchingConsultations } from "@/lib/prompt-evidence";
 import { siteUrl } from "@/lib/site";
+import { notifySearchEngines, publicProfilePath } from "@/lib/indexnow";
 
 const DAY_MS = 86_400_000;
 const FREE_WATCH_DAYS = 14;
@@ -171,6 +172,8 @@ export async function processWatchMeasurement(watch: WatchRecord) {
     autoActionImpacts = impacts;
 
     const refreshed = await refreshPublicProfileFromScan(watch.token, result, crawl.pages);
+    // 自動更新したページを検索エンジンに知らせる（設定があるときだけ。失敗しても測定は続ける）
+    if (refreshed.length) await notifySearchEngines(refreshed.map((profile) => publicProfilePath(profile.slug))).catch(() => false);
     if (refreshed.length) {
       const executed = refreshed.map((profile) => ({
         id: `profile_${profile.id}_${result.scanId}`,

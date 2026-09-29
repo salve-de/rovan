@@ -19,6 +19,7 @@ import { directProfileOrigin } from "@/lib/profile-origin";
 import { demoMode } from "@/lib/demo-mode";
 import { demoContext } from "@/lib/demo/engine";
 import { isNoSiteTarget } from "@/lib/no-site";
+import { notifySearchEnginesAfterResponse, publicProfilePath } from "@/lib/indexnow";
 import type { ScanResult } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -188,6 +189,8 @@ export async function POST(request: Request) {
         ? await publishPublicProfile(profileId, token)
         : await revokePublicProfile(profileId, token);
       if (!record) return json({ error: "公開ページが見つからないか、いまは操作できません。" }, 404);
+      // 公開・停止を検索エンジンにすぐ知らせる（設定があるときだけ）
+      notifySearchEnginesAfterResponse([publicProfilePath(record.slug)]);
       return json({ profile: toPublicProfile(record) });
     }
 
