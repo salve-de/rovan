@@ -51,7 +51,7 @@ export function ProfileAutomationControls({ scanId, watchToken, sample = false }
     <h2>元の情報が変わったら、ページも自動で最新に。</h2>
     <p>一度許可すれば、毎週の処理で、元のサイトに書かれた料金・対応地域・得意分野などを出典つきで追加・更新します。御社のサイトや紹介文は書きかえません。有料契約中は掲載期限も自動で延長します。</p>
     <p className="wt-auto-note">Rovanの公開情報ページです。AI事業者による認定・登録を示すものではありません。</p>
-    {!sample ? <a href={profileManagementHref({ watchToken })} referrerPolicy="no-referrer">公開ページの管理画面を開く</a> : null}
+    {!sample ? <a className="document-link" href={profileManagementHref({ watchToken })} referrerPolicy="no-referrer">公開ページの管理画面を開く</a> : null}
     {sample ? <p>見本です。実際の自動更新・公開操作は行われません。</p> : !management ? <p>保存した公開ページの管理リンクから、この週次見守りの管理リンクを指定して紐付けてください。紐付け後は新しいタブでも管理できます。</p> : <>
       <p role="status">自動更新：{state ? state.enabled ? "許可済み" : "停止中" : "確認中"}{state?.lastUpdatedAt ? `／直近の反映：${new Date(state.lastUpdatedAt).toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })}（${state.changedFactCount}件の差分）` : ""}</p>
       <button type="button" className="button button-primary" disabled={busy || !state} onClick={() => void operate(state?.enabled ? "disable" : "enable")}>{state?.enabled ? "自動更新を停止する" : "参照元の記載の自動更新を許可する"}</button>

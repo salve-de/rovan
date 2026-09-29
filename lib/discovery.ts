@@ -3,6 +3,8 @@ import "server-only";
 import { env } from "@/lib/env";
 import { shortHash } from "@/lib/ids";
 import { buildCorePromptPanel, panelVersion } from "@/lib/prompt-panels";
+import { demoMode } from "@/lib/demo-mode";
+import { demoDiscovery, demoEvidence, demoPromptSeeds } from "@/lib/demo/engine";
 import type {
   ActionCard,
   BuyerPrompt,
@@ -111,6 +113,7 @@ function heuristicDiscovery(url: string, pages: CrawledPage[]): CompanyDiscovery
 
 export async function discoverCompany(url: string, pages: CrawledPage[]) {
   const domain = new URL(url).hostname.replace(/^www\./iu, "");
+  if (demoMode()) return demoDiscovery(url, pages);
   if (!env.openAiKey) return heuristicDiscovery(url, pages);
 
   try {
@@ -222,6 +225,9 @@ function fallbackPrompts(discovery: CompanyDiscovery, count: number, panel: Buye
 
 export async function generateBuyerPrompts(discovery: CompanyDiscovery, count: number, panel: BuyerPrompt["panel"]) {
   if (panel === "core") return buildCorePromptPanel(discovery);
+  if (demoMode()) {
+    return demoPromptSeeds(discovery, count).map(([text, cluster, importance], index) => enrichPrompt({ id: shortHash(`${panel}:${index}:${text}`), text, cluster, importance, panel, version: panelVersion(panel) }));
+  }
   if (!env.openAiKey) return fallbackPrompts(discovery, count, panel);
 
   try {
@@ -306,6 +312,10 @@ function fallbackEvidence(discovery: CompanyDiscovery, pages: CrawledPage[], los
 }
 
 export async function analyzeEvidence(input: { discovery: CompanyDiscovery; pages: CrawledPage[]; lostPrompts: LostPrompt[] }) {
+  if (demoMode()) {
+    const { gaps, actions } = demoEvidence(input.discovery, input.lostPrompts);
+    return { gaps, actions: actions.map((action) => ({ ...action, impactScore: actionImpactScore(action) })) };
+  }
   if (!env.openAiKey) return fallbackEvidence(input.discovery, input.pages, input.lostPrompts);
   try {
     const raw = await askJson<any>(`あなたは公開ページの内容確認を担当します。自社公開ページと、AI回答に含まれた候補・参照元を比べ、公開Webから確認できない情報と次に確認する内容を出してください。「存在しない」と断定せず、「確認できない」と書いてください。順位上昇、売上、因果効果は推測しないでください。画面に出す文言は普通の日本語で短くしてください。JSONだけ返してください。

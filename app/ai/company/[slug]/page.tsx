@@ -10,6 +10,7 @@ import { getActivePublicProfileBySlug } from "@/lib/storage";
 import type { PublicProfile } from "@/lib/types";
 import { siteUrl } from "@/lib/site";
 import { getSampleProfile } from "@/lib/sample-profiles";
+import { demoMode } from "@/lib/demo-mode";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -91,6 +92,11 @@ export default async function PublicCompanyPage({ params, searchParams }: PagePr
           <Link className="pp-header-link" href="/">Rovanについて <ArrowIcon /></Link>
         </div>
       </header>
+      {!sample && demoMode() ? (
+        <div className="rp-demo-banner" role="status">
+          <div className="shell"><strong>デモ環境のページです。</strong>AIにまだ接続していない開発用の環境でつくられたページで、実際には公開されていません。</div>
+        </div>
+      ) : null}
 
       <section className="pp-hero">
         <div className="shell pp-hero-inner">

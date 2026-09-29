@@ -28,6 +28,7 @@ test("weekly execution renews the entitlement lease before a failing content cra
     require: (name: string) => {
       if (name === "server-only") return {};
       if (name === "@/lib/env") return { env: {} };
+      if (name === "@/lib/demo-mode") return { demoMode: () => false };
       if (name === "@/lib/storage") return { renewBoundPublicProfiles: async (token: string) => { calls.push(`renew:${token}`); } };
       if (name === "@/lib/watch-runs") return { getActiveWatchRun: async () => ({ nextPromptIndex: 1, prompts: [{}] }) };
       if (name === "@/lib/crawler") return { crawlCompanySite: async () => { calls.push("crawl"); throw new Error("source unavailable"); } };

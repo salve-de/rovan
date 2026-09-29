@@ -151,6 +151,7 @@ export function toPublicScanResult(result: ScanResult): PublicScanResult {
     marketMap: result.marketMap,
     demandProxy: result.demandProxy,
     contentQuality: result.contentQuality,
+    ...(result.demo ? { demo: true } : {}),
   };
 }
 

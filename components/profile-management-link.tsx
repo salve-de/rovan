@@ -7,7 +7,7 @@ export function ProfileManagementLink({ capability }: { capability: ProfileManag
   const [message, setMessage] = useState("");
   const href = profileManagementHref(capability);
   return <div className="document-note">
-    <a href={href} referrerPolicy="no-referrer">公開ページの管理画面を開く</a>
+    <a className="document-link" href={href} referrerPolicy="no-referrer">公開ページの管理画面を開く</a>
     <p>この管理リンクを保存すると、タブを閉じた後や別のブラウザーでも公開停止・更新設定ができます。管理権限を含むため、公開用URLと分けて保管してください。</p>
     <button type="button" className="button button-secondary" onClick={async () => {
       const url = new URL(href, window.location.origin).href;

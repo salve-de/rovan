@@ -42,6 +42,8 @@ type PublicProfileStorageOptions = {
   now?: Date | string;
   /** Explicit expiry is useful when restoring a record; it is not user input. */
   expiresAt?: string;
+  /** 自社サイトのない下書き（Rovan上のページが参照先）。診断に紐付けたまま direct-creation と同じ公開先に直す */
+  direct?: boolean;
 };
 
 function profileDate(value?: Date | string) {
@@ -246,7 +248,7 @@ export async function createPublicProfilePreview(draft: PublicProfileDraft, opti
     updatedAt: now.toISOString(),
     expiresAt,
   };
-  if (record.sourceScanId === "direct-creation") {
+  if (record.sourceScanId === "direct-creation" || options.direct) {
     // Resolve the actual unique public destination before serializing artifacts.
     const targetUrl = `${directProfileOrigin(options.requestUrl, options.requestOrigin)}/ai/company/${encodeURIComponent(record.slug)}`;
     Object.assign(record, toPublicProfile({ ...record, targetUrl,

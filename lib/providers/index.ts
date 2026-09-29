@@ -8,8 +8,15 @@ import { env } from "@/lib/env";
 import { openAiProvider } from "@/lib/providers/openai";
 import { geminiProvider } from "@/lib/providers/gemini";
 import { perplexityProvider } from "@/lib/providers/perplexity";
+import { demoProviders } from "@/lib/providers/demo";
+import { demoMode } from "@/lib/demo-mode";
 
 export const providers: AiSearchProvider[] = [openAiProvider, geminiProvider, perplexityProvider];
+
+/** AIキー未設定の開発環境では模擬の答えを返すAIに差し替える（lib/demo-mode.ts） */
+function activeProviders() {
+  return demoMode() ? demoProviders : providers;
+}
 
 function providerModelName(provider: string) {
   if (provider === "openai") return env.openAiSearchModel;
@@ -30,7 +37,7 @@ export async function runObservationPanel(input: {
   const key = (row: Pick<Observation, "promptId" | "provider" | "repetition">) => `${row.promptId}:${row.provider}:${row.repetition}`;
   const existing = new Map((input.existingObservations || []).map((row) => [key(row), row]));
   const allTasks = input.prompts.flatMap((prompt) =>
-    providers.flatMap((provider) =>
+    activeProviders().flatMap((provider) =>
       Array.from({ length: input.repetitions }, (_, index) => ({
         prompt,
         provider,

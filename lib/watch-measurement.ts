@@ -1,6 +1,7 @@
 import "server-only";
 import { generateChangePack } from "@/lib/change-pack";
-import { crawlCompanySite } from "@/lib/crawler";
+import { crawlCompanySite, emptyCrawl } from "@/lib/crawler";
+import { demoMode } from "@/lib/demo-mode";
 import { generateBuyerPrompts } from "@/lib/discovery";
 import { env } from "@/lib/env";
 import { runObservationPanel } from "@/lib/providers";
@@ -118,7 +119,10 @@ export async function processWatchMeasurement(watch: WatchRecord) {
     }
   }
 
-  const crawl = await crawlCompanySite(run.targetUrl, run.panelKind === "free" ? 24 : 40);
+  // デモ（AIキー未設定の開発環境）ではサイトを読めなくても週次の結果を作る
+  const crawl = demoMode()
+    ? await crawlCompanySite(run.targetUrl, run.panelKind === "free" ? 24 : 40).catch(() => emptyCrawl())
+    : await crawlCompanySite(run.targetUrl, run.panelKind === "free" ? 24 : 40);
   const result = await buildScanResult({
     scanId: run.id,
     targetUrl: run.targetUrl,

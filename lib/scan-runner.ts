@@ -1,5 +1,7 @@
 import "server-only";
-import { crawlCompanySite } from "@/lib/crawler";
+import { crawlCompanySite, emptyCrawl } from "@/lib/crawler";
+import { demoMode } from "@/lib/demo-mode";
+import { isNoSiteTarget, noSiteInput } from "@/lib/no-site";
 import { discoverCompany, generateBuyerPrompts } from "@/lib/discovery";
 import { runObservationPanel } from "@/lib/providers";
 import { buildScanResult } from "@/lib/scan-result";
@@ -16,15 +18,25 @@ export async function runScan(input: {
   observationConcurrency?: number;
   onProgress?: (event: ScanProgressEvent) => Promise<void> | void;
 }) {
-  const url = normalizePublicUrl(input.url);
+  // ホームページなしで名前だけ調べる対象（lib/no-site.ts）は、接続しないのでURLの検査も不要
+  const noSite = isNoSiteTarget(input.url);
+  const url = noSite ? input.url : normalizePublicUrl(input.url);
   const promptCount = input.promptCount ?? 12;
   const repetitions = input.repetitions ?? 1;
   const panelKind = input.panelKind ?? "free";
-  const emit = async (stage: ScanProgressEvent["stage"], progress: number, message: string, detail?: string) => input.onProgress?.({ stage, progress, message, detail });
+  const demo = demoMode();
+  const emit = async (stage: ScanProgressEvent["stage"], progress: number, message: string, detail?: string) => {
+    // デモでは各段階を少し見せる（本物と同じ進み方を確かめられるように）
+    if (demo) await new Promise((resolve) => setTimeout(resolve, 450));
+    return input.onProgress?.({ stage, progress, message, detail });
+  };
 
-  await emit("validating", 5, "サイトにつながるか確認しています。", new URL(url).hostname);
-  await emit("crawling", 12, "サービスや導入事例など、会社の公開ページを読んでいます。");
-  const crawl = await crawlCompanySite(url, panelKind === "free" ? 12 : 36);
+  await emit("validating", 5, noSite ? "ホームページがないため、お店の名前で調べます。" : "サイトにつながるか確認しています。", noSite ? noSiteInput(url) : new URL(url).hostname);
+  await emit("crawling", 12, noSite ? "お店の名前と地域から、比べられる相手を整理しています。" : "サービスや導入事例など、会社の公開ページを読んでいます。");
+  // デモではサイトを読めなくても止めず、名前だけで調べた扱いにする
+  const crawl = noSite ? emptyCrawl() : demo
+    ? await crawlCompanySite(url, panelKind === "free" ? 12 : 36).catch(() => emptyCrawl())
+    : await crawlCompanySite(url, panelKind === "free" ? 12 : 36);
 
   await emit("discovering", 30, "比較される市場と会社を整理しています。", `公開ページ ${crawl.pages.length}件`);
   const discovery = await discoverCompany(url, crawl.pages);

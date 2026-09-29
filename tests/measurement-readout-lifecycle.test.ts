@@ -47,6 +47,7 @@ function harness(kind: "result" | "watch") {
     "next/link": { default: ({ children }: { children: React.ReactNode }) => React.createElement("a", null, children) },
     "next/navigation": { useSearchParams: () => new URLSearchParams(query), useRouter: () => ({ push: (url: string) => navigations.push(url) }) },
     "@/lib/sample-data": { sampleResult, sampleWatch },
+    "@/lib/no-site": { isNoSiteTarget: () => false },
     "@/lib/sample-value-proof": { sampleValueWatch: sampleWatch },
     "@/lib/public-dto": { toPublicWatch },
     "@/lib/pricing": { WATCH_MONTHLY_PRICE_LABEL: "¥19,800" },

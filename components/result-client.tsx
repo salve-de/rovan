@@ -12,6 +12,7 @@ import { ReportActions } from "@/components/report-actions";
 import { PositioningPanel } from "@/components/positioning-panel";
 import { PublicProfileActions } from "@/components/public-profile-actions";
 import { sampleResult } from "@/lib/sample-data";
+import { isNoSiteTarget } from "@/lib/no-site";
 import { WATCH_MONTHLY_PRICE_LABEL } from "@/lib/pricing";
 import { measurementReadout, readoutIdentity } from "@/lib/measurement-readout";
 import type { EvidenceGap, LostPrompt, Observation, ProviderName, ScanRecord, ScanResult } from "@/lib/types";
@@ -95,7 +96,7 @@ function ResultView({ sample, scanId, showSellerLinks, demo = false }: { sample:
   const hasMeasurement = readout.successful > 0;
   const primaryWinner = primaryLoss?.winner || topCompetitor?.name || null;
   const citationCount = new Set(result.observations.filter((item) => item.status === "success").flatMap((item) => item.citations.map((citation) => citation.url))).size;
-  const host = (() => { try { return new URL(result.targetUrl).hostname.replace(/^www\./, ""); } catch { return result.targetUrl; } })();
+  const host = isNoSiteTarget(result.targetUrl) ? "ホームページなし（お店の名前で調査）" : (() => { try { return new URL(result.targetUrl).hostname.replace(/^www\./, ""); } catch { return result.targetUrl; } })();
   const displayWarnings = [...new Set(result.warnings.map(userFacingWarning))];
 
   return <main className="report-page">
@@ -104,6 +105,10 @@ function ResultView({ sample, scanId, showSellerLinks, demo = false }: { sample:
     {demo ? (
       <div className="rp-demo-banner" role="status">
         <div className="shell"><strong>デモ表示です。</strong>AIの接続前のため、見本のお店（{result.discovery.brandName}）の結果で流れを見せています。あなたの会社の結果ではありません。</div>
+      </div>
+    ) : result.demo ? (
+      <div className="rp-demo-banner" role="status">
+        <div className="shell"><strong>デモ表示です。</strong>AIにまだ接続していないため、AIの答えは入力内容に合わせてつくった模擬データです。比べている相手の会社名も架空です。</div>
       </div>
     ) : null}
 
@@ -265,7 +270,7 @@ function ReportHero({
           <p className="rp-hero-meta">
             <span>{host}</span>
             <span>{result.discovery.market}</span>
-            <span>{sample ? "診断レポートの見本" : `実測日: ${formatDate(result.measuredAt)}`}</span>
+            <span>{sample ? "診断レポートの見本" : result.demo ? `模擬データ（${formatDate(result.measuredAt)}）` : `実測日: ${formatDate(result.measuredAt)}`}</span>
           </p>
         </div>
 

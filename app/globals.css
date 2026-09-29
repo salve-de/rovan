@@ -4198,3 +4198,8 @@ html { scroll-padding-top: 72px; }
 .report-subbar-breadcrumb a, .pp-fact-source { padding-inline: 6px; }
 /* ブラウザ既定の <small>（親の約83%）で12pxを下回らないように */
 small { font-size: max(12px, 0.833em); }
+/* デモ表示の帯：次の週を今すぐ測るボタン */
+.rp-demo-banner-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 20px; }
+.rp-demo-banner-action { min-height: 44px; padding: 0 18px; border: 0; border-radius: 10px; background: var(--bg); color: var(--warn); font-size: 15px; font-weight: 700; cursor: pointer; }
+.rp-demo-banner-action:hover { background: var(--warn-soft); }
+.rp-demo-banner-action:disabled { opacity: .7; cursor: progress; }

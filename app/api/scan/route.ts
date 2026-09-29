@@ -4,6 +4,8 @@ import { createScan, getRecentCompletedScan, updateScan } from "@/lib/storage";
 import { normalizePublicUrl } from "@/lib/url-security";
 import { FREE_PANEL_SIZE } from "@/lib/prompt-panels";
 import { env } from "@/lib/env";
+import { demoMode } from "@/lib/demo-mode";
+import { noSiteTarget } from "@/lib/no-site";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -30,20 +32,24 @@ export async function POST(request: Request) {
   if (process.env.NODE_ENV === "production" && !(env.supabaseUrl && env.supabaseServiceKey)) {
     return Response.json({ error: "診断の保存先を準備中です。時間を置いてお試しください。" }, { status: 503 });
   }
-  if (!env.openAiKey) {
-    // 開発中（AIキー未設定）だけ、見本データで流れを最後まで確認できるデモに切り替える。本番では常にfalse。
-    const demo = process.env.NODE_ENV !== "production";
-    return Response.json({ error: "診断に必要なAI接続を準備中です。時間を置いてお試しください。", demo }, { status: 503 });
+  // AIキー未設定の開発環境では、AIの答えを入力に合わせた模擬データで作るデモとして最後まで動かす（lib/demo-mode.ts）
+  const demo = demoMode();
+  if (!env.openAiKey && !demo) {
+    return Response.json({ error: "診断に必要なAI接続を準備中です。時間を置いてお試しください。" }, { status: 503 });
   }
   let targetUrl: string;
   try {
-    const body = await request.json() as { url?: string };
-    targetUrl = normalizePublicUrl(body.url || "");
+    const body = await request.json() as { url?: string; name?: string };
+    const name = typeof body.name === "string" ? body.name.trim().slice(0, 120) : "";
+    // ホームページなしで名前だけ調べる診断は、いまはデモでだけ使える（本番のAI接続での対応は今後）
+    if (!body.url && name && demo) targetUrl = noSiteTarget(name);
+    else if (!body.url && name) return Response.json({ error: "ホームページなしの診断は、先に御社のページの下書きをつくってから行います。" }, { status: 400 });
+    else targetUrl = normalizePublicUrl(body.url || "");
   } catch (error) {
     return Response.json({ error: error instanceof Error ? error.message : "URLが不正です。" }, { status: 400 });
   }
 
-  const cached = await getRecentCompletedScan(targetUrl, 10 * 60_000).catch(() => null);
+  const cached = demo ? null : await getRecentCompletedScan(targetUrl, 10 * 60_000).catch(() => null);
   if (cached?.stage === "complete" && cached.result) {
     return ndjsonResponse((emit, close) => {
       emit({ type: "accepted", scanId: cached.id, reused: true });

@@ -145,22 +145,7 @@ export function ScanProgress() {
     try {
       const response = await fetch("/api/scan", { method: "POST", headers: { "content-type": "application/json", accept: "application/x-ndjson" }, body: JSON.stringify(targetUrl ? { url: targetUrl } : { name: nameOnly }), signal: abort.signal });
       if (!response.ok) {
-        const data = await response.json().catch(() => ({})) as { error?: string; demo?: boolean };
-        if (data.demo) {
-          // 開発中のデモ：本物と同じ段階表示のあと、見本のお店の結果へ進む（結果画面に「デモ」と明記）
-          for (const [index, item] of steps.entries()) {
-            if (abort.signal.aborted) return;
-            setStage(item.stage);
-            setProgress(Math.round(((index + 1) / steps.length) * 95));
-            setMessage(`${item.label}…（デモ）`);
-            setDetail("AIの接続前のため、見本のお店のデータで流れを表示しています");
-            await new Promise((resolve) => setTimeout(resolve, 700));
-          }
-          if (abort.signal.aborted) return;
-          setProgress(100); setStage("complete"); setMessage("結果をまとめました。");
-          router.replace("/result?sample=1&demo=1");
-          return;
-        }
+        const data = await response.json().catch(() => ({})) as { error?: string };
         if (!targetUrl) {
           // ホームページなしの診断は、先に御社のページの下書きをつくってから行う
           setPhase("no_site");
@@ -504,8 +489,10 @@ export function ScanProgress() {
       </div>
       <div className="scan-stage-list" aria-label="診断の進み具合"><div className="scan-stage-list-head"><strong>今回確認すること</strong><span>{completedCount} / {steps.length}</span></div><ol>{steps.map((item, index) => {
         const state = stage === "failed" ? (index < activeIndex ? "done" : index === activeIndex ? "failed" : "pending") : index < activeIndex || stage === "complete" ? "done" : index === activeIndex ? "active" : "pending";
-        return <li className={state} key={item.stage}><span>{state === "done" ? "✓" : state === "failed" ? "!" : index + 1}</span><strong>{item.label}</strong>{state === "active" ? <em>確認中</em> : state === "done" ? <em>完了</em> : null}</li>;
-      })}</ol><p className="scan-stage-note">サイトの内容とAIの回答を順番に照合しています。完了すると結果ページへ移動します。</p></div>
+        // ホームページなし（名前だけ）の診断では、読むページがないので手順名を変える
+        const label = !targetHost && item.stage === "crawling" ? "名前と地域を確認" : item.label;
+        return <li className={state} key={item.stage}><span>{state === "done" ? "✓" : state === "failed" ? "!" : index + 1}</span><strong>{label}</strong>{state === "active" ? <em>確認中</em> : state === "done" ? <em>完了</em> : null}</li>;
+      })}</ol><p className="scan-stage-note">{targetHost ? "サイトの内容とAIの回答を順番に照合しています。" : "お店の名前がAIの答えに出るかを、質問ごとに確かめています。"}完了すると結果ページへ移動します。</p></div>
     </section>
   </main>;
 }

@@ -1,4 +1,5 @@
 import "server-only";
+import { isNoSiteTarget } from "@/lib/no-site";
 import { isAllowedByRobots } from "@/lib/robots";
 import { safeFetchText } from "@/lib/url-security";
 import type { AiCrawlerName, CrawlAudit, CrawledPage } from "@/lib/types";
@@ -169,7 +170,14 @@ async function robotsFor(url: URL, cache: Map<string, string>, allowedOrigin: st
   return robots;
 }
 
-export async function crawlCompanySite(input: string, maxPages = 24) {
+/** 読み込むページがないとき（ホームページなしで名前だけ調べる場合など）の結果 */
+export function emptyCrawl(): { pages: CrawledPage[]; robots: string; attempted: number; audit?: CrawlAudit } {
+  return { pages: [], robots: "", attempted: 0 };
+}
+
+export async function crawlCompanySite(input: string, maxPages = 24): Promise<{ pages: CrawledPage[]; robots: string; attempted: number; audit?: CrawlAudit }> {
+  // 名前だけの診断対象（.invalid の予約ドメイン）には接続しない
+  if (isNoSiteTarget(input)) return emptyCrawl();
   const start = new URL(input);
   const allowedOrigin = start.origin;
   const robotsCache = new Map<string, string>();

@@ -8,6 +8,7 @@ import { buildAiVisibilityAudit } from "@/lib/visibility-audit";
 import { panelVersion } from "@/lib/prompt-panels";
 import { derivePositioningAdvice } from "@/lib/positioning";
 import { providers } from "@/lib/providers";
+import { demoMode } from "@/lib/demo-mode";
 import type { BuyerPrompt, CompanyDiscovery, CrawlAudit, CrawledPage, Observation, PromptPanelKind, ScanResult } from "@/lib/types";
 
 export async function buildScanResult(input: {
@@ -58,6 +59,7 @@ export async function buildScanResult(input: {
     actions: analysis.actions,
     totalCostUsd: input.observations.reduce((sum, item) => sum + (item.costUsd || 0), 0),
     warnings,
+    ...(demoMode() ? { demo: true } : {}),
   };
   result.visibilityAudit = buildAiVisibilityAudit({ result, pages: input.pages, crawl: input.crawlAudit, generatedAt: result.measuredAt });
   result.marketMap = buildMarketMap({ result, generatedAt: result.measuredAt });

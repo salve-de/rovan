@@ -181,6 +181,7 @@ function renderResult(result: ScanResult) {
     "next/link": { default: ({ children }: { children: React.ReactNode }) => React.createElement("a", null, children) },
     "next/navigation": { useSearchParams: () => new URLSearchParams("sample=1"), useRouter: () => ({ push: empty }) },
     "@/lib/sample-data": { sampleResult: result },
+    "@/lib/no-site": { isNoSiteTarget: () => false },
     "@/lib/measurement-readout": measurementReadout,
     "@/lib/pricing": { WATCH_MONTHLY_PRICE_LABEL: "¥19,800" },
     "@/components/executive-diagnostic-summary": { ExecutiveDiagnosticSummary },

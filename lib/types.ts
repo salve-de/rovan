@@ -346,6 +346,8 @@ export type ScanResult = {
   contentQuality?: ContentQuality;
   totalCostUsd: number;
   warnings: string[];
+  /** AIキー未設定の開発環境で、AIの答えを模擬データで作った結果（画面に「デモ」と表示する） */
+  demo?: boolean;
 };
 
 export type ScanRecord = {

@@ -536,6 +536,27 @@ function WatchViewClient({ sample, token, showSellerLinks, demo = false }: { sam
   }, [measurementStatus, sample, token]);
 
   const change = useWatchChange(watch);
+  const [advancing, setAdvancing] = useState(false);
+
+  /** デモ専用：次の週の測定を今すぐ実行して、週次報告の変化を確かめる */
+  async function advanceDemoWeek() {
+    if (!token || advancing) return;
+    setAdvancing(true); setError("");
+    try {
+      const response = await fetch("/api/watch/demo-advance", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ token }) });
+      const data = await response.json().catch(() => ({})) as { error?: string };
+      if (!response.ok) throw new Error(data.error || "次の週の測定を実行できませんでした。");
+      const refreshed = await fetch(`/api/watch?token=${encodeURIComponent(token)}`, { cache: "no-store" });
+      const next = await refreshed.json() as WatchView & { error?: string };
+      if (!refreshed.ok) throw new Error(next.error || "週次見守りの情報を取得できませんでした。");
+      setWatch(next);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "次の週の測定を実行できませんでした。");
+    } finally {
+      setAdvancing(false);
+    }
+  }
 
   async function manageBilling() {
     if (sample) return;
@@ -637,6 +658,13 @@ function WatchViewClient({ sample, token, showSellerLinks, demo = false }: { sam
       {sample && demo ? (
         <div className="rp-demo-banner" role="status">
           <div className="shell"><strong>デモ表示です。</strong>見守りを始めると、毎週この画面で「名前が出た質問」の変化が届きます。いま見ているのは見本のお店の画面です。</div>
+        </div>
+      ) : !sample && watch.latest.demo ? (
+        <div className="rp-demo-banner" role="status">
+          <div className="shell rp-demo-banner-row">
+            <span><strong>デモ表示です。</strong>AIの答えは模擬データです（{watch.history.length}回分の測定）。本当は1週間ごとに測りますが、デモでは今すぐ次の週を測れます。</span>
+            <button type="button" className="rp-demo-banner-action" disabled={advancing} onClick={() => void advanceDemoWeek()}>{advancing ? "次の週を測定中…" : "1週間後の報告を見る（デモ）"}</button>
+          </div>
         </div>
       ) : null}
       <section className="rp-hero wt-hero">

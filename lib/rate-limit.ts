@@ -2,6 +2,7 @@ import "server-only";
 import { createHash } from "node:crypto";
 import { env } from "@/lib/env";
 import { durableStorageAvailable } from "@/lib/runtime-readiness";
+import { demoRateLimitBypass } from "@/lib/demo-mode";
 
 const globalLimits = globalThis as unknown as { aixNextLimits?: Map<string, { count: number; resetAt: number }> };
 const memory = globalLimits.aixNextLimits ?? new Map<string, { count: number; resetAt: number }>();
@@ -36,6 +37,8 @@ function consumeMemory(key: string, limit: number, windowSeconds: number) {
 }
 
 async function consume(key: string, limit: number, windowSeconds: number) {
+  // 開発サーバーのデモ（AIキー未設定）では外部の有料APIを呼ばないので、監査で何度も試せるよう制限しない
+  if (demoRateLimitBypass()) return { allowed: true, reset_at: new Date(Date.now() + windowSeconds * 1000).toISOString() };
   if (durableStorageAvailable()) {
     const value = await consumeSupabase(key, limit, windowSeconds);
     if (value) return value;

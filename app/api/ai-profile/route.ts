@@ -14,8 +14,12 @@ import { getScan } from "@/lib/storage";
 import { consumeProfileCreation } from "@/lib/rate-limit";
 import { profileManagementHref } from "@/lib/profile-management-link";
 import { buildSelectedPublicProfileDraft } from "@/lib/profile-selection";
-import { crawlCompanySite } from "@/lib/crawler";
+import { crawlCompanySite, emptyCrawl } from "@/lib/crawler";
 import { directProfileOrigin } from "@/lib/profile-origin";
+import { demoMode } from "@/lib/demo-mode";
+import { demoContext } from "@/lib/demo/engine";
+import { isNoSiteTarget } from "@/lib/no-site";
+import type { ScanResult } from "@/lib/types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -37,6 +41,25 @@ function stringField(body: Record<string, unknown>, name: string) {
 
 function objectBody(value: unknown): Record<string, unknown> | null {
   return value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : null;
+}
+
+/** ホームページがない（読めない）デモの診断から、読み取った名前・業種・地域と選んだ強みで下書きをつくる */
+function demoDirectDraft(result: ScanResult, strategyId: string) {
+  const { discovery } = result;
+  const { industry, region } = demoContext(discovery);
+  const strategies = result.positioning?.strategies || [];
+  const strategy = strategies.find((item) => item.id === strategyId) || strategies[0];
+  // 強みの候補名「「雨漏りの修理」という利用場面に絞る」から、かぎかっこの中だけを紹介文に使う
+  const focus = strategy?.name.match(/「([^」]+)」/u)?.[1] || "";
+  const intro = `${discovery.brandName}は、${region ? `${region}の` : ""}${industry.noun}です。`;
+  return buildDirectPublicProfileDraft({
+    brandName: discovery.brandName,
+    market: industry.noun,
+    location: region,
+    summary: focus ? `${intro}とくに「${focus}」に合う相談先として、情報を整理しています。` : intro,
+    targetCustomers: discovery.targetCustomers,
+    useCases: discovery.useCases,
+  });
 }
 
 function safeError(error: unknown) {
@@ -71,17 +94,24 @@ export async function POST(request: Request) {
       const expiresInDays = body.expiresInDays;
       if (expiresInDays !== undefined && typeof expiresInDays !== "number") return json({ error: "期限の指定が不正です。" }, 400);
       const strategyId = stringField(body, "strategyId");
-      const crawl = await crawlCompanySite(scan.targetUrl, 12);
+      const noSite = isNoSiteTarget(scan.targetUrl);
+      const demo = demoMode();
+      const crawl = noSite ? emptyCrawl() : demo
+        ? await crawlCompanySite(scan.targetUrl, 12).catch(() => emptyCrawl())
+        : await crawlCompanySite(scan.targetUrl, 12);
       const target = new URL(scan.targetUrl);
       const sourceSlug = target.pathname.match(/^\/ai\/company\/([^/]+)\/?$/u)?.[1];
       const sourceRecord = sourceSlug && target.origin === directProfileOrigin(request.url, request.headers.get("origin") || undefined)
         ? await getActivePublicProfileBySlug(decodeURIComponent(sourceSlug)) : null;
       const selected = buildSelectedPublicProfileDraft(scan.result, crawl.pages, strategyId, { sourceProfile: sourceRecord ? toPublicProfile(sourceRecord) : undefined });
-      if (selected.selection.status === "empty") return json({ error: "公開できる参照元の記載を確認できませんでした。候補または参照元を見直してください。", selection: selected.selection }, 409);
-      const record = await createPublicProfilePreview(selected.draft, {
+      // デモでホームページがない・読めない場合は、Rovan上のページを参照先にした下書きにする
+      const directDraft = selected.selection.status === "empty" && (noSite || demo);
+      if (selected.selection.status === "empty" && !directDraft) return json({ error: "公開できる参照元の記載を確認できませんでした。候補または参照元を見直してください。", selection: selected.selection }, 409);
+      const record = await createPublicProfilePreview(directDraft ? demoDirectDraft(scan.result, strategyId) : selected.draft, {
         sourceScanId: scan.id,
         // Public callers cannot extend the free lifetime.
         expiresInDays: 30,
+        ...(directDraft ? { direct: true, requestUrl: request.url, requestOrigin: request.headers.get("origin") || undefined } : {}),
       });
 
       return json({
