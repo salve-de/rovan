@@ -5,8 +5,9 @@ export type NavigationContext = { resultHref: string; profileHref: string; watch
 
 export function SiteHeader({ compact = false, context }: { compact?: boolean; context?: NavigationContext }) {
   if (!context) {
+    // 申込ボタンを常に見せるため追従させる。結果・見守り画面（context あり）はページ内の次の一手を優先し、追従させない
     return (
-      <header className={`site-header ${compact ? "site-header-compact" : ""}`}>
+      <header className={`site-header site-header--sticky ${compact ? "site-header-compact" : ""}`}>
         <div className="shell header-inner">
           <Brand />
           <nav className="header-nav" aria-label="主要ナビゲーション">
@@ -58,7 +59,7 @@ export function SiteHeader({ compact = false, context }: { compact?: boolean; co
             <Link href="/login" className="header-login-link">
               ログイン
             </Link>
-            <Link className="header-cta" href="/#scan">
+            <Link className="header-cta" href="/#start">
               無料診断
             </Link>
           </div>
@@ -66,7 +67,7 @@ export function SiteHeader({ compact = false, context }: { compact?: boolean; co
         <details className="mobile-menu">
           <summary>メニュー</summary>
           <nav aria-label="モバイルナビゲーション">
-            <Link href="/#scan">無料診断</Link>
+            <Link href="/#start">無料診断</Link>
             {links.map(([href, label]) => <Link key={label} href={href} prefetch={false}>{label}</Link>)}
             <Link href="/pricing">料金プラン</Link>
             <Link href="/login">ログイン</Link>

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { ScanForm } from "@/components/scan-form";
 
-const TRUST_ITEMS = ["登録不要", "ホームページがなくてもOK", "診断は無料"];
+const TRUST_ITEMS = ["登録・メール不要", "ホームページなしでもOK", "無料診断・自動課金なし"];
 
 export function HomeHero() {
   return (
@@ -21,7 +21,7 @@ export function HomeHero() {
             <p className="home-hero-lead-sub">御社の強みをAIが読める形にまとめて公開し、毎週AIの答えを確かめます。ホームページがなくても使えます。</p>
           </div>
           <div id="start" className="home-hero-form">
-            <ScanForm hideExtraToggle submitLabel="まずは無料で診断" placeholder="例: 青葉ベーカリー 高崎、@aoba_bakery、URL" label="会社名・店名、Instagram、ホームページのどれか" />
+            <ScanForm hideExtraToggle showLabel submitLabel="まずは無料で診断" placeholder="例: 青葉ベーカリー 高崎" label="社名・店名、Instagram、ホームページのどれか" />
           </div>
           <ul className="home-hero-trust">
             {TRUST_ITEMS.map((item) => (

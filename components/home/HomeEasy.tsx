@@ -44,9 +44,9 @@ export function HomeEasy() {
 
         <div className="home-benefits-pricing">
           <span className="home-benefits-pricing-free">診断は無料</span>
-          <span className="home-benefits-pricing-sep">｜</span>
+          <span className="home-benefits-pricing-sep" aria-hidden="true">｜</span>
           <span>続けるなら <b>月{WATCH_MONTHLY_PRICE_TAX_INCLUSIVE.toLocaleString("ja-JP")}円</b>（税込）</span>
-          <span className="home-benefits-pricing-sep">｜</span>
+          <span className="home-benefits-pricing-sep" aria-hidden="true">｜</span>
           <span>最初の14日間は無料・自動で課金されません</span>
         </div>
       </div>

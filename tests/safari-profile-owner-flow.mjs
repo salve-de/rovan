@@ -55,7 +55,7 @@ try {
   const next = await cmd("/window/new", "POST", { type: "tab" });
   await cmd("/window", "POST", { handle: next.handle });
   await go("/manage");
-  await wait("保存した管理URL");
+  await wait("保存した管理用リンク");
   const managementText = new URL(management, base).href;
   for (let attempt = 0; attempt < 3; attempt++) {
     try {

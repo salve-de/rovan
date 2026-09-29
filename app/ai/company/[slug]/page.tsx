@@ -61,7 +61,6 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
     description,
     alternates: { canonical: `${siteUrl}/ai/company/${encodeURIComponent(profile.slug)}` },
     robots: sample ? { index: false, follow: false, noarchive: true } : { index: true, follow: true, noarchive: true },
-    openGraph: { title: profile.title, description, type: "article" },
   };
 }
 

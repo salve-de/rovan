@@ -10,5 +10,5 @@ export default async function ScanPage({ searchParams }: { searchParams: Promise
   const first = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value)?.trim();
   // No diagnosis target — go straight back to the input form instead of flashing an empty search screen.
   if (!first(params.input) && !first(params.url)) redirect("/");
-  return <Suspense fallback={<div className="full-loading">Rovanを準備しています。</div>}><ScanProgress /></Suspense>;
+  return <Suspense fallback={<div className="full-loading" role="status">Rovanを準備しています。</div>}><ScanProgress /></Suspense>;
 }

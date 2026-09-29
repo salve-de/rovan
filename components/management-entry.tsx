@@ -27,7 +27,7 @@ export function ManagementEntry() {
       </Link>
     </div>
     <p className="management-entry-note">
-      ブックマーク、または受信したRovanの通知メールからも開けます。管理URLには操作権限が含まれます。他の人には共有しないでください。
+      ブックマーク、または受信したRovanの通知メールからも開けます。管理用リンクには操作権限が含まれます。他の人には共有しないでください。
     </p>
   </form>;
 }

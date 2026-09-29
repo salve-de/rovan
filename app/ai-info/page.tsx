@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function AiInfoPage() {
-  return <Suspense fallback={<div className="full-loading">下書きを準備しています。</div>}><AiReadableClient /></Suspense>;
+  return <Suspense fallback={<div className="full-loading" role="status">下書きを準備しています。</div>}><AiReadableClient /></Suspense>;
 }

@@ -14,6 +14,7 @@
     "test": "tsx --test tests/**/*.test.ts",
     "watch:job": "tsx scripts/run-weekly-watch.ts",
     "release:preflight": "tsx scripts/release-preflight.ts",
+    "ux:audit": "node scripts/ux-audit.mjs",
     "check": "npm run lint && npm test && npm run typecheck && npm run build"
   },
   "dependencies": {

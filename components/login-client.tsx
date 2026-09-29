@@ -77,7 +77,7 @@ export function LoginClient({ googleEnabled }: { googleEnabled: boolean }) {
           {devLink ? (
             <div className="login-dev-link">
               <span>ローカル開発用クイックログイン</span>
-              <a href={devLink} className="button button-dark">ワンクリックでログインを完了する <ArrowIcon /></a>
+              <a href={devLink} className="button button-primary">ワンクリックでログインを完了する <ArrowIcon /></a>
             </div>
           ) : null}
           <button type="button" className="login-retry-btn" onClick={() => { setSent(false); setEmail(""); }}>
@@ -119,7 +119,7 @@ export function LoginClient({ googleEnabled }: { googleEnabled: boolean }) {
                 placeholder="president@example.co.jp"
               />
             </label>
-            <button className="button button-dark login-submit-btn" type="submit" disabled={busy || !email.trim()}>
+            <button className="button button-primary login-submit-btn" type="submit" disabled={busy || !email.trim()}>
               {busy ? "送信中…" : <>ログイン用リンクを送信する <ArrowIcon /></>}
             </button>
             {message ? <p className="form-error login-form-error" role="status">{message}</p> : null}

@@ -25,7 +25,7 @@ async function waitFor(script) {
 async function go(path) {
   await command("/url", "POST", { url: base + path });
   await waitFor("return document.readyState === 'complete'");
-  if (path === "/profile/manage") await waitFor("return document.body.innerText.includes('保存した公開ページまたはWatchの管理リンクから')");
+  if (path === "/profile/manage") await waitFor("return document.body.innerText.includes('公開ページを作ったときに表示された「管理用リンク」')");
 }
 async function click(selector) {
   const element = await command("/element", "POST", { using: "css selector", value: selector });

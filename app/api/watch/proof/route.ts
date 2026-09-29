@@ -16,7 +16,7 @@ export async function GET(request: Request) {
     ? new Response(format === 'report' ? valueReport(proof,sample) : proofCsv(proof), {headers:{...headers,'content-type':format === 'report' ? 'text/html; charset=utf-8' : 'text/csv; charset=utf-8','content-disposition':`attachment; filename="rovan-${sample?'sample-':''}report.${format === 'report'?'html':'csv'}"`}})
     : Response.json(proof,{headers});
   if(sample) return respond(sampleValueProof());
-  if (!token) return Response.json({error:'管理URLから開いてください。'}, {status:401,headers});
+  if (!token) return Response.json({error:'管理用リンクから開いてください。'}, {status:401,headers});
   try {
     const watch = await getWatch(token);
     if (!watch) return Response.json({error:'見守りが見つかりません。'}, {status:404,headers});

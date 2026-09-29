@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { SiteHeader } from "./site-header";
 import { SiteFooter } from "./site-footer";
@@ -36,7 +37,7 @@ function ManagementSession({ query }: { query: string }) {
 
   useEffect(() => {
     const controller = new AbortController();
-    if (!capability.token && !capability.watchToken) { setMessage("保存した公開ページまたはWatchの管理リンクから開いてください。"); return; }
+    if (!capability.token && !capability.watchToken) { setMessage(""); return; }
     void request({ action: "manage", ...capability }, controller.signal).then((data) => { setProfiles(data.profiles); setMessage(""); })
       .catch((error) => { if (!controller.signal.aborted) setMessage(error.message); });
     return () => controller.abort();
@@ -63,13 +64,14 @@ function ManagementSession({ query }: { query: string }) {
   const watchHref = capability.watchToken ? `/watch?token=${encodeURIComponent(capability.watchToken)}` : "/manage";
   const resultHref = profiles[0]?.resultUrl || "/#scan";
   const statusLabel = { draft: "下書き（未公開）", published: "公開中", revoked: "非公開", expired: "期限切れ" } as const;
+  const hasCapability = Boolean(capability.token || capability.watchToken);
   return <>
-    <SiteHeader context={{ resultHref, profileHref: profileManagementHref(capability), watchHref }} />
+    {hasCapability ? <SiteHeader context={{ resultHref, profileHref: profileManagementHref(capability), watchHref }} /> : <SiteHeader />}
     <main className="pm-page">
       <section className="rp-hero">
         <div className="shell rp-hero-inner">
           <div className="rp-hero-head">
-            <span className="rp-eyebrow">公開ページの管理</span>
+            <span className="rp-eyebrow">管理画面</span>
             <h1>公開ページの管理</h1>
             <p className="rp-hero-meta"><span>公開内容と情報のもとを確認して、公開・停止・自動更新を切りかえられます。</span></p>
           </div>
@@ -79,6 +81,13 @@ function ManagementSession({ query }: { query: string }) {
 
       <div className="shell pm-body">
         {message ? <p role="status" className="pm-message">{message}</p> : null}
+        {!hasCapability ? <div className="pm-empty">
+          <p>この画面は、公開ページを作ったときに表示された「管理用リンク」から開きます。メールアドレスを登録した方は、Rovanからの通知メールからも開けます。</p>
+          <div className="empty-actions">
+            <Link className="button button-primary" href="/manage">管理用リンクで開く</Link>
+            <Link className="button button-secondary" href="/">まだの方は、無料で診断する</Link>
+          </div>
+        </div> : null}
         {profiles.map(({ profile, direct, resultUrl, automation }) => <section key={profile.id} className="pm-card">
           <div className="pm-card-head">
             <div>
@@ -121,11 +130,11 @@ function ManagementSession({ query }: { query: string }) {
             </div>
           </div> : null}
         </section>)}
-        {!profiles.length && !message ? <p className="pm-message">公開ページを読み込んでいます…</p> : null}
-        <p className="pm-links">
-          <a href="/manage" referrerPolicy="no-referrer">別の管理リンクを使う</a>
+        {hasCapability && !profiles.length && !message ? <p className="pm-message">公開ページを読み込んでいます…</p> : null}
+        {hasCapability ? <p className="pm-links">
+          <a className="document-link" href="/manage" referrerPolicy="no-referrer">別の管理リンクを使う</a>
           {capability.watchToken ? <a href={watchHref} referrerPolicy="no-referrer">週次見守りに戻る</a> : profiles[0]?.resultUrl ? <a href={resultHref} referrerPolicy="no-referrer">診断結果に戻る</a> : null}
-        </p>
+        </p> : null}
       </div>
     </main>
     <SiteFooter />

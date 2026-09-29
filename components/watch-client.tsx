@@ -580,19 +580,19 @@ function WatchViewClient({ sample, token, showSellerLinks, demo = false }: { sam
     const signal = lifecycle.current!.signal;
     try {
       await navigator.clipboard.writeText(new URL(`/watch?token=${encodeURIComponent(token)}`, window.location.origin).href);
-      if (!signal.aborted) setBookmarkStatus("管理URLをコピーしました。安全な場所に保存してください。");
+      if (!signal.aborted) setBookmarkStatus("管理用リンクをコピーしました。安全な場所に保存してください。");
     } catch {
       if (!signal.aborted) setBookmarkStatus("コピーできませんでした。ブラウザのブックマーク機能でこのページを保存してください。");
     }
   }
 
-  if (loading) return <div className="full-loading">AI推薦状況を読み込んでいます。</div>;
+  if (loading) return <div className="full-loading" role="status">AI推薦状況を読み込んでいます。</div>;
   if (!watch || !change) return <main className="empty-page"><SiteHeader compact /><div className="shell empty-content">
-    <h1>AI推薦状況の変化を表示できません。</h1>
-    <p>{error || "週次見守りを見るには、ログインまたは管理URLが必要です。"}</p>
+    <h1>週次見守りの画面を開けませんでした。</h1>
+    <p>{error || "見守りの画面を見るには、ログインするか、メールで届いた管理用リンクを開いてください。"}</p>
     <div className="watch-empty-actions">
       <Link className="button button-primary" href="/login">ログインする</Link>
-      <Link className="button button-secondary" href="/manage">管理URLをお持ちの方はこちら</Link>
+      <Link className="button button-secondary" href="/manage">管理用リンクで開く</Link>
     </div>
     <p className="watch-empty-cta"><Link href="/">まだ診断がお済みでない方は、無料診断へ</Link></p>
   </div></main>;
@@ -722,7 +722,7 @@ function WatchViewClient({ sample, token, showSellerLinks, demo = false }: { sam
                   required
                   autoFocus
                 />
-                <button type="submit" className="button button-dark watch-notify-save" disabled={savingEmail}>{savingEmail ? "保存中…" : "保存"}</button>
+                <button type="submit" className="button button-primary watch-notify-save" disabled={savingEmail}>{savingEmail ? "保存中…" : "保存"}</button>
                 <button type="button" className="watch-text-button" onClick={() => setShowEmailForm(false)}>閉じる</button>
               </form>
             )}
@@ -731,8 +731,8 @@ function WatchViewClient({ sample, token, showSellerLinks, demo = false }: { sam
 
         {!sample ? (
           <div className="watch-bookmark">
-            <p className="watch-muted-note">このページをブックマークしてください。メール未登録でも、保存した管理URLから見守りに戻れます。「管理」ページではこのURLを使って開けます。管理URLを知る人は設定を変更できるため、共有しないでください。</p>
-            <button type="button" className="button button-secondary" onClick={() => void copyBookmark()}>管理URLをコピー</button>
+            <p className="watch-muted-note">このページをブックマークしてください。メール未登録でも、保存した管理用リンクから見守りに戻れます。「管理」ページではこのURLを使って開けます。管理用リンクを知る人は設定を変更できるため、共有しないでください。</p>
+            <button type="button" className="button button-secondary" onClick={() => void copyBookmark()}>管理用リンクをコピー</button>
             {bookmarkStatus ? <p role="status" className="watch-notify-status">{bookmarkStatus}</p> : null}
           </div>
         ) : null}

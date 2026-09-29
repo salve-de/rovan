@@ -105,7 +105,7 @@ for (const kind of ["result", "watch"] as const) {
     assert.match(h.render(`${param}=third`), /読み込んで/);
     assert.doesNotMatch(h.render(), /実測対象B/);
     assert.match(h.render(""), /読み込んで/);
-    assert.match(h.render(), /表示できません/);
+    assert.match(h.render(), /開けませんでした/);
     assert.match(h.render("sample=1"), /見本/);
     h.dispose();
   });
@@ -121,7 +121,7 @@ test("Watch unsubscribe invokes PATCH with empty email, updates UI, and exposes 
   assert.equal(header.props.context.profileHref, "/profile/manage?watchToken=private-token");
   assert.doesNotMatch(header.props.context.resultHref, /evil/);
   assert.equal(h.nodes().find((node) => node.props?.watchToken)?.props.watchToken, "private-token");
-  await h.nodes().find((node) => node.type === "button" && node.props.children === "管理URLをコピー").props.onClick();
+  await h.nodes().find((node) => node.type === "button" && node.props.children === "管理用リンクをコピー").props.onClick();
   assert.equal(h.copied[0], "https://rovan.test/watch?token=private-token");
   h.nodes().find((node) => node.type === "button" && node.props.children === "メール通知を解除する").props.onClick();
   assert.deepEqual(JSON.parse(String(h.requests[1].init.body)), { token: "private-token", email: "" });

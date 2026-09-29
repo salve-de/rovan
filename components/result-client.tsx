@@ -85,8 +85,8 @@ function ResultView({ sample, scanId, showSellerLinks, demo = false }: { sample:
     finally { if (!signal.aborted) setWatchBusy(false); }
   }
 
-  if (loading) return <div className="full-loading">診断結果を読み込んでいます。</div>;
-  if (!result) return <main className="empty-page"><SiteHeader compact /><div className="shell empty-content"><h1>診断結果を表示できません。</h1><p>{error}</p><p><Link className="button button-primary" href="/">新しく無料診断する</Link> <Link className="button" href="/manage">過去の結果を開く</Link></p></div></main>;
+  if (loading) return <div className="full-loading" role="status">診断結果を読み込んでいます。</div>;
+  if (!result) return <main className="empty-page"><SiteHeader compact /><div className="shell empty-content"><h1>診断結果を開けませんでした。</h1><p>{error}</p><div className="empty-actions"><Link className="button button-primary" href="/">新しく無料診断する</Link><Link className="button button-secondary" href="/manage">過去の結果を開く</Link></div></div></main>;
 
   const topCompetitor = result.competitors[0];
   const primaryLoss = result.lostPrompts[0];

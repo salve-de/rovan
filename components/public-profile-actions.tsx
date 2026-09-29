@@ -155,7 +155,7 @@ export function PublicProfileActions({ result, sample = false, selectedStrategyI
                 </span>
                 <span className="weapon-tag">{strat.code}</span>
               </div>
-              <h4>{strat.name}</h4>
+              <h3>{strat.name}</h3>
               <p className="weapon-desc">{strat.coreThesis}</p>
               <small className="weapon-target">こんなお客さんに：{strat.targetMarket}</small>
             </div>
@@ -167,7 +167,7 @@ export function PublicProfileActions({ result, sample = false, selectedStrategyI
       <div className="rovan-hot-advice-card">
         <div className="hot-advice-header">
           <span className="hot-advice-tag">この強みを選んだ理由</span>
-          <h4>「{strategies[selectedStrategy]?.name || "固有の特徴"}」を軸に、大手と差別化する</h4>
+          <h3>「{strategies[selectedStrategy]?.name || "固有の特徴"}」を軸に、大手と差別化する</h3>
         </div>
         <p className="hot-advice-body">
           {strategies[selectedStrategy]?.passionateReason ||
@@ -198,7 +198,7 @@ export function PublicProfileActions({ result, sample = false, selectedStrategyI
           ) : (
             <div className="saved-success-box">
               {profile ? <div className="document-note">
-                <h4>{profile.brandName}</h4><p>{profile.summary}</p>
+                <h3>{profile.brandName}</h3><p>{profile.summary}</p>
                 <ul>{profile.facts.map((fact, index) => <li key={index}>{fact.label}：{fact.value}</li>)}</ul>
                 <p>参照元：</p><ul>{profile.sourcePages.map((source) => <li key={source.url}><a href={source.url} target="_blank" rel="noreferrer">{source.title || source.url}</a></li>)}</ul>
                 <p>公開状態：{profile.status === "published" ? "公開中" : profile.status === "revoked" ? "非公開" : profile.status === "expired" ? "期限切れ" : "下書き"}。選択した候補に関連する参照元の記載だけを掲載します。候補を変える場合は下書きを作り直してください。</p>

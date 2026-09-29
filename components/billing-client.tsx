@@ -67,12 +67,12 @@ export function BillingClient() {
           <strong>ログインが必要です</strong>
           <p>本画面はご契約者様専用の管理画面です。Googleアカウントまたはメールアドレスでログインしてください。</p>
           <div className="billing-login-required-action">
-            <Link href="/login" className="button button-dark">ログイン画面を開く <ArrowIcon /></Link>
+            <Link href="/login" className="button button-primary">ログイン画面を開く <ArrowIcon /></Link>
           </div>
         </div>
       )}
       <input type="hidden" value={token} disabled={busy} onChange={(event) => { setWatch(null); setToken(event.target.value); }} />
-      <button className={`button button-dark${token ? "" : " is-hidden"}`} type="submit" disabled={busy || !token || !watch}>
+      <button className={`button button-primary${token ? "" : " is-hidden"}`} type="submit" disabled={busy || !token || !watch}>
         {busy ? "準備中…" : watch ? <>契約・決済管理画面を開く <ArrowIcon /></> : "契約情報を確認しています…"}
       </button>
       {message ? <p className="form-error" role="status">{message}</p> : null}

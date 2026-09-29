@@ -7,7 +7,7 @@ export const runtime = "nodejs";
 export async function POST(request: Request) {
   try {
     const body = await request.json().catch(() => null);
-    if (!validToken(body?.token) || typeof body?.email !== "string") return Response.json({ error: "管理URLと、メールを登録した場合はそのアドレスが必要です。" }, { status: 400 });
+    if (!validToken(body?.token) || typeof body?.email !== "string") return Response.json({ error: "管理用リンクと、メールを登録した場合はそのアドレスが必要です。" }, { status: 400 });
     const watch = await getWatch(body.token);
     if (!watch || watch.email !== body.email.trim().toLowerCase()) return Response.json({ error: "Watch tokenと登録メールが一致しません。" }, { status: 403 });
     const data = await exportWatchData(body.token, body.email);

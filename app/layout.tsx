@@ -24,7 +24,9 @@ export const metadata: Metadata = {
   title: { default: "Rovan（ロヴァン）— ChatGPTに、御社はおすすめされていますか？", template: "%s | Rovan" },
   description: "Rovanは、AIに御社をすすめてもらうためのサービスです。御社の強みをAIが読める形で公開し、毎週AIの答えを確かめます。ホームページがなくても使えます。",
   applicationName: BRAND.name,
-  openGraph: { siteName: BRAND.name, type: "website", locale: "ja_JP", title: "Rovan（ロヴァン）— ChatGPTに、御社はおすすめされていますか？", description: "Rovanは、AIに御社をすすめてもらうためのサービスです。御社の強みをAIが読める形で公開し、毎週AIの答えを確かめます。ホームページがなくても使えます。", url: "/" },
+  // 題名・説明は各ページの title/description から自動で入る（ここで固定すると全ページが同じ題名で共有される）
+  openGraph: { siteName: BRAND.name, type: "website", locale: "ja_JP" },
+  twitter: { card: "summary_large_image" },
   icons: { icon: "/favicon.svg" },
 };
 

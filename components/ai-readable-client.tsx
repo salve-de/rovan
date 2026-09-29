@@ -52,7 +52,7 @@ function AiReadableContent({ sample, token, url }: { sample: boolean; token: str
     return () => controller.abort();
   }, [sample, token]);
 
-  if (loading) return <div className="full-loading">下書きを読み込んでいます。</div>;
+  if (loading) return <div className="full-loading" role="status">下書きを読み込んでいます。</div>;
 
   const draft = sample ? sampleAiReadable() : watch?.changePack?.aiReadable || null;
   const resolvedDomain = watch ? normalizeDomain(watch.latest.targetUrl) : domain;

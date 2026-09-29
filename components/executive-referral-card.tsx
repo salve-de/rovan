@@ -13,7 +13,7 @@ export function ExecutiveReferralCard() {
   }
   return <section className="watch-section shell" aria-label="無料診断を紹介する">
     <h2>身近な経営者にも、AI推薦の現状を。</h2>
-    <p>無料診断を紹介できます。あなたの診断結果・管理URLは含みません。</p>
+    <p>無料診断を紹介できます。あなたの診断結果・管理用リンクは含みません。</p>
     <button type="button" className="button button-secondary" onClick={() => void copy()}>無料診断の紹介文をコピー</button>
     <p role="status">{status}</p>
     <small>紹介報酬・初月割引は現在適用されません。</small>

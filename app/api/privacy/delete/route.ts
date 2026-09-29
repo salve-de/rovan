@@ -8,7 +8,7 @@ export const runtime = "nodejs";
 export async function DELETE(request: Request) {
   try {
     const body = await request.json().catch(() => null);
-    if (!validToken(body?.token) || typeof body?.email !== "string" || !isDataDeletionConfirmation(body?.confirmation)) return Response.json({ error: "管理URL、メールを登録した場合はそのアドレス、確認文字列 DELETE ROVAN DATA が必要です。" }, { status: 400 });
+    if (!validToken(body?.token) || typeof body?.email !== "string" || !isDataDeletionConfirmation(body?.confirmation)) return Response.json({ error: "管理用リンク、メールを登録した場合はそのアドレス、確認文字列 DELETE ROVAN DATA が必要です。" }, { status: 400 });
     const watch = await getWatch(body.token);
     if (!watch) {
       const receipt = await deleteWatchData(body.token, body.email);

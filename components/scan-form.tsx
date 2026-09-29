@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useId, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowIcon } from "@/components/icons";
 
@@ -10,6 +10,7 @@ export function ScanForm({
   submitLabel,
   placeholder = "会社名・店舗名 ＋ 地域（例: 青葉ベーカリー 高崎、山田板金 大田区）またはURL",
   label,
+  showLabel = false,
   formId = "scan",
 }: {
   compact?: boolean;
@@ -17,10 +18,14 @@ export function ScanForm({
   submitLabel?: string;
   placeholder?: string;
   label?: string;
+  /** true のとき label を入力欄の上に見える形で出す（placeholder は入力すると消えるため） */
+  showLabel?: boolean;
   /** ページ内で一意にする。2つ目以降のフォームは null を渡す */
   formId?: string | null;
 }) {
   const router = useRouter();
+  const inputId = useId();
+  const errorId = `${inputId}-error`;
   const [input, setInput] = useState("");
   const [showExtra, setShowExtra] = useState(false);
   const [extraUrl, setExtraUrl] = useState("");
@@ -138,11 +143,17 @@ export function ScanForm({
         onSubmit={submit}
         noValidate
       >
+        {showLabel && label ? <label className="scan-label" htmlFor={inputId}>{label}</label> : null}
         <div className="scan-field">
           <input
-            aria-label={label ?? "会社名・店舗名・活動名・URL"}
+            id={inputId}
+            aria-label={showLabel && label ? undefined : (label ?? "会社名・店舗名・活動名・URL")}
+            aria-invalid={error ? true : undefined}
+            aria-describedby={error ? errorId : undefined}
             autoCapitalize="none"
+            autoComplete="organization"
             autoCorrect="off"
+            enterKeyHint="go"
             inputMode="text"
             placeholder={placeholder}
             value={input}
@@ -153,7 +164,7 @@ export function ScanForm({
             <ArrowIcon />
           </button>
         </div>
-        {error ? <p className="form-error" role="alert">{error}</p> : null}
+        {error ? <p id={errorId} className="form-error" role="alert">{error}</p> : null}
 
 
         {!compact && !hideExtraToggle ? (

@@ -4,5 +4,5 @@ import { BillingClient } from "@/components/billing-client";
 import { MarketingShell } from "@/components/marketing-shell";
 
 export default function BillingPage() {
-  return <MarketingShell compact art={<Image src="/illustrations/signing-contract.svg" alt="" width={300} height={300} priority />} eyebrow="ご契約・お支払い" title="週次見守りのご契約を管理する。" lead="お支払い方法の変更、請求履歴の確認、解約は、Stripe（決済会社）の画面で行います。"><Suspense fallback={<div className="full-loading">契約情報を読み込んでいます。</div>}><BillingClient /></Suspense></MarketingShell>;
+  return <MarketingShell compact art={<Image src="/illustrations/signing-contract.svg" alt="" width={300} height={300} priority />} eyebrow="ご契約・お支払い" title="週次見守りのご契約を管理する。" lead="お支払い方法の変更、請求履歴の確認、解約は、Stripe（決済会社）の画面で行います。"><Suspense fallback={<div className="full-loading" role="status">契約情報を読み込んでいます。</div>}><BillingClient /></Suspense></MarketingShell>;
 }
